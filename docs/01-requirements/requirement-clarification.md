@@ -1,6 +1,6 @@
 # Requirement Clarification
 
-## 1. Document Information
+## 1. Information
 
 | Item | Description |
 |---|---|
