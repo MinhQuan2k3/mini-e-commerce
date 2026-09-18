@@ -7,9 +7,6 @@
 | Project | Mini E-commerce / Inventory Management |
 | Company | A-Software |
 | Purpose | Clarify ambiguous requirements before system analysis, design and implementation |
-| Status | Clarified – Pending Review |
-| Last Updated | 18/09/2026 |
-
 ---
 
 ## 2. User & Authentication
