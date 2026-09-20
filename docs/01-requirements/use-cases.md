@@ -1510,13 +1510,3 @@ Implementation
     ↓
 Test Cases
 ```
-
-Trước khi chuyển sang thiết kế ERD, cần bảo đảm các Use Case quan trọng nhất đã được review, đặc biệt là:
-
-- UC-CART-05 — Merge Guest Cart
-- UC-CHECKOUT-01 — Checkout
-- UC-ORDER-01 — Create Order
-- UC-ORDER-04 — Cancel Pending Order
-- UC-ORDER-05 — Update Order Status
-- UC-ADMIN-PROD-01 — Manage Products
-- UC-ADMIN-ORDER-01 — Manage Orders
