@@ -58,9 +58,7 @@ Các Use Case được chia thành các nhóm sau:
 Authentication & Account
     ├── UC-AUTH-01 Register Customer
     ├── UC-AUTH-02 Login
-    ├── UC-AUTH-03 Verify Email
-    ├── UC-AUTH-04 Forgot Password
-    └── UC-AUTH-05 Authorize User
+    └── UC-AUTH-03 Authorize User
 
 Product Browsing
     ├── UC-PROD-01 View Product List
@@ -183,80 +181,7 @@ Cho phép Guest, Customer hoặc Admin đăng nhập vào hệ thống bằng Em
 
 ---
 
-## UC-AUTH-03 — Verify Email
-
-### Description
-
-Cho phép Customer xác thực Email sau khi đăng ký tài khoản.
-
-| Item                 | Description                                               |
-| -------------------- | --------------------------------------------------------- |
-| Use Case ID          | UC-AUTH-03                                                |
-| Use Case Name        | Verify Email                                              |
-| Primary Actor        | Customer                                                  |
-| Goal                 | Xác minh Email của tài khoản                              |
-| Trigger              | Customer sử dụng Verification Link hoặc Verification Code |
-| Preconditions        | Tài khoản đã được đăng ký nhưng chưa xác thực             |
-| Postconditions       | Tài khoản được đánh dấu là Email Verified                 |
-| Related Requirements | FR-AUTH-05                                                |
-
-### Main Success Flow
-
-1. Customer nhận Email Verification.
-2. Customer mở Verification Link hoặc nhập Verification Code.
-3. Hệ thống kiểm tra token/code.
-4. Hệ thống kiểm tra token/code còn hiệu lực.
-5. Hệ thống đánh dấu tài khoản đã xác thực.
-6. Hệ thống hiển thị thông báo thành công.
-
-### Alternative / Exception Flows
-
-| Condition             | System Response                               |
-| --------------------- | --------------------------------------------- |
-| Token không hợp lệ    | Từ chối xác thực                              |
-| Token hết hạn         | Yêu cầu gửi lại Verification Email            |
-| Tài khoản đã xác thực | Hiển thị thông báo tài khoản đã được xác thực |
-
----
-
-## UC-AUTH-04 — Forgot Password
-
-### Description
-
-Cho phép người dùng gửi yêu cầu hỗ trợ khi quên Password.
-
-| Item                 | Description                                    |
-| -------------------- | ---------------------------------------------- |
-| Use Case ID          | UC-AUTH-04                                     |
-| Use Case Name        | Forgot Password                                |
-| Primary Actor        | Guest, Customer                                |
-| Goal                 | Gửi yêu cầu khôi phục quyền truy cập tài khoản |
-| Trigger              | Người dùng chọn Forgot Password                |
-| Preconditions        | Người dùng không nhớ Password                  |
-| Postconditions       | Yêu cầu hỗ trợ được ghi nhận                   |
-| Related Requirements | FR-AUTH-06                                     |
-
-### Main Success Flow
-
-1. Người dùng chọn Forgot Password.
-2. Hệ thống hiển thị biểu mẫu yêu cầu hỗ trợ.
-3. Người dùng nhập Email.
-4. Người dùng gửi yêu cầu.
-5. Hệ thống kiểm tra dữ liệu.
-6. Hệ thống ghi nhận yêu cầu.
-7. Hệ thống hiển thị hướng dẫn tiếp theo.
-
-### Alternative / Exception Flows
-
-| Condition           | System Response                                             |
-| ------------------- | ----------------------------------------------------------- |
-| Email không hợp lệ  | Hiển thị lỗi validation                                     |
-| Email không tồn tại | Hiển thị thông báo chung, không tiết lộ thông tin tài khoản |
-| Lỗi hệ thống        | Hiển thị thông báo thử lại sau                              |
-
----
-
-## UC-AUTH-05 — Authorize User
+## UC-AUTH-03 — Authorize User
 
 ### Description
 
