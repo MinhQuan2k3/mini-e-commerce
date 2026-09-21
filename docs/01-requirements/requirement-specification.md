@@ -62,8 +62,8 @@ Hệ thống có 3 nhóm actor chính.
 | Search Product           |   ✓   |     ✓    |   ✓   |
 | Filter / Sort Product    |   ✓   |     ✓    |   ✓   |
 | View Product Detail      |   ✓   |     ✓    |   ✓   |
-| Add to Cart              |   ✓   |     ✓    |   -   |
-| Manage Personal Cart     |   ✓   |     ✓    |   -   |
+| Add to Cart              |   -   |     ✓    |   -   |
+| Manage Personal Cart     |   -   |     ✓    |   -   |
 | Register                 |   ✓   |     -    |   -   |
 | Login                    |   ✓   |     ✓    |   ✓   |
 | Checkout                 |   -   |     ✓    |   -   |
@@ -137,23 +137,7 @@ Thông tin credential mặc định không được hard-code dưới dạng sec
 
 ---
 
-### FR-AUTH-05 — Email Verification
-
-Hệ thống phải hỗ trợ cơ chế xác thực email cho tài khoản Customer sau khi đăng ký.
-
-Tài khoản chỉ được xem là đã xác thực sau khi hoàn thành verification flow.
-
----
-
-### FR-AUTH-06 — Forgot Password
-
-Hệ thống phải hỗ trợ chức năng Forgot Password.
-
-Người dùng có thể gửi yêu cầu hỗ trợ khi quên mật khẩu theo cơ chế được triển khai trong MVP.
-
----
-
-### FR-AUTH-07 — Role-Based Authorization
+### FR-AUTH-05 — Role-Based Authorization
 
 Hệ thống phải phân quyền dựa trên role.
 
@@ -170,7 +154,7 @@ Customer không được phép truy cập các Admin API.
 
 ---
 
-### FR-AUTH-08 — Stateless Authentication
+### FR-AUTH-06 — Stateless Authentication
 
 Backend phải sử dụng JWT-based stateless authentication.
 
@@ -408,23 +392,15 @@ Hệ thống phải trả về lỗi phù hợp.
 
 ## FR-CART — Shopping Cart
 
-### FR-CART-01 — Guest Cart
-
-Guest phải có thể sử dụng Shopping Cart mà không cần đăng nhập.
-
-Guest Cart được lưu phía Client, sử dụng LocalStorage.
-
----
-
-### FR-CART-02 — Customer Cart
+### FR-CART-01 — Customer Cart
 
 Sau khi Customer đăng nhập, Cart của Customer được lưu trong Database.
 
 ---
 
-### FR-CART-03 — Add Product to Cart
+### FR-CART-02 — Add Product to Cart
 
-Guest hoặc Customer có thể thêm Product còn hàng vào Cart.
+Customer có thể thêm Product còn hàng vào Cart.
 
 Điều kiện:
 
@@ -436,7 +412,7 @@ Product.stock_quantity > 0
 
 ---
 
-### FR-CART-04 — Duplicate Product in Cart
+### FR-CART-03 — Duplicate Product in Cart
 
 Nếu Product đã tồn tại trong Cart, hệ thống không tạo CartItem mới.
 
@@ -448,7 +424,7 @@ existing_quantity += requested_quantity
 
 ---
 
-### FR-CART-05 — CartItem Uniqueness
+### FR-CART-04 — CartItem Uniqueness
 
 Database phải đảm bảo mỗi Cart chỉ có tối đa một CartItem cho cùng một Product.
 
@@ -460,7 +436,7 @@ UNIQUE(cart_id, product_id)
 
 ---
 
-### FR-CART-06 — Cart Quantity Validation
+### FR-CART-05 — Cart Quantity Validation
 
 Quantity trong Cart không được vượt quá Stock hiện tại.
 
@@ -474,7 +450,7 @@ hệ thống phải từ chối thao tác và hiển thị lỗi.
 
 ---
 
-### FR-CART-07 — Update Cart Quantity
+### FR-CART-06 — Update Cart Quantity
 
 Customer phải có thể tăng hoặc giảm quantity của CartItem.
 
@@ -482,7 +458,7 @@ Hệ thống phải validate lại Stock sau mỗi thay đổi.
 
 ---
 
-### FR-CART-08 — Remove CartItem
+### FR-CART-07 — Remove CartItem
 
 Customer phải có thể xóa Product khỏi Cart.
 
@@ -490,25 +466,7 @@ Guest cũng phải có thể xóa CartItem khỏi LocalStorage Cart.
 
 ---
 
-### FR-CART-09 — Guest Cart Merge
-
-Khi Guest đăng nhập:
-
-```text
-LocalStorage Cart
-        ↓
-Login
-        ↓
-Merge
-        ↓
-Customer Database Cart
-```
-
-Nếu Product đã tồn tại trong Customer Cart, hệ thống phải merge quantity thay vì tạo duplicate CartItem.
-
----
-
-### FR-CART-10 — Unavailable Cart Item
+### FR-CART-08 — Unavailable Cart Item
 
 Nếu Product trong Cart:
 
@@ -641,43 +599,7 @@ MVP không hỗ trợ:
 
 ## FR-PAY — Payment
 
-### FR-PAY-01 — Payment Methods
-
-Hệ thống hỗ trợ các phương thức:
-
-- COD
-- Bank Transfer
-- E-wallet
-- Online Payment Gateway
-
-COD là phương thức mặc định.
-
----
-
-### FR-PAY-02 — Payment Status
-
-Order phải lưu trạng thái Payment riêng với Order Status.
-
-Payment Status tối thiểu phải được thiết kế để phân biệt:
-
-```text
-UNPAID
-PAID
-```
-
-Các trạng thái bổ sung có thể được xác định khi lựa chọn Payment Gateway cụ thể.
-
----
-
-### FR-PAY-03 — Online Payment Gateway
-
-Hệ thống phải có khả năng tích hợp Payment Gateway bên ngoài.
-
-Việc lựa chọn nhà cung cấp cụ thể sẽ được xác định trong giai đoạn API/Technical Design.
-
----
-
-### FR-PAY-04 — COD Order
+### FR-PAY-01 — COD Order
 
 Với COD:
 
@@ -1374,15 +1296,7 @@ API phải có Postman Collection để hỗ trợ kiểm thử.
 
 ---
 
-## NFR-11 — Deployment
-
-Hệ thống phải được deploy lên môi trường có thể truy cập để demo/evaluation.
-
-Có thể sử dụng các giải pháp miễn phí hoặc chi phí thấp phù hợp với MVP.
-
----
-
-## NFR-12 — CI/CD
+## NFR-11 — CI/CD
 
 CI/CD không phải requirement bắt buộc của MVP.
 
