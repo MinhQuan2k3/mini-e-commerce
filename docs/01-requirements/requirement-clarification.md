@@ -7,6 +7,7 @@
 | Project | Mini E-commerce / Inventory Management |
 | Company | A-Software |
 | Purpose | Clarify ambiguous requirements before system analysis, design and implementation |
+| Status | Draft for Design |
 ---
 
 ## 2. User & Authentication
