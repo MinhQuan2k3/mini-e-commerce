@@ -43,10 +43,9 @@ API Specification
 
 | Actor           | Description                                                                                             |
 | --------------- | ------------------------------------------------------------------------------------------------------- |
-| Guest           | Người dùng chưa đăng nhập. Có thể xem sản phẩm, tìm kiếm sản phẩm và sử dụng giỏ hàng trên trình duyệt. |
-| Customer        | Người dùng đã đăng nhập, có thể quản lý giỏ hàng, Checkout, đặt hàng và xem lịch sử đơn hàng.           |
-| Admin           | Người quản trị có quyền quản lý Product, Category, Inventory và Order.                                  |
-| Payment Gateway | Hệ thống bên thứ ba hỗ trợ xử lý thanh toán trực tuyến nếu phương thức này được sử dụng.                |
+| Guest           | Người dùng chưa đăng nhập. Có thể xem danh sách sản phẩm, tìm kiếm, lọc/sắp xếp và xem chi tiết sản phẩm. |
+| Customer        | Người dùng đã đăng nhập, có thể quản lý giỏ hàng cá nhân, Checkout, đặt hàng và xem lịch sử đơn hàng.    |
+| Admin           | Người quản trị hệ thống có quyền quản lý Product, Category, Inventory và Order.                         |
 
 ---
 
@@ -70,13 +69,10 @@ Shopping Cart
     ├── UC-CART-01 Add Product to Cart
     ├── UC-CART-02 View Cart
     ├── UC-CART-03 Update Cart Quantity
-    ├── UC-CART-04 Remove Cart Item
-    └── UC-CART-05 Merge Guest Cart
+    └── UC-CART-04 Remove Cart Item
 
 Checkout & Payment
-    ├── UC-CHECKOUT-01 Checkout
-    ├── UC-CHECKOUT-02 Select Payment Method
-    └── UC-PAY-01 Process Online Payment
+    └── UC-CHECKOUT-01 Checkout & Place Order
 
 Order Management
     ├── UC-ORDER-01 Create Order
@@ -122,10 +118,9 @@ Cho phép Guest tạo tài khoản Customer mới để sử dụng các chức 
 5. Hệ thống kiểm tra định dạng Email.
 6. Hệ thống kiểm tra Email đã tồn tại hay chưa.
 7. Hệ thống kiểm tra dữ liệu đầu vào.
-8. Hệ thống hash Password.
+8. Hệ thống hash Password bằng BCrypt hoặc Argon2.
 9. Hệ thống tạo tài khoản Customer.
-10. Hệ thống yêu cầu Customer thực hiện Email Verification.
-11. Hệ thống hiển thị thông báo đăng ký thành công.
+10. Hệ thống hiển thị thông báo đăng ký thành công.
 
 ### Alternative / Exception Flows
 
@@ -153,7 +148,7 @@ Cho phép Guest, Customer hoặc Admin đăng nhập vào hệ thống bằng Em
 | Trigger              | Người dùng gửi Login Form                                     |
 | Preconditions        | Người dùng có tài khoản hợp lệ                                |
 | Postconditions       | Người dùng được xác thực và nhận JWT nếu đăng nhập thành công |
-| Related Requirements | FR-AUTH-02, FR-AUTH-03, FR-AUTH-08                            |
+| Related Requirements | FR-AUTH-02, FR-AUTH-03, FR-AUTH-06                            |
 
 ### Main Success Flow
 
@@ -163,21 +158,20 @@ Cho phép Guest, Customer hoặc Admin đăng nhập vào hệ thống bằng Em
 4. Người dùng gửi Login Form.
 5. Hệ thống tìm tài khoản theo Email.
 6. Hệ thống kiểm tra Password.
-7. Hệ thống kiểm tra trạng thái tài khoản nếu cần.
+7. Hệ thống kiểm tra trạng thái tài khoản.
 8. Hệ thống tạo JWT.
 9. Hệ thống trả về thông tin đăng nhập và role.
-10. Frontend lưu trạng thái authentication.
-11. Hệ thống chuyển người dùng đến trang phù hợp.
+10. Frontend lưu trạng thái authentication (Token).
+11. Hệ thống chuyển người dùng đến trang phù hợp theo Role.
 
 ### Alternative / Exception Flows
 
-| Step | Condition                     | System Response                                     |
-| ---- | ----------------------------- | --------------------------------------------------- |
-| 5    | Email không tồn tại           | Hiển thị thông báo thông tin đăng nhập không hợp lệ |
-| 6    | Password sai                  | Từ chối đăng nhập                                   |
-| 7    | Tài khoản chưa xác thực Email | Yêu cầu hoàn tất Email Verification                 |
-| 7    | Tài khoản bị vô hiệu hóa      | Từ chối đăng nhập                                   |
-| 8    | Lỗi tạo JWT                   | Hiển thị lỗi hệ thống                               |
+| Step | Condition                  | System Response                                     |
+| ---- | -------------------------- | --------------------------------------------------- |
+| 5    | Email không tồn tại        | Hiển thị thông báo thông tin đăng nhập không hợp lệ |
+| 6    | Password sai               | Từ chối đăng nhập                                   |
+| 7    | Tài khoản bị vô hiệu hóa   | Từ chối đăng nhập                                   |
+| 8    | Lỗi tạo JWT                | Hiển thị lỗi hệ thống                               |
 
 ---
 
@@ -185,35 +179,35 @@ Cho phép Guest, Customer hoặc Admin đăng nhập vào hệ thống bằng Em
 
 ### Description
 
-Kiểm tra quyền truy cập của người dùng trước khi cho phép thực hiện các chức năng được bảo vệ.
+Kiểm tra quyền truy cập của người dùng dựa trên Role (Role-based authorization) trước khi cho phép thực hiện các chức năng được bảo vệ.
 
 | Item                 | Description                                              |
 | -------------------- | -------------------------------------------------------- |
-| Use Case ID          | UC-AUTH-05                                               |
+| Use Case ID          | UC-AUTH-03                                               |
 | Use Case Name        | Authorize User                                           |
 | Primary Actor        | Customer, Admin                                          |
 | Goal                 | Đảm bảo người dùng chỉ truy cập chức năng được cấp quyền |
 | Trigger              | Người dùng gửi request đến protected API                 |
 | Preconditions        | Request được gửi đến Backend                             |
 | Postconditions       | Request được chấp nhận hoặc từ chối theo quyền           |
-| Related Requirements | FR-AUTH-07, FR-API-02, FR-API-03, BR-22                  |
+| Related Requirements | FR-AUTH-05, FR-API-02, FR-API-03, BR-22                  |
 
 ### Main Success Flow
 
-1. Client gửi request kèm JWT.
-2. Backend kiểm tra JWT.
-3. Backend xác định User và Role.
-4. Backend kiểm tra quyền truy cập resource.
-5. Backend cho phép request tiếp tục nếu hợp lệ.
+1. Client gửi request kèm JWT trong Header.
+2. Backend xác thực tính hợp lệ của JWT.
+3. Backend trích xuất User Information và Role (`CUSTOMER` hoặc `ADMIN`).
+4. Backend kiểm tra quyền truy cập resource tương ứng với Role.
+5. Backend cho phép request tiếp tục xử lý nếu hợp lệ.
 
 ### Alternative / Exception Flows
 
 | Condition                   | System Response           |
 | --------------------------- | ------------------------- |
 | Không có JWT                | Trả về `401 Unauthorized` |
-| JWT không hợp lệ            | Trả về `401 Unauthorized` |
-| User không có quyền         | Trả về `403 Forbidden`    |
-| Customer truy cập Admin API | Từ chối request           |
+| JWT không hợp lệ/hết hạn    | Trả về `401 Unauthorized` |
+| User không đúng role yêu cầu| Trả về `403 Forbidden`    |
+| Customer truy cập Admin API | Từ chối request (`403`)   |
 
 ---
 
@@ -240,11 +234,10 @@ Cho phép Guest, Customer và Admin xem danh sách Product.
 
 1. Người dùng mở Product List.
 2. Frontend gửi request lấy danh sách Product.
-3. Backend truy vấn các Product phù hợp.
-4. Backend loại bỏ Product không được hiển thị công khai nếu cần.
-5. Backend trả về danh sách Product.
-6. Frontend hiển thị Product List.
-7. Người dùng có thể chọn Product để xem chi tiết.
+3. Backend truy vấn các Product có trạng thái `ACTIVE`.
+4. Backend trả về danh sách Product bao gồm: Name, Price, Primary Image, Category, Availability/Stock Status.
+5. Frontend hiển thị Product List.
+6. Người dùng có thể chọn Product để xem chi tiết.
 
 ### Alternative / Exception Flows
 
@@ -276,21 +269,21 @@ Cho phép người dùng xem thông tin chi tiết của một Product.
 ### Main Success Flow
 
 1. Người dùng chọn Product từ Product List.
-2. Frontend gửi request lấy Product Detail.
+2. Frontend gửi request lấy Product Detail theo ID.
 3. Backend tìm Product theo ID.
-4. Backend kiểm tra Product có tồn tại và được phép hiển thị hay không.
-5. Backend trả về Product Detail.
+4. Backend kiểm tra Product có tồn tại.
+5. Backend trả về Product Detail (ID, SKU, Name, Description, Price, Stock, Image, Category, Status).
 6. Frontend hiển thị thông tin Product.
-7. Nếu Product còn hàng, hệ thống hiển thị Add to Cart.
+7. Nếu Product có trạng thái `ACTIVE` và `stock_quantity > 0`, hiển thị nút "Thêm vào giỏ" (chỉ dành cho Customer).
 
 ### Alternative / Exception Flows
 
-| Condition             | System Response        |
-| --------------------- | ---------------------- |
-| Product không tồn tại | Trả về `404 Not Found` |
-| Product INACTIVE      | Không cho phép mua     |
-| Product hết hàng      | Hiển thị Out of Stock  |
-| API thất bại          | Hiển thị Error State   |
+| Condition             | System Response                     |
+| --------------------- | ----------------------------------- |
+| Product không tồn tại | Trả về `404 Not Found`              |
+| Product INACTIVE      | Hiển thị trạng thái "Không khả dụng"|
+| Product hết stock     | Vô hiệu hóa nút đặt hàng / Thêm giỏ |
+| API thất bại          | Hiển thị Error State                |
 
 ---
 
@@ -313,20 +306,19 @@ Cho phép người dùng tìm kiếm Product theo Name, SKU hoặc Description.
 
 ### Main Success Flow
 
-1. Người dùng nhập Keyword.
+1. Người dùng nhập Keyword vào ô tìm kiếm.
 2. Frontend gửi Search Request.
-3. Backend chuẩn hóa Keyword.
+3. Backend chuyển Keyword về chữ thường (case-insensitive).
 4. Backend tìm kiếm trong Product Name, SKU và Description.
-5. Backend trả về kết quả.
+5. Backend trả về danh sách kết quả.
 6. Frontend hiển thị danh sách kết quả.
 
 ### Alternative / Exception Flows
 
 | Condition        | System Response                                    |
 | ---------------- | -------------------------------------------------- |
-| Keyword rỗng     | Hiển thị toàn bộ Product hoặc yêu cầu nhập Keyword |
+| Keyword rỗng     | Hiển thị toàn bộ Product hoặc giữ nguyên danh sách |
 | Không có kết quả | Hiển thị `No products found`                       |
-| Keyword quá dài  | Từ chối request hoặc giới hạn độ dài               |
 | Lỗi truy vấn     | Hiển thị Error State                               |
 
 ---
@@ -351,19 +343,18 @@ Cho phép người dùng lọc, sắp xếp và phân trang danh sách Product.
 ### Main Success Flow
 
 1. Người dùng chọn Category Filter hoặc Price Filter.
-2. Người dùng chọn Sort Option nếu cần.
-3. Người dùng chọn Page hoặc chuyển sang trang tiếp theo.
+2. Người dùng chọn kiểu Sort (Price/Newest/Name).
+3. Người dùng chọn số trang (Offset-based pagination, mặc định 10-12 items/trang).
 4. Frontend gửi các tham số truy vấn.
-5. Backend validate các tham số.
-6. Backend áp dụng Filter, Sort và Pagination.
-7. Backend trả về danh sách Product và thông tin phân trang.
-8. Frontend cập nhật danh sách.
+5. Backend áp dụng Filter, Sort và Pagination vào SQL query.
+6. Backend trả về danh sách Product và thông tin phân trang (total pages, current page).
+7. Frontend cập nhật lại giao diện danh sách.
 
 ### Alternative / Exception Flows
 
 | Condition              | System Response                       |
 | ---------------------- | ------------------------------------- |
-| Filter không hợp lệ    | Bỏ qua hoặc từ chối tham số           |
+| Filter không hợp lệ    | Bỏ qua tham số không hợp lệ           |
 | Page vượt quá số trang | Trả về danh sách rỗng hoặc trang cuối |
 | Không có kết quả       | Hiển thị Empty State                  |
 
@@ -375,43 +366,42 @@ Cho phép người dùng lọc, sắp xếp và phân trang danh sách Product.
 
 ### Description
 
-Cho phép Guest hoặc Customer thêm Product còn khả dụng vào Cart.
+Cho phép Customer thêm Product còn khả dụng vào Cart cá nhân (được lưu trữ trong Database).
 
 | Item                 | Description                                                 |
 | -------------------- | ----------------------------------------------------------- |
 | Use Case ID          | UC-CART-01                                                  |
 | Use Case Name        | Add Product to Cart                                         |
-| Primary Actor        | Guest, Customer                                             |
+| Primary Actor        | Customer                                                    |
 | Goal                 | Thêm Product vào giỏ hàng                                   |
-| Trigger              | Người dùng nhấn Add to Cart                                 |
-| Preconditions        | Product tồn tại, Active và còn Stock                        |
+| Trigger              | Customer nhấn Add to Cart                                   |
+| Preconditions        | Customer đã đăng nhập; Product ACTIVE và `stock_quantity > 0` |
 | Postconditions       | Product được thêm vào Cart hoặc quantity hiện tại được tăng |
-| Related Requirements | FR-CART-03, FR-CART-04, FR-CART-05, BR-08, BR-09            |
+| Related Requirements | FR-CART-01, FR-CART-02, FR-CART-03, FR-CART-05, BR-08, BR-09|
 
 ### Main Success Flow
 
-1. Người dùng mở Product Detail.
-2. Người dùng nhập Quantity.
-3. Người dùng nhấn Add to Cart.
-4. Hệ thống kiểm tra Product tồn tại.
-5. Hệ thống kiểm tra Product có trạng thái Active.
-6. Hệ thống kiểm tra Stock.
-7. Hệ thống kiểm tra Product đã có trong Cart hay chưa.
-8. Nếu chưa có, hệ thống tạo CartItem.
-9. Nếu đã có, hệ thống tăng quantity của CartItem.
-10. Hệ thống cập nhật Cart.
-11. Frontend hiển thị thông báo thành công.
+1. Customer mở Product Detail.
+2. Customer chọn số lượng mua (Quantity).
+3. Customer nhấn "Thêm vào giỏ".
+4. Backend xác thực Customer JWT.
+5. Backend kiểm tra Product có trạng thái `ACTIVE` và còn tồn kho (`stock_quantity > 0`).
+6. Backend kiểm tra Product đã có trong Cart của Customer hay chưa (dựa trên cặp `cart_id, product_id`).
+7. Nếu chưa có, Backend tạo `CartItem` mới.
+8. Nếu đã có, Backend cộng dồn `quantity` vào `CartItem` hiện tại.
+9. Backend kiểm tra tổng `quantity` trong giỏ không vượt quá `stock_quantity`.
+10. Backend lưu thay đổi vào Database.
+11. Frontend hiển thị Toast thông báo thành công.
 
 ### Alternative / Exception Flows
 
-| Condition                                       | System Response              |
-| ----------------------------------------------- | ---------------------------- |
-| Product không tồn tại                           | Từ chối thao tác             |
-| Product INACTIVE                                | Không cho phép thêm vào Cart |
-| Product hết hàng                                | Hiển thị Out of Stock        |
-| Quantity <= 0                                   | Hiển thị lỗi validation      |
-| Quantity vượt Stock                             | Từ chối thao tác             |
-| CartItem đã tồn tại và tổng quantity vượt Stock | Từ chối thao tác             |
+| Condition                                       | System Response                      |
+| ----------------------------------------------- | ------------------------------------ |
+| Customer chưa đăng nhập                         | Chuyển hướng sang trang Login        |
+| Product INACTIVE hoặc không tồn tại             | Từ chối thao tác                     |
+| Product hết hàng (`stock = 0`)                  | Vô hiệu hóa tính năng và hiển thị lỗi|
+| Quantity <= 0                                   | Hiển thị lỗi validation              |
+| Quantity (hoặc tổng quantity) vượt quá Stock   | Từ chối thao tác và hiển thị thông báo|
 
 ---
 
@@ -419,38 +409,35 @@ Cho phép Guest hoặc Customer thêm Product còn khả dụng vào Cart.
 
 ### Description
 
-Cho phép Guest hoặc Customer xem các Product hiện có trong Cart.
+Cho phép Customer xem danh sách các Product trong Cart của chính mình.
 
 | Item                 | Description                            |
 | -------------------- | -------------------------------------- |
 | Use Case ID          | UC-CART-02                             |
 | Use Case Name        | View Cart                              |
-| Primary Actor        | Guest, Customer                        |
+| Primary Actor        | Customer                               |
 | Goal                 | Xem và kiểm tra nội dung Cart          |
-| Trigger              | Người dùng mở Cart                     |
-| Preconditions        | Cart có thể được truy cập              |
+| Trigger              | Customer mở trang Cart                 |
+| Preconditions        | Customer đã đăng nhập                  |
 | Postconditions       | Cart Items và Cart Total được hiển thị |
-| Related Requirements | FR-CART-01, FR-CART-02, FR-UI-04       |
+| Related Requirements | FR-CART-01, FR-CART-08, FR-UI-04       |
 
 ### Main Success Flow
 
-1. Người dùng mở Cart.
-2. Nếu là Guest, Frontend đọc Cart từ LocalStorage.
-3. Nếu là Customer, Frontend gọi Cart API.
-4. Hệ thống lấy thông tin Product liên quan.
-5. Hệ thống kiểm tra Availability và Stock.
-6. Frontend hiển thị Cart Items.
-7. Frontend tính hoặc hiển thị Item Total và Cart Total.
-8. Hệ thống hiển thị các thao tác Update Quantity và Remove.
+1. Customer nhấn chọn biểu tượng Giỏ hàng.
+2. Frontend gọi API `GET /api/cart` kèm JWT.
+3. Backend kiểm tra danh sách `CartItem` thuộc về Customer.
+4. Backend kiểm tra giá cả, trạng thái `ACTIVE/INACTIVE` và Stock hiện tại của từng Product.
+5. Backend trả về dữ liệu Cart gồm các sản phẩm, số lượng, đơn giá, tổng tiền và trạng thái khả dụng.
+6. Frontend hiển thị danh sách Cart Items, tổng tiền giỏ hàng và các sản phẩm không khả dụng (nếu có).
 
 ### Alternative / Exception Flows
 
-| Condition                    | System Response                  |
-| ---------------------------- | -------------------------------- |
-| Cart rỗng                    | Hiển thị Empty Cart State        |
-| Product không còn tồn tại    | Đánh dấu CartItem không khả dụng |
-| Product hết hàng             | Hiển thị Out of Stock            |
-| Quantity vượt Stock hiện tại | Yêu cầu điều chỉnh Quantity      |
+| Condition                    | System Response                                  |
+| ---------------------------- | ------------------------------------------------ |
+| Customer chưa đăng nhập      | Yêu cầu đăng nhập                                |
+| Cart rỗng                    | Hiển thị Empty Cart State ("Giỏ hàng rỗng")      |
+| Product bị INACTIVE/hết Stock| Đánh dấu "Không khả dụng", chặn nút Checkout     |
 
 ---
 
@@ -458,39 +445,37 @@ Cho phép Guest hoặc Customer xem các Product hiện có trong Cart.
 
 ### Description
 
-Cho phép người dùng thay đổi quantity của CartItem.
+Cho phép Customer thay đổi số lượng (quantity) của CartItem trong giỏ hàng.
 
 | Item                 | Description                            |
 | -------------------- | -------------------------------------- |
 | Use Case ID          | UC-CART-03                             |
 | Use Case Name        | Update Cart Quantity                   |
-| Primary Actor        | Guest, Customer                        |
+| Primary Actor        | Customer                               |
 | Goal                 | Điều chỉnh số lượng Product trong Cart |
-| Trigger              | Người dùng tăng hoặc giảm Quantity     |
-| Preconditions        | CartItem tồn tại                       |
-| Postconditions       | Quantity được cập nhật nếu hợp lệ      |
-| Related Requirements | FR-CART-06, FR-CART-07, BR-10          |
+| Trigger              | Customer tăng/giảm số lượng trên UI    |
+| Preconditions        | Customer đã đăng nhập, CartItem tồn tại|
+| Postconditions       | Quantity được cập nhật trong Database  |
+| Related Requirements | FR-CART-05, FR-CART-06, BR-10          |
 
 ### Main Success Flow
 
-1. Người dùng chọn CartItem.
-2. Người dùng thay đổi Quantity.
-3. Frontend gửi yêu cầu cập nhật.
-4. Hệ thống kiểm tra Quantity > 0.
-5. Hệ thống kiểm tra Product còn Active.
-6. Hệ thống kiểm tra Quantity không vượt Stock.
-7. Hệ thống cập nhật CartItem.
-8. Hệ thống cập nhật Cart Total.
-9. Frontend hiển thị kết quả.
+1. Customer điều chỉnh số lượng của sản phẩm trong giỏ hàng.
+2. Frontend gửi request cập nhật số lượng đến Backend.
+3. Backend kiểm tra `quantity > 0`.
+4. Backend kiểm tra sản phẩm còn `ACTIVE`.
+5. Backend kiểm tra `quantity <= product.stock_quantity`.
+6. Backend cập nhật số lượng `CartItem` trong Database.
+7. Backend tính toán lại tổng tiền.
+8. Frontend cập nhật lại giao diện giỏ hàng và tổng giá trị.
 
 ### Alternative / Exception Flows
 
 | Condition              | System Response                                  |
 | ---------------------- | ------------------------------------------------ |
-| Quantity <= 0          | Yêu cầu Remove CartItem hoặc nhập giá trị hợp lệ |
-| Quantity vượt Stock    | Từ chối cập nhật                                 |
-| Product INACTIVE       | Đánh dấu không khả dụng                          |
-| CartItem không tồn tại | Trả về `404 Not Found`                           |
+| Quantity <= 0          | Yêu cầu nhập giá trị hợp lệ hoặc gọi xóa sản phẩm|
+| Quantity vượt Stock    | Từ chối cập nhật và báo lỗi không đủ tồn kho     |
+| Product INACTIVE       | Đánh dấu sản phẩm không khả dụng                 |
 
 ---
 
@@ -498,218 +483,75 @@ Cho phép người dùng thay đổi quantity của CartItem.
 
 ### Description
 
-Cho phép người dùng xóa Product khỏi Cart.
+Cho phép Customer xóa một sản phẩm ra khỏi giỏ hàng.
 
 | Item                 | Description                     |
 | -------------------- | ------------------------------- |
 | Use Case ID          | UC-CART-04                      |
 | Use Case Name        | Remove Cart Item                |
-| Primary Actor        | Guest, Customer                 |
+| Primary Actor        | Customer                        |
 | Goal                 | Xóa CartItem không còn muốn mua |
-| Trigger              | Người dùng nhấn Remove          |
-| Preconditions        | CartItem tồn tại                |
-| Postconditions       | CartItem bị xóa khỏi Cart       |
-| Related Requirements | FR-CART-08, FR-UI-04            |
+| Trigger              | Customer nhấn nút Xóa (Remove)  |
+| Preconditions        | Customer đã đăng nhập, CartItem tồn tại |
+| Postconditions       | CartItem bị xóa khỏi Database   |
+| Related Requirements | FR-CART-07, FR-UI-04            |
 
 ### Main Success Flow
 
-1. Người dùng mở Cart.
-2. Người dùng chọn Remove trên CartItem.
-3. Hệ thống yêu cầu xác nhận nếu UI có hỗ trợ.
-4. Người dùng xác nhận.
-5. Hệ thống xóa CartItem.
-6. Hệ thống cập nhật Cart Total.
-7. Frontend hiển thị Cart mới.
+1. Customer nhấn biểu tượng Xóa trên một dòng sản phẩm trong giỏ hàng.
+2. Frontend gửi request xóa `CartItem` đến Backend.
+3. Backend xác thực ownership của CartItem.
+4. Backend xóa `CartItem` khỏi Database.
+5. Backend trả về trạng thái thành công.
+6. Frontend cập nhật lại danh sách sản phẩm và tổng giá trị giỏ hàng.
 
 ### Alternative / Exception Flows
 
 | Condition               | System Response             |
 | ----------------------- | --------------------------- |
-| Người dùng hủy xác nhận | Không thay đổi Cart         |
-| CartItem không tồn tại  | Cập nhật lại Cart hiện tại  |
-| Lỗi lưu dữ liệu         | Hiển thị Error Notification |
-
----
-
-## UC-CART-05 — Merge Guest Cart
-
-### Description
-
-Đồng bộ Cart được lưu trong LocalStorage với Cart của Customer sau khi Guest đăng nhập.
-
-| Item                 | Description                                     |
-| -------------------- | ----------------------------------------------- |
-| Use Case ID          | UC-CART-05                                      |
-| Use Case Name        | Merge Guest Cart                                |
-| Primary Actor        | Customer                                        |
-| Goal                 | Giữ lại các Product đã thêm trước khi đăng nhập |
-| Trigger              | Guest đăng nhập thành công                      |
-| Preconditions        | Guest có Cart trong LocalStorage                |
-| Postconditions       | Guest Cart được merge vào Customer Cart         |
-| Related Requirements | FR-CART-09, FR-CART-01, FR-CART-02              |
-
-### Main Success Flow
-
-1. Guest có Product trong LocalStorage Cart.
-2. Guest thực hiện Login.
-3. Login thành công.
-4. Frontend đọc LocalStorage Cart.
-5. Frontend gửi Cart Data đến Backend.
-6. Backend lấy Customer Cart.
-7. Backend kiểm tra từng CartItem.
-8. Nếu Product chưa tồn tại, Backend tạo CartItem mới.
-9. Nếu Product đã tồn tại, Backend cộng dồn Quantity.
-10. Backend kiểm tra Stock.
-11. Backend lưu Customer Cart.
-12. Frontend xóa hoặc đánh dấu LocalStorage Cart đã được đồng bộ.
-
-### Alternative / Exception Flows
-
-| Condition              | System Response                                    |
-| ---------------------- | -------------------------------------------------- |
-| LocalStorage Cart rỗng | Không cần merge                                    |
-| Product đã INACTIVE    | Không merge Product đó và thông báo                |
-| Quantity vượt Stock    | Giới hạn Quantity hoặc yêu cầu Customer điều chỉnh |
-| Cart Merge thất bại    | Không xóa LocalStorage Cart và hiển thị lỗi        |
+| CartItem không tồn tại  | Cập nhật lại giao diện giỏ  |
+| Lỗi xử lý Backend       | Hiển thị Toast thông báo lỗi|
 
 ---
 
 # 8. Checkout & Payment Use Cases
 
-## UC-CHECKOUT-01 — Checkout
+## UC-CHECKOUT-01 — Checkout & Place Order
 
 ### Description
 
-Cho phép Customer kiểm tra Cart, nhập thông tin giao hàng và tạo yêu cầu đặt hàng.
+Cho phép Customer nhập thông tin giao hàng, kiểm tra lại đơn hàng và hoàn tất đặt hàng (sử dụng phương thức thanh toán mặc định COD).
 
 | Item                 | Description                                   |
 | -------------------- | --------------------------------------------- |
 | Use Case ID          | UC-CHECKOUT-01                                |
-| Use Case Name        | Checkout                                      |
+| Use Case Name        | Checkout & Place Order                        |
 | Primary Actor        | Customer                                      |
-| Goal                 | Hoàn tất thông tin cần thiết để đặt hàng      |
-| Trigger              | Customer chọn Checkout                        |
-| Preconditions        | Customer đã đăng nhập và Cart không rỗng      |
-| Postconditions       | Dữ liệu Checkout hợp lệ và sẵn sàng tạo Order |
-| Related Requirements | FR-CHECKOUT-01 đến FR-CHECKOUT-09             |
+| Goal                 | Đặt hàng thành công                            |
+| Trigger              | Customer chọn Checkout từ trang Cart          |
+| Preconditions        | Customer đã đăng nhập; Cart không rỗng và chứa sản phẩm hợp lệ |
+| Postconditions       | Order được tạo (`PENDING`), Stock bị trừ, Cart được làm sạch |
+| Related Requirements | FR-CHECKOUT-01 đến FR-CHECKOUT-09, FR-PAY-01 |
 
 ### Main Success Flow
 
-1. Customer mở Cart.
-2. Customer chọn Checkout.
-3. Hệ thống kiểm tra Customer đã đăng nhập.
-4. Hệ thống kiểm tra Cart không rỗng.
-5. Hệ thống kiểm tra Product còn Active.
-6. Hệ thống kiểm tra Stock của từng CartItem.
-7. Hệ thống hiển thị Checkout Form.
-8. Customer nhập:
-   - Full Name
-   - Phone Number
-   - Address
-   - Province/City
-   - District/Ward
-9. Customer chọn Payment Method.
-10. Hệ thống validate Shipping Information.
-11. Hệ thống tính Order Total.
-12. Hệ thống hiển thị Order Summary.
-13. Customer xác nhận Place Order.
-14. Hệ thống chuyển sang UC-ORDER-01 — Create Order.
+1. Customer mở giỏ hàng và nhấn "Thanh toán / Checkout".
+2. Backend validate: Customer authenticated, Cart không rỗng, tất cả sản phẩm đều ACTIVE và `cart_quantity <= stock_quantity`.
+3. Customer nhập thông tin giao hàng: Full Name, Phone Number, Address, Province/City, District/Ward.
+4. Hệ thống hiển thị Phương thức giao hàng mặc định ("Giao hàng tiêu chuẩn") và Phương thức thanh toán mặc định (COD).
+5. Customer xác nhận thông tin và nhấn "Đặt hàng / Place Order".
+6. Hệ thống chuyển sang thực hiện **UC-ORDER-01 — Create Order** trong một Database Transaction.
+7. Đơn hàng được tạo thành công ở trạng thái `PENDING`, Payment Status là `UNPAID`.
+8. Frontend chuyển sang trang Xác nhận đơn hàng (Order Confirmation).
 
 ### Alternative / Exception Flows
 
 | Condition                         | System Response                                |
 | --------------------------------- | ---------------------------------------------- |
-| Customer chưa đăng nhập           | Chuyển đến Login                               |
-| Cart rỗng                         | Không cho phép Checkout                        |
-| Product hết hàng                  | Yêu cầu cập nhật Cart                          |
-| Product INACTIVE                  | Đánh dấu không khả dụng                        |
-| Shipping Information thiếu        | Hiển thị lỗi validation                        |
-| Stock thay đổi trong lúc Checkout | Từ chối tạo Order và yêu cầu kiểm tra lại Cart |
-| Cart chứa Product không khả dụng  | Chặn Checkout                                  |
-
----
-
-## UC-CHECKOUT-02 — Select Payment Method
-
-### Description
-
-Cho phép Customer lựa chọn phương thức thanh toán cho Order.
-
-| Item                 | Description                                         |
-| -------------------- | --------------------------------------------------- |
-| Use Case ID          | UC-CHECKOUT-02                                      |
-| Use Case Name        | Select Payment Method                               |
-| Primary Actor        | Customer                                            |
-| Goal                 | Xác định phương thức thanh toán                     |
-| Trigger              | Customer mở Payment Method Selection                |
-| Preconditions        | Customer đang ở Checkout                            |
-| Postconditions       | Payment Method được chọn và lưu trong Checkout Data |
-| Related Requirements | FR-PAY-01, FR-PAY-02, FR-PAY-04                     |
-
-### Main Success Flow
-
-1. Hệ thống hiển thị các Payment Methods được hỗ trợ.
-2. Customer chọn một phương thức.
-3. Hệ thống kiểm tra phương thức có được hỗ trợ hay không.
-4. Hệ thống lưu lựa chọn.
-5. Hệ thống hiển thị Payment Method trong Order Summary.
-
-### Payment Methods
-
-- COD
-- Bank Transfer
-- E-wallet
-- Online Payment Gateway
-
-### Alternative / Exception Flows
-
-| Condition                               | System Response                  |
-| --------------------------------------- | -------------------------------- |
-| Payment Method không được hỗ trợ        | Từ chối lựa chọn                 |
-| Payment Gateway tạm thời không khả dụng | Yêu cầu chọn phương thức khác    |
-| Customer không chọn phương thức         | Sử dụng COD mặc định nếu phù hợp |
-
----
-
-## UC-PAY-01 — Process Online Payment
-
-### Description
-
-Xử lý thanh toán thông qua Payment Gateway bên ngoài khi Customer chọn phương thức thanh toán trực tuyến.
-
-| Item                 | Description                                         |
-| -------------------- | --------------------------------------------------- |
-| Use Case ID          | UC-PAY-01                                           |
-| Use Case Name        | Process Online Payment                              |
-| Primary Actor        | Customer                                            |
-| Supporting Actor     | Payment Gateway                                     |
-| Goal                 | Hoàn tất thanh toán trực tuyến                      |
-| Trigger              | Customer xác nhận thanh toán online                 |
-| Preconditions        | Checkout hợp lệ và Payment Gateway khả dụng         |
-| Postconditions       | Payment Status được cập nhật theo kết quả giao dịch |
-| Related Requirements | FR-PAY-02, FR-PAY-03                                |
-
-### Main Success Flow
-
-1. Customer chọn Online Payment Gateway.
-2. Hệ thống tạo payment request.
-3. Hệ thống chuyển Customer đến Payment Gateway hoặc hiển thị Payment UI.
-4. Customer thực hiện thanh toán.
-5. Payment Gateway xử lý giao dịch.
-6. Payment Gateway trả về kết quả.
-7. Hệ thống xác thực kết quả trả về.
-8. Hệ thống cập nhật Payment Status.
-9. Hệ thống hiển thị kết quả thanh toán.
-
-### Alternative / Exception Flows
-
-| Condition                | System Response                                             |
-| ------------------------ | ----------------------------------------------------------- |
-| Thanh toán thất bại      | Payment Status giữ ở trạng thái chưa thanh toán hoặc Failed |
-| Customer hủy thanh toán  | Quay lại Checkout hoặc hiển thị thông báo                   |
-| Payment Gateway timeout  | Hiển thị trạng thái đang xử lý hoặc yêu cầu thử lại         |
-| Callback không hợp lệ    | Không cập nhật Payment Status                               |
-| Giao dịch bị xử lý trùng | Không ghi nhận thanh toán nhiều lần                         |
+| Customer chưa đăng nhập           | Chuyển hướng tới Login                         |
+| Cart rỗng hoặc có item không khả dụng | Chặn Checkout và báo lỗi                      |
+| Thông tin giao hàng bị thiếu      | Hiển thị lỗi validation trên Form              |
+| Stock bị thay đổi trước khi nhấn Đặt hàng | Từ chối tạo Order, hiển thị thông báo cập nhật lại giỏ |
 
 ---
 
@@ -719,69 +561,37 @@ Xử lý thanh toán thông qua Payment Gateway bên ngoài khi Customer chọn 
 
 ### Description
 
-Tạo Order mới sau khi Customer hoàn tất Checkout hợp lệ.
+Thực hiện tạo Order và OrderItems trong Database, trừ tồn kho và làm sạch Cart khi Customer hoàn tất Checkout.
 
 | Item                 | Description                                                                |
 | -------------------- | -------------------------------------------------------------------------- |
 | Use Case ID          | UC-ORDER-01                                                                |
 | Use Case Name        | Create Order                                                               |
 | Primary Actor        | Customer                                                                   |
-| Goal                 | Tạo Order và cập nhật Stock                                                |
-| Trigger              | Customer nhấn Place Order                                                  |
-| Preconditions        | Customer đã đăng nhập, Cart hợp lệ và Stock đủ                             |
-| Postconditions       | Order được tạo, OrderItems được lưu, Stock được giảm và Cart được cập nhật |
-| Related Requirements | FR-CHECKOUT-05 đến FR-CHECKOUT-09, FR-ORDER-01 đến FR-ORDER-04             |
+| Goal                 | Lưu thông tin Order, bảo toàn lịch sử giá và trừ tồn kho                   |
+| Trigger              | Customer xác nhận Đặt hàng từ UC-CHECKOUT-01                               |
+| Preconditions        | Thông tin Checkout hợp lệ                                                  |
+| Postconditions       | Order được lưu, Stock giảm, CartItem bị xóa                                |
+| Related Requirements | FR-CHECKOUT-05 đến 09, FR-ORDER-01 đến 04, FR-PAY-01, NFR-05, BR-12, BR-15|
 
-### Main Success Flow
+### Main Success Flow (Trong 1 Database Transaction)
 
-1. Customer nhấn Place Order.
-2. Backend xác thực JWT.
-3. Backend kiểm tra Customer ownership đối với Cart.
-4. Backend kiểm tra Cart không rỗng.
-5. Backend kiểm tra Product Status.
-6. Backend kiểm tra Stock hiện tại.
-7. Backend tính giá từng OrderItem.
-8. Backend tính Order Total.
-9. Backend tạo Order với trạng thái `PENDING`.
-10. Backend tạo các OrderItems.
-11. Backend lưu giá Product tại thời điểm mua vào OrderItem.
-12. Backend giảm Stock tương ứng.
-13. Backend cập nhật hoặc xóa CartItems đã đặt hàng.
-14. Backend commit transaction.
-15. Frontend hiển thị Order Confirmation.
-
-### Transaction Requirements
-
-Các thao tác sau phải được thực hiện trong cùng một transaction:
-
-```text
-Validate Cart
-    ↓
-Validate Stock
-    ↓
-Create Order
-    ↓
-Create OrderItems
-    ↓
-Deduct Stock
-    ↓
-Clear/Update Cart
-    ↓
-Commit Transaction
-```
+1. Backend bắt đầu Transaction.
+2. Backend kiểm tra tồn kho chính xác của từng sản phẩm tại thời điểm tạo đơn (Stock Validation).
+3. Backend tạo bản ghi `Order` mới (Order Status = `PENDING`, Payment Status = `UNPAID`, Payment Method = `COD`).
+4. Với mỗi sản phẩm trong Cart, Backend tạo bản ghi `OrderItem` tương ứng và **lưu giá sản phẩm tại thời điểm mua** (`price_at_purchase`).
+5. Backend tính tổng giá trị đơn hàng (`Total Amount`).
+6. Backend trừ `stock_quantity` của từng sản phẩm tương ứng với số lượng mua.
+7. Backend xóa các `CartItem` đã đặt hàng khỏi giỏ hàng của Customer.
+8. Backend Commit Transaction.
+9. Trả về Order Detail cho Frontend.
 
 ### Alternative / Exception Flows
 
 | Condition                              | System Response                    |
 | -------------------------------------- | ---------------------------------- |
-| Customer chưa đăng nhập                | Trả về `401 Unauthorized`          |
-| Cart rỗng                              | Từ chối tạo Order                  |
-| Product không tồn tại                  | Rollback transaction               |
-| Product INACTIVE                       | Rollback transaction               |
-| Stock không đủ                         | Rollback transaction và thông báo  |
-| Lỗi tạo OrderItem                      | Rollback transaction               |
-| Lỗi giảm Stock                         | Rollback transaction               |
-| Concurrent Checkout làm Stock không đủ | Từ chối request và không tạo Order |
+| Xảy ra lỗi ở bất kỳ bước nào          | Rollback Transaction toàn bộ       |
+| Sản phẩm bị hết hàng do mua đồng thời  | Rollback Transaction và thông báo lỗi tồn kho |
 
 ---
 
@@ -789,7 +599,7 @@ Commit Transaction
 
 ### Description
 
-Cho phép Customer xem danh sách các Order của chính mình.
+Cho phép Customer xem danh sách các Order do chính mình đã đặt.
 
 | Item                 | Description                                |
 | -------------------- | ------------------------------------------ |
@@ -797,28 +607,26 @@ Cho phép Customer xem danh sách các Order của chính mình.
 | Use Case Name        | View Customer Order History                |
 | Primary Actor        | Customer                                   |
 | Goal                 | Theo dõi các Order đã tạo                  |
-| Trigger              | Customer mở Order History                  |
+| Trigger              | Customer mở mục "Đơn hàng của tôi"         |
 | Preconditions        | Customer đã đăng nhập                      |
 | Postconditions       | Danh sách Order của Customer được hiển thị |
-| Related Requirements | FR-ORDER-11, FR-ORDER-13                   |
+| Related Requirements | FR-ORDER-11, FR-ORDER-13, BR-17            |
 
 ### Main Success Flow
 
-1. Customer mở Order History.
-2. Frontend gửi request đến Backend.
-3. Backend xác thực Customer.
-4. Backend truy vấn các Order thuộc Customer hiện tại.
-5. Customer có thể filter theo Order Status.
-6. Backend trả về danh sách Order.
-7. Frontend hiển thị Order History.
+1. Customer truy cập trang Lịch sử đơn hàng.
+2. Frontend gọi API `GET /api/orders/my-orders`.
+3. Backend kiểm tra JWT và truy vấn toàn bộ Order của Customer đó.
+4. Customer có thể lọc đơn hàng theo Order Status (`PENDING`, `CONFIRMED`, `SHIPPING`, `DELIVERED`, `CANCELLED`).
+5. Backend trả về danh sách Order.
+6. Frontend hiển thị danh sách đơn hàng bao gồm: Mã đơn, Ngày đặt, Tổng tiền, Trạng thái.
 
 ### Alternative / Exception Flows
 
 | Condition               | System Response                                    |
 | ----------------------- | -------------------------------------------------- |
 | Customer chưa đăng nhập | Trả về `401 Unauthorized`                          |
-| Không có Order          | Hiển thị Empty State                               |
-| Filter không hợp lệ     | Trả về lỗi validation hoặc sử dụng filter mặc định |
+| Chưa từng đặt đơn hàng  | Hiển thị Empty State ("Bạn chưa có đơn hàng nào")  |
 
 ---
 
@@ -826,7 +634,7 @@ Cho phép Customer xem danh sách các Order của chính mình.
 
 ### Description
 
-Cho phép Customer xem chi tiết một Order thuộc về mình.
+Cho phép Customer xem thông tin chi tiết một đơn hàng cụ thể của chính mình.
 
 | Item                 | Description                                      |
 | -------------------- | ------------------------------------------------ |
@@ -834,29 +642,26 @@ Cho phép Customer xem chi tiết một Order thuộc về mình.
 | Use Case Name        | View Order Detail                                |
 | Primary Actor        | Customer                                         |
 | Goal                 | Xem thông tin chi tiết Order                     |
-| Trigger              | Customer chọn một Order                          |
+| Trigger              | Customer chọn xem một đơn hàng                   |
 | Preconditions        | Customer đã đăng nhập                            |
-| Postconditions       | Order Detail được hiển thị nếu Customer có quyền |
-| Related Requirements | FR-ORDER-12, FR-ORDER-13, FR-API-04, BR-17       |
+| Postconditions       | Chi tiết đơn hàng được hiển thị                  |
+| Related Requirements | FR-ORDER-12, FR-API-04, BR-17                    |
 
 ### Main Success Flow
 
-1. Customer chọn Order từ Order History.
-2. Frontend gửi Order ID đến Backend.
-3. Backend xác thực Customer.
-4. Backend tìm Order theo ID.
-5. Backend kiểm tra Order thuộc Customer hiện tại.
-6. Backend lấy OrderItems và thông tin liên quan.
-7. Backend trả về Order Detail.
-8. Frontend hiển thị Order Detail.
+1. Customer chọn một đơn hàng từ trang Lịch sử đơn hàng.
+2. Frontend gọi API `GET /api/orders/{id}`.
+3. Backend kiểm tra JWT và xác thực **quyền sở hữu** đơn hàng (`Order.customer_id == Current User ID`).
+4. Backend lấy dữ liệu Order, danh sách OrderItems (gồm giá mua cũ) và thông tin giao hàng.
+5. Backend trả về dữ liệu chi tiết.
+6. Frontend hiển thị thông tin chi tiết đơn hàng.
 
 ### Alternative / Exception Flows
 
 | Condition                 | System Response           |
 | ------------------------- | ------------------------- |
 | Order không tồn tại       | Trả về `404 Not Found`    |
-| Order thuộc Customer khác | Từ chối truy cập          |
-| Customer chưa đăng nhập   | Trả về `401 Unauthorized` |
+| Order thuộc Customer khác | Trả về `403 Forbidden`    |
 
 ---
 
@@ -864,44 +669,35 @@ Cho phép Customer xem chi tiết một Order thuộc về mình.
 
 ### Description
 
-Cho phép Customer hủy Order khi Order đang ở trạng thái `PENDING`.
+Cho phép Customer hủy đơn hàng khi đơn hàng đang ở trạng thái `PENDING`.
 
 | Item                 | Description                                            |
 | -------------------- | ------------------------------------------------------ |
 | Use Case ID          | UC-ORDER-04                                            |
 | Use Case Name        | Cancel Pending Order                                   |
 | Primary Actor        | Customer                                               |
-| Goal                 | Hủy Order chưa được xác nhận                           |
-| Trigger              | Customer nhấn Cancel Order                             |
-| Preconditions        | Customer đã đăng nhập và Order thuộc Customer hiện tại |
-| Postconditions       | Order chuyển sang `CANCELLED` và Stock được hoàn lại   |
+| Goal                 | Hủy Order chưa xác nhận và hoàn trả tồn kho            |
+| Trigger              | Customer nhấn "Hủy đơn hàng"                           |
+| Preconditions        | Customer đã đăng nhập, Order ở trạng thái `PENDING`     |
+| Postconditions       | Order chuyển sang `CANCELLED`, Stock được hoàn lại     |
 | Related Requirements | FR-ORDER-07, FR-ORDER-10, BR-13, BR-16                 |
 
-### Main Success Flow
+### Main Success Flow (Trong 1 Database Transaction)
 
-1. Customer mở Order Detail.
-2. Hệ thống kiểm tra Order Status.
-3. Nếu Order đang ở `PENDING`, hệ thống hiển thị Cancel action.
-4. Customer nhấn Cancel Order.
-5. Hệ thống yêu cầu xác nhận.
-6. Customer xác nhận.
-7. Backend kiểm tra Order ownership.
-8. Backend kiểm tra Order Status vẫn là `PENDING`.
-9. Backend chuyển Order sang `CANCELLED`.
-10. Backend hoàn lại Stock của từng OrderItem.
-11. Backend đảm bảo Stock chỉ được hoàn một lần.
-12. Backend commit transaction.
-13. Frontend hiển thị thông báo thành công.
+1. Customer mở xem chi tiết đơn hàng đang ở trạng thái `PENDING`.
+2. Customer nhấn nút "Hủy đơn hàng" và xác nhận.
+3. Backend kiểm tra quyền sở hữu đơn hàng.
+4. Backend kiểm tra trạng thái hiện tại của đơn hàng bắt buộc phải là `PENDING`.
+5. Backend cập nhật trạng thái đơn hàng thành `CANCELLED`.
+6. Backend cộng hoàn lại `stock_quantity` cho từng sản phẩm trong `OrderItem`.
+7. Backend Commit Transaction và thông báo thành công.
 
 ### Alternative / Exception Flows
 
 | Condition                            | System Response              |
 | ------------------------------------ | ---------------------------- |
-| Order không thuộc Customer           | Từ chối truy cập             |
-| Order đã chuyển sang trạng thái khác | Không cho phép Cancel        |
-| Customer hủy xác nhận                | Không thay đổi Order         |
-| Stock Restoration thất bại           | Rollback thay đổi Order      |
-| Order đã được hoàn Stock trước đó    | Không hoàn Stock lần thứ hai |
+| Order đã chuyển sang `CONFIRMED` / `SHIPPING` | Từ chối hủy đơn và báo lỗi|
+| Order thuộc Customer khác            | Trả về `403 Forbidden`       |
 
 ---
 
@@ -909,7 +705,7 @@ Cho phép Customer hủy Order khi Order đang ở trạng thái `PENDING`.
 
 ### Description
 
-Cho phép Admin cập nhật trạng thái Order theo transition hợp lệ.
+Cho phép Admin cập nhật trạng thái xử lý đơn hàng theo luồng chuyển trạng thái hợp lệ.
 
 | Item                 | Description                                        |
 | -------------------- | -------------------------------------------------- |
@@ -917,63 +713,36 @@ Cho phép Admin cập nhật trạng thái Order theo transition hợp lệ.
 | Use Case Name        | Update Order Status                                |
 | Primary Actor        | Admin                                              |
 | Goal                 | Cập nhật tiến trình xử lý Order                    |
-| Trigger              | Admin thay đổi Order Status                        |
-| Preconditions        | Admin đã đăng nhập và có quyền quản lý Order       |
+| Trigger              | Admin thay đổi trạng thái Order                    |
+| Preconditions        | Admin đã đăng nhập; Order tồn tại                  |
 | Postconditions       | Order Status được cập nhật nếu transition hợp lệ   |
 | Related Requirements | FR-ORDER-08, FR-ORDER-09, FR-ADMIN-ORDER-05, BR-19 |
 
 ### Main Success Flow
 
-1. Admin mở Order Management.
-2. Admin chọn một Order.
-3. Admin mở Order Detail.
-4. Admin chọn Status mới.
-5. Backend xác thực Admin role.
-6. Backend kiểm tra Order tồn tại.
-7. Backend kiểm tra transition có hợp lệ.
-8. Backend cập nhật Order Status.
-9. Backend lưu Updated Date.
-10. Frontend hiển thị trạng thái mới.
+1. Admin mở chi tiết đơn hàng trong trang Quản lý đơn hàng.
+2. Admin chọn trạng thái mới cho đơn hàng.
+3. Backend kiểm tra quyền Admin (`Role == ADMIN`).
+4. Backend kiểm tra tính hợp lệ của luồng chuyển trạng thái (Order Status Transition Matrix).
+5. Backend cập nhật trạng thái mới và thời gian `updated_at`.
+6. Frontend hiển thị thông báo cập nhật trạng thái thành công.
 
-### Supported Statuses
+### Supported Status Transitions
 
 ```text
-PENDING
-CONFIRMED
-SHIPPING
-DELIVERED
-CANCELLED
+PENDING ──► CONFIRMED ──► SHIPPING ──► DELIVERED
+   │
+   └──► CANCELLED (Nếu Admin/Customer hủy khi đơn ở PENDING)
 ```
 
-### Main Status Transition
-
-```text
-PENDING
-   ↓
-CONFIRMED
-   ↓
-SHIPPING
-   ↓
-DELIVERED
-```
-
-Alternative cancellation flow:
-
-```text
-PENDING
-   ↓
-CANCELLED
-```
+*(Lưu ý: Admin không được chỉnh sửa sản phẩm, số lượng, giá hay thông tin giao hàng của đơn đã tạo).*
 
 ### Alternative / Exception Flows
 
-| Condition                                          | System Response           |
-| -------------------------------------------------- | ------------------------- |
-| Admin chưa đăng nhập                               | Trả về `401 Unauthorized` |
-| User không có Admin role                           | Trả về `403 Forbidden`    |
-| Order không tồn tại                                | Trả về `404 Not Found`    |
-| Transition không hợp lệ                            | Từ chối cập nhật          |
-| Admin cố sửa Product/Quantity/Shipping Information | Không cho phép thao tác   |
+| Condition                                | System Response         |
+| ---------------------------------------- | ----------------------- |
+| User không có vai trò Admin              | Trả về `403 Forbidden`  |
+| Chuyển trạng thái không hợp lệ (vd: DELIVERED -> PENDING) | Từ chối cập nhật và báo lỗi|
 
 ---
 
@@ -983,82 +752,38 @@ CANCELLED
 
 ### Description
 
-Cho phép Admin xem, tìm kiếm, tạo, cập nhật, kích hoạt, vô hiệu hóa và Soft Delete Product.
+Cho phép Admin thực hiện các thao tác quản trị sản phẩm: Xem, Tìm kiếm, Tạo mới, Cập nhật, Thay đổi trạng thái (ACTIVE/INACTIVE) và Soft Delete.
 
 | Item                 | Description                                  |
 | -------------------- | -------------------------------------------- |
 | Use Case ID          | UC-ADMIN-PROD-01                             |
 | Use Case Name        | Manage Products                              |
 | Primary Actor        | Admin                                        |
-| Goal                 | Quản lý Product Catalog                      |
-| Trigger              | Admin mở Product Management                  |
-| Preconditions        | Admin đã đăng nhập và có quyền               |
-| Postconditions       | Product được xem hoặc cập nhật theo thao tác |
-| Related Requirements | FR-ADMIN-PROD-01 đến FR-ADMIN-PROD-07        |
-
-### Supported Operations
-
-- View Products
-- Search Products
-- Create Product
-- Update Product
-- Update Stock
-- Activate Product
-- Deactivate Product
-- Soft Delete Product
+| Goal                 | Quản lý thông tin danh mục sản phẩm          |
+| Trigger              | Admin mở giao diện Quản lý sản phẩm          |
+| Preconditions        | Admin đã đăng nhập                           |
+| Postconditions       | Dữ liệu sản phẩm được thêm/sửa/xóa tương ứng |
+| Related Requirements | FR-ADMIN-PROD-01 đến 07, FR-PROD-03 đến 07  |
 
 ### Main Success Flow — Create Product
 
-1. Admin mở Product Management.
-2. Admin chọn Create Product.
-3. Hệ thống hiển thị Product Form.
-4. Admin nhập:
-   - SKU
-   - Product Name
-   - Description
-   - Price
-   - Stock Quantity
-   - Image URL
-   - Category
-   - Status
-5. Admin gửi Form.
-6. Backend validate dữ liệu.
-7. Backend kiểm tra SKU uniqueness.
-8. Backend kiểm tra Category tồn tại.
-9. Backend lưu Product.
-10. Frontend hiển thị thông báo thành công.
-
-### Main Success Flow — Update Product
-
-1. Admin chọn Product.
-2. Admin chọn Edit.
-3. Hệ thống hiển thị dữ liệu hiện tại.
-4. Admin cập nhật thông tin.
-5. Admin gửi Form.
-6. Backend validate dữ liệu.
-7. Backend cập nhật Product.
-8. Frontend hiển thị dữ liệu mới.
+1. Admin chọn "Thêm sản phẩm mới".
+2. Admin nhập: SKU, Product Name, Description, Price (> 0), Stock Quantity (>= 0), Image URL, Category ID, Status (`ACTIVE`/`INACTIVE`).
+3. Backend validate: SKU duy nhất, Price > 0, Stock >= 0, Category tồn tại.
+4. Backend lưu Product mới vào Database.
 
 ### Main Success Flow — Soft Delete Product
 
-1. Admin chọn Product.
-2. Admin nhấn Delete.
-3. Hệ thống yêu cầu xác nhận.
-4. Admin xác nhận.
-5. Backend kiểm tra quyền.
-6. Backend chuyển Product sang `INACTIVE` hoặc áp dụng cơ chế Soft Delete.
-7. Frontend hiển thị thông báo thành công.
+1. Admin chọn nút Xóa đối với một sản phẩm.
+2. Backend kiểm tra quyền Admin.
+3. Backend thực hiện Soft Delete (cập nhật `Status = INACTIVE` hoặc gán thời gian `deleted_at`) nhằm bảo toàn dữ liệu lịch sử đơn hàng.
 
 ### Alternative / Exception Flows
 
 | Condition                              | System Response         |
 | -------------------------------------- | ----------------------- |
-| SKU đã tồn tại                         | Từ chối lưu Product     |
-| Price <= 0                             | Hiển thị lỗi validation |
-| Stock < 0                              | Hiển thị lỗi validation |
-| Category không tồn tại                 | Từ chối lưu Product     |
-| Product đang được tham chiếu bởi Order | Không hard-delete       |
-| Admin không có quyền                   | Trả về `403 Forbidden`  |
+| SKU bị trùng                           | Báo lỗi SKU đã tồn tại  |
+| Giá <= 0 hoặc Tồn kho < 0              | Hiển thị lỗi validation |
 
 ---
 
@@ -1068,52 +793,31 @@ Cho phép Admin xem, tìm kiếm, tạo, cập nhật, kích hoạt, vô hiệu 
 
 ### Description
 
-Cho phép Admin xem, tạo, cập nhật và xóa Category theo business rules.
+Cho phép Admin xem, tạo mới, cập nhật và xóa danh mục sản phẩm (Flat Category).
 
 | Item                 | Description                                                  |
 | -------------------- | ------------------------------------------------------------ |
 | Use Case ID          | UC-ADMIN-CAT-01                                              |
 | Use Case Name        | Manage Categories                                            |
 | Primary Actor        | Admin                                                        |
-| Goal                 | Quản lý danh mục Product                                     |
-| Trigger              | Admin mở Category Management                                 |
-| Preconditions        | Admin đã đăng nhập và có quyền                               |
-| Postconditions       | Category được tạo, cập nhật hoặc xóa nếu hợp lệ              |
-| Related Requirements | FR-CAT-01 đến FR-CAT-06, FR-ADMIN-CAT-01 đến FR-ADMIN-CAT-04 |
-
-### Supported Operations
-
-- View Categories
-- Create Category
-- Update Category
-- Delete Category
-
-### Main Success Flow — Create Category
-
-1. Admin mở Category Management.
-2. Admin chọn Create Category.
-3. Admin nhập Category Name, Description và Status.
-4. Admin gửi Form.
-5. Backend validate dữ liệu.
-6. Backend lưu Category.
-7. Frontend hiển thị Category mới.
+| Goal                 | Quản lý các danh mục sản phẩm                                |
+| Trigger              | Admin mở trang Quản lý danh mục                              |
+| Preconditions        | Admin đã đăng nhập                                           |
+| Postconditions       | Category được tạo, sửa hoặc xóa nếu hợp lệ                   |
+| Related Requirements | FR-CAT-01 đến 04, FR-ADMIN-CAT-01 đến 04, BR-20              |
 
 ### Main Success Flow — Delete Category
 
-1. Admin chọn Category.
-2. Admin nhấn Delete.
-3. Backend kiểm tra Category có Product tham chiếu hay không.
-4. Nếu không có Product tham chiếu, Backend thực hiện Delete.
-5. Frontend hiển thị thông báo thành công.
+1. Admin nhấn Xóa một Category.
+2. Backend kiểm tra xem có Product nào đang tham chiếu đến Category này hay không.
+3. Nếu **không** còn Product tham chiếu, Backend thực hiện xóa Category.
+4. Frontend hiển thị thông báo thành công.
 
 ### Alternative / Exception Flows
 
-| Condition                       | System Response         |
-| ------------------------------- | ----------------------- |
-| Category không tồn tại          | Trả về `404 Not Found`  |
-| Category còn Product tham chiếu | Block Delete            |
-| Category Name không hợp lệ      | Hiển thị lỗi validation |
-| Admin không có quyền            | Trả về `403 Forbidden`  |
+| Condition                            | System Response                                |
+| ------------------------------------ | ---------------------------------------------- |
+| Category vẫn còn chứa Product        | Chặn thao tác xóa và báo lỗi (BR-20)           |
 
 ---
 
@@ -1123,39 +827,26 @@ Cho phép Admin xem, tạo, cập nhật và xóa Category theo business rules.
 
 ### Description
 
-Cho phép Admin xem và cập nhật Stock Quantity của Product.
+Cho phép Admin xem và điều chỉnh trực tiếp số lượng tồn kho (`stock_quantity`) của từng sản phẩm.
 
 | Item                 | Description                                   |
 | -------------------- | --------------------------------------------- |
 | Use Case ID          | UC-ADMIN-INV-01                               |
 | Use Case Name        | Manage Inventory                              |
 | Primary Actor        | Admin                                         |
-| Goal                 | Duy trì số lượng tồn kho chính xác            |
-| Trigger              | Admin cập nhật Stock của Product              |
-| Preconditions        | Admin đã đăng nhập và Product tồn tại         |
-| Postconditions       | Stock Quantity được cập nhật hợp lệ           |
-| Related Requirements | FR-ADMIN-PROD-05, FR-CHECKOUT-07, FR-ORDER-10 |
+| Goal                 | Duy trì và cập nhật số lượng tồn kho chính xác|
+| Trigger              | Admin điều chỉnh tồn kho trong màn hình Edit Product |
+| Preconditions        | Admin đã đăng nhập                            |
+| Postconditions       | Stock Quantity được cập nhật                   |
+| Related Requirements | FR-ADMIN-PROD-05, BR-05                       |
 
 ### Main Success Flow
 
-1. Admin mở Product Management hoặc Inventory Management.
-2. Admin chọn Product.
-3. Admin xem Stock Quantity hiện tại.
-4. Admin nhập Stock Quantity mới.
-5. Backend kiểm tra Admin role.
-6. Backend kiểm tra Stock không âm.
-7. Backend cập nhật Stock Quantity.
-8. Backend cập nhật Product Status nếu nghiệp vụ yêu cầu.
-9. Frontend hiển thị Stock mới.
-
-### Alternative / Exception Flows
-
-| Condition             | System Response        |
-| --------------------- | ---------------------- |
-| Stock < 0             | Từ chối cập nhật       |
-| Product không tồn tại | Trả về `404 Not Found` |
-| Admin không có quyền  | Trả về `403 Forbidden` |
-| Lỗi cập nhật database | Không thay đổi Stock   |
+1. Admin mở màn hình Quản lý tồn kho / Chỉnh sửa sản phẩm.
+2. Admin nhập số lượng tồn kho mới (`stock_quantity >= 0`).
+3. Backend kiểm tra `stock_quantity >= 0`.
+4. Backend cập nhật giá trị tồn kho vào Database.
+5. Frontend hiển thị số lượng tồn kho mới.
 
 ---
 
@@ -1165,151 +856,49 @@ Cho phép Admin xem và cập nhật Stock Quantity của Product.
 
 ### Description
 
-Cho phép Admin xem, tìm kiếm, lọc và cập nhật các Order trong hệ thống.
+Cho phép Admin xem toàn bộ danh sách đơn hàng, tìm kiếm, lọc đơn hàng và xem chi tiết đơn hàng trong hệ thống.
 
 | Item                 | Description                                                             |
 | -------------------- | ----------------------------------------------------------------------- |
 | Use Case ID          | UC-ADMIN-ORDER-01                                                       |
 | Use Case Name        | Manage Orders                                                           |
 | Primary Actor        | Admin                                                                   |
-| Goal                 | Theo dõi và xử lý toàn bộ Order                                         |
-| Trigger              | Admin mở Order Management                                               |
-| Preconditions        | Admin đã đăng nhập và có quyền                                          |
-| Postconditions       | Order List hoặc Order Detail được hiển thị; Status có thể được cập nhật |
-| Related Requirements | FR-ADMIN-ORDER-01 đến FR-ADMIN-ORDER-05                                 |
+| Goal                 | Quản lý và theo dõi toàn bộ đơn hàng hệ thống                           |
+| Trigger              | Admin mở trang Quản lý đơn hàng                                         |
+| Preconditions        | Admin đã đăng nhập                                                      |
+| Postconditions       | Danh sách / Chi tiết đơn hàng được hiển thị                             |
+| Related Requirements | FR-ADMIN-ORDER-01 đến 05                                                |
 
-### Supported Operations
+### Main Success Flow
 
-- View All Orders
-- Search Orders
-- Filter Orders
-- View Order Detail
-- Update Order Status
-
-### Main Success Flow — View and Search Orders
-
-1. Admin mở Order Management.
-2. Hệ thống hiển thị danh sách Order.
-3. Admin nhập Search Keyword nếu cần.
-4. Admin chọn Status Filter nếu cần.
-5. Frontend gửi request đến Backend.
-6. Backend truy vấn Order theo điều kiện.
-7. Backend trả về kết quả.
-8. Frontend hiển thị Order List.
-
-### Main Success Flow — View Order Detail
-
-1. Admin chọn một Order.
-2. Frontend gửi Order ID.
-3. Backend kiểm tra Admin role.
-4. Backend lấy Order và OrderItems.
-5. Backend trả về thông tin chi tiết.
-6. Frontend hiển thị Order Detail.
-
-### Main Success Flow — Update Order Status
-
-1. Admin mở Order Detail.
-2. Admin chọn Status mới.
-3. Backend kiểm tra transition.
-4. Backend cập nhật Status.
-5. Frontend hiển thị kết quả.
-
-### Alternative / Exception Flows
-
-| Condition                      | System Response                  |
-| ------------------------------ | -------------------------------- |
-| Không có Order phù hợp         | Hiển thị Empty State             |
-| Order không tồn tại            | Trả về `404 Not Found`           |
-| Search Keyword không hợp lệ    | Hiển thị lỗi hoặc bỏ qua tham số |
-| Status Transition không hợp lệ | Từ chối cập nhật                 |
-| Admin không có quyền           | Trả về `403 Forbidden`           |
+1. Admin xem danh sách toàn bộ Order (`GET /api/admin/orders`).
+2. Admin có thể tìm kiếm đơn hàng theo Order ID, Tên Customer, Email hoặc Số điện thoại.
+3. Admin có thể lọc danh sách theo Order Status.
+4. Admin chọn một đơn hàng để xem đầy đủ thông tin: Thông tin người nhận, danh sách OrderItems, đơn giá lúc mua, tổng tiền và trạng thái thanh toán.
 
 ---
 
 # 14. Cross-Cutting Use Case Rules
 
-## 14.1. Authentication Rule
+## 14.1. Authentication & Authorization Rule
 
-Các Use Case sau yêu cầu Customer hoặc Admin phải đăng nhập:
+- Các chức năng nâng cao (Cart, Checkout, Order History, Admin Operations) bắt buộc phải qua xác thực JWT.
+- Backend phải phân quyền theo Role (`CUSTOMER`, `ADMIN`) trên Server-side. Không tin tưởng kiểm tra ở Client-side.
 
-- Checkout
-- Create Order
-- View Customer Order History
-- View Customer Order Detail
-- Cancel Pending Order
-- Manage Products
-- Manage Categories
-- Manage Inventory
-- Manage Orders
+## 14.2. Ownership Rule
 
----
+- Customer chỉ được phép xem và hủy các Order do chính tài khoản đó tạo ra (`customer_id`).
 
-## 14.2. Authorization Rule
+## 14.3. Inventory & Stock Rules
 
-Backend phải kiểm tra Role ở server-side.
+1. `stock_quantity` không được âm (`>= 0`).
+2. Khi Checkout thành công, Stock phải bị trừ ngay trong Database Transaction.
+3. Khi Order bị hủy (`CANCELLED`), Stock phải được cộng hoàn trả lại (chỉ thực hiện hoàn Stock đúng 1 lần).
 
-Không được chỉ dựa vào việc ẩn hoặc hiển thị menu trên Frontend.
+## 14.4. Order Rules
 
-| Operation                | Required Role |
-| ------------------------ | ------------- |
-| Checkout                 | CUSTOMER      |
-| View Own Orders          | CUSTOMER      |
-| Cancel Own Pending Order | CUSTOMER      |
-| Manage Products          | ADMIN         |
-| Manage Categories        | ADMIN         |
-| Manage Inventory         | ADMIN         |
-| Manage All Orders        | ADMIN         |
-| Update Order Status      | ADMIN         |
-
----
-
-## 14.3. Ownership Rule
-
-Customer chỉ được truy cập các resource thuộc về chính mình.
-
-Ví dụ:
-
-- Customer chỉ xem được Order của bản thân.
-- Customer không được xem Order của Customer khác.
-- Customer không được cập nhật Order của Customer khác.
-
----
-
-## 14.4. Stock Rule
-
-Các nghiệp vụ liên quan đến Stock phải tuân thủ:
-
-1. Stock không được âm.
-2. Product hết Stock không được mua.
-3. Cart Quantity không được vượt Stock.
-4. Backend phải kiểm tra Stock tại thời điểm Checkout.
-5. Checkout phải cập nhật Stock trong transaction.
-6. Cancel Order phải hoàn Stock.
-7. Stock chỉ được hoàn một lần cho mỗi Order.
-
----
-
-## 14.5. Order Status Rule
-
-Order Status hợp lệ:
-
-```text
-PENDING
-CONFIRMED
-SHIPPING
-DELIVERED
-CANCELLED
-```
-
-Transition cơ bản:
-
-| Current Status | Allowed Next Status           |
-| -------------- | ----------------------------- |
-| PENDING        | CONFIRMED, CANCELLED          |
-| CONFIRMED      | SHIPPING                      |
-| SHIPPING       | DELIVERED                     |
-| DELIVERED      | Không có transition trong MVP |
-| CANCELLED      | Không có transition trong MVP |
+1. Giá sản phẩm trong `OrderItem` phải bảo toàn giá tại thời điểm mua (`price_at_purchase`), không thay đổi khi Admin đổi giá sản phẩm sau đó.
+2. Luồng trạng thái đơn hàng tuân theo: `PENDING` -> `CONFIRMED` -> `SHIPPING` -> `DELIVERED` (hoặc `CANCELLED` từ `PENDING`).
 
 ---
 
@@ -1319,21 +908,16 @@ Transition cơ bản:
 | ----------------- | ---------------------------------- | ------------------------- |
 | UC-AUTH-01        | Register Customer                  | Guest                     |
 | UC-AUTH-02        | Login                              | Guest, Customer, Admin    |
-| UC-AUTH-03        | Verify Email                       | Customer                  |
-| UC-AUTH-04        | Forgot Password                    | Guest, Customer           |
-| UC-AUTH-05        | Authorize User                     | Customer, Admin           |
+| UC-AUTH-03        | Authorize User                     | Customer, Admin           |
 | UC-PROD-01        | View Product List                  | Guest, Customer, Admin    |
 | UC-PROD-02        | View Product Detail                | Guest, Customer, Admin    |
 | UC-PROD-03        | Search Product                     | Guest, Customer, Admin    |
 | UC-PROD-04        | Filter, Sort and Paginate Products | Guest, Customer, Admin    |
-| UC-CART-01        | Add Product to Cart                | Guest, Customer           |
-| UC-CART-02        | View Cart                          | Guest, Customer           |
-| UC-CART-03        | Update Cart Quantity               | Guest, Customer           |
-| UC-CART-04        | Remove Cart Item                   | Guest, Customer           |
-| UC-CART-05        | Merge Guest Cart                   | Customer                  |
-| UC-CHECKOUT-01    | Checkout                           | Customer                  |
-| UC-CHECKOUT-02    | Select Payment Method              | Customer                  |
-| UC-PAY-01         | Process Online Payment             | Customer, Payment Gateway |
+| UC-CART-01        | Add Product to Cart                | Customer                  |
+| UC-CART-02        | View Cart                          | Customer                  |
+| UC-CART-03        | Update Cart Quantity               | Customer                  |
+| UC-CART-04        | Remove Cart Item                   | Customer                  |
+| UC-CHECKOUT-01    | Checkout & Place Order             | Customer                  |
 | UC-ORDER-01       | Create Order                       | Customer                  |
 | UC-ORDER-02       | View Customer Order History        | Customer                  |
 | UC-ORDER-03       | View Order Detail                  | Customer                  |
@@ -1350,88 +934,49 @@ Transition cơ bản:
 
 | Functional Requirement Group | Related Use Cases                                               |
 | ---------------------------- | --------------------------------------------------------------- |
-| FR-AUTH                      | UC-AUTH-01, UC-AUTH-02, UC-AUTH-03, UC-AUTH-04, UC-AUTH-05      |
+| FR-AUTH                      | UC-AUTH-01, UC-AUTH-02, UC-AUTH-03                              |
 | FR-PROD                      | UC-PROD-01, UC-PROD-02, UC-PROD-03, UC-PROD-04                  |
 | FR-CAT                       | UC-ADMIN-CAT-01                                                 |
-| FR-CART                      | UC-CART-01, UC-CART-02, UC-CART-03, UC-CART-04, UC-CART-05      |
+| FR-CART                      | UC-CART-01, UC-CART-02, UC-CART-03, UC-CART-04                  |
 | FR-CHECKOUT                  | UC-CHECKOUT-01, UC-ORDER-01                                     |
-| FR-PAY                       | UC-CHECKOUT-02, UC-PAY-01                                       |
+| FR-PAY                       | UC-CHECKOUT-01, UC-ORDER-01                                     |
 | FR-ORDER                     | UC-ORDER-01, UC-ORDER-02, UC-ORDER-03, UC-ORDER-04, UC-ORDER-05 |
 | FR-ADMIN-PROD                | UC-ADMIN-PROD-01                                                |
 | FR-ADMIN-CAT                 | UC-ADMIN-CAT-01                                                 |
 | FR-ADMIN-ORDER               | UC-ADMIN-ORDER-01                                               |
 | FR-ADMIN-INV                 | UC-ADMIN-INV-01                                                 |
-| FR-API                       | UC-AUTH-05 và các Use Case yêu cầu Backend API                  |
+| FR-API                       | UC-AUTH-03 và các API Use Cases                                 |
 
 ---
 
 # 17. Out of Scope
 
-Các Use Case sau không thuộc phạm vi MVP:
+Các tính năng/Use Case sau không thuộc phạm vi MVP:
 
-- Coupon / Promotion Management.
-- Multiple Shipping Addresses.
-- Multiple Shipping Methods.
-- Category Hierarchy Management.
-- Product Reviews.
-- Product Recommendations.
-- Advanced Analytics.
-- Admin Auditing.
-- Advanced Customer Support System.
-- Advanced Payment Reconciliation.
-- Automated Delivery Tracking.
-- Advanced Notification Center.
+- Coupon / Promotion / Mã giảm giá.
+- Multiple Shipping Addresses / Multiple Shipping Methods.
+- Category Hierarchy (Danh mục cha/con).
+- Multiple Product Images (Nhiều hình ảnh sản phẩm).
+- Online Payment Gateway Integration / E-Wallet.
+- Admin Self-Registration (Đăng ký tài khoản Admin công khai).
+- Admin Auditing Logs.
 
 ---
 
 # 18. Open Design Decisions
 
-Các vấn đề sau cần được quyết định trong giai đoạn Design hoặc API Specification:
+Các vấn đề kỹ thuật chi tiết sẽ được quyết định ở giai đoạn API Specification & Database Design:
 
 | ID    | Open Decision                                       | Related Use Cases                      |
 | ----- | --------------------------------------------------- | -------------------------------------- |
-| OD-01 | Cơ chế Email Verification cụ thể                    | UC-AUTH-03                             |
-| OD-02 | Cơ chế Forgot Password                              | UC-AUTH-04                             |
-| OD-03 | Payment Gateway cụ thể                              | UC-PAY-01                              |
-| OD-04 | Xác định thời điểm tạo Order đối với Online Payment | UC-CHECKOUT-01, UC-PAY-01, UC-ORDER-01 |
-| OD-05 | Chi tiết Stock Locking/Concurrency Control          | UC-ORDER-01                            |
-| OD-06 | Chọn `status` hoặc `deleted_at` cho Soft Delete     | UC-ADMIN-PROD-01                       |
-| OD-07 | Cơ chế lưu Cart Merge                               | UC-CART-05                             |
-| OD-08 | Chi tiết Error Response Schema                      | UC-AUTH-05 và các API Use Case         |
-| OD-09 | Cơ chế xử lý Payment Callback                       | UC-PAY-01                              |
-| OD-10 | Chi tiết Order Status Transition Validation         | UC-ORDER-05                            |
+| OD-01 | Cơ chế Email Verification cụ thể                    | UC-AUTH-01                             |
+| OD-02 | Cơ chế Forgot Password                              | UC-AUTH-02                             |
+| OD-03 | Chi tiết Stock Locking / Concurrency Control        | UC-ORDER-01                            |
+| OD-04 | Chọn `status` hay `deleted_at` cho Soft Delete      | UC-ADMIN-PROD-01                       |
+| OD-05 | Định dạng chuẩn cho API Error Response Schema       | UC-AUTH-03 và toàn bộ API Use Cases    |
 
 ---
 
 # 19. Conclusion
 
-Các Use Case bao phủ những nghiệp vụ chính:
-
-1. Authentication & Account
-2. Product Browsing
-3. Shopping Cart
-4. Checkout
-5. Payment
-6. Order Management
-7. Product Management
-8. Category Management
-9. Inventory Management
-10. Admin Order Management
-
-Use Case được sử dụng làm cơ sở để phát triển:
-
-```text
-Use Cases
-    ↓
-ERD
-    ↓
-Class Diagram
-    ↓
-Wireframes
-    ↓
-API Specification
-    ↓
-Implementation
-    ↓
-Test Cases
-```
+Bản Use Cases đã được chuẩn hóa và bao phủ chính xác toàn bộ luồng nghiệp vụ của hệ thống **Mini E-commerce / Inventory Management** theo đúng định hướng MVP.
