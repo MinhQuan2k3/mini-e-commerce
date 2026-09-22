@@ -969,11 +969,9 @@ Các vấn đề kỹ thuật chi tiết sẽ được quyết định ở giai 
 
 | ID    | Open Decision                                       | Related Use Cases                      |
 | ----- | --------------------------------------------------- | -------------------------------------- |
-| OD-01 | Cơ chế Email Verification cụ thể                    | UC-AUTH-01                             |
-| OD-02 | Cơ chế Forgot Password                              | UC-AUTH-02                             |
-| OD-03 | Chi tiết Stock Locking / Concurrency Control        | UC-ORDER-01                            |
-| OD-04 | Chọn `status` hay `deleted_at` cho Soft Delete      | UC-ADMIN-PROD-01                       |
-| OD-05 | Định dạng chuẩn cho API Error Response Schema       | UC-AUTH-03 và toàn bộ API Use Cases    |
+| OD-01 | Chi tiết Stock Locking / Concurrency Control        | UC-ORDER-01                            |
+| OD-02 | Chọn `status` hay `deleted_at` cho Soft Delete      | UC-ADMIN-PROD-01                       |
+| OD-03 | Định dạng chuẩn cho API Error Response Schema       | UC-AUTH-03 và toàn bộ API Use Cases    |
 
 ---
 
