@@ -29,9 +29,9 @@ Browse Product
       ↓
 Search / Filter Product
       ↓
-Add to Cart
-      ↓
 Login / Register
+      ↓
+Add to Cart
       ↓
 Checkout
       ↓
@@ -50,7 +50,7 @@ Hệ thống có 3 nhóm actor chính.
 
 | Actor    | Description                                                                             |
 | -------- | --------------------------------------------------------------------------------------- |
-| Guest    | Người dùng chưa đăng nhập. Có thể xem sản phẩm và sử dụng giỏ hàng trên trình duyệt.    |
+| Guest    | Người dùng chưa đăng nhập. Chỉ có thể xem sản phẩm trên trình duyệt.                        |
 | Customer | Người dùng đã đăng nhập và có quyền mua hàng, quản lý giỏ hàng và xem lịch sử đơn hàng. |
 | Admin    | Người quản trị hệ thống, có quyền quản lý Product, Category, Inventory và Order.        |
 
@@ -1357,19 +1357,11 @@ Guest không cần đăng nhập cho các bước trên.
 ## 9.2. Customer Checkout Flow
 
 ```text
-Guest Cart
-    ↓
-Login / Register
-    ↓
-Merge Cart
-    ↓
 View Cart
     ↓
 Checkout
     ↓
 Enter Shipping Information
-    ↓
-Select Payment Method
     ↓
 Validate Cart & Stock
     ↓
@@ -1541,16 +1533,12 @@ Một số chi tiết không còn là business requirement nhưng cần được
 | ----- | --------------------------------------------------- | ----------------------- |
 | TD-01 | Chọn BCrypt hay Argon2                              | Backend Setup           |
 | TD-02 | Chọn Tailwind CSS hay Bootstrap                     | Frontend Setup          |
-| TD-03 | Chọn Payment Gateway cụ thể                         | API/Payment Design      |
-| TD-04 | Thiết kế Email Verification mechanism               | Backend Design          |
-| TD-05 | Thiết kế Forgot Password mechanism                  | Backend Design          |
-| TD-06 | Chọn cơ chế Soft Delete: `status` hoặc `deleted_at` | ERD                     |
-| TD-07 | Xác định chính xác Product page size: 10 hoặc 12    | API/UI Design           |
-| TD-08 | Xác định format của SKU nếu auto-generated          | Database/API Design     |
-| TD-09 | Xác định chi tiết Order Status Transition Matrix    | Use Case/API Design     |
-| TD-10 | Xác định cơ chế concurrency control cho Stock       | Backend/Database Design |
-| TD-11 | Chọn môi trường Deployment cụ thể                   | Deployment              |
-| TD-12 | Thiết kế chi tiết Payment Status                    | ERD/API Design          |
+| TD-03 | Chọn cơ chế Soft Delete: `status` hoặc `deleted_at` | ERD                     |
+| TD-04 | Xác định chính xác Product page size: 10 hoặc 12    | API/UI Design           |
+| TD-05 | Xác định format của SKU nếu auto-generated          | Database/API Design     |
+| TD-06 | Xác định chi tiết Order Status Transition Matrix    | Use Case/API Design     |
+| TD-07 | Xác định cơ chế concurrency control cho Stock       | Backend/Database Design |
+| TD-08 | Thiết kế chi tiết Payment Status                    | ERD/API Design          |
 
 Các Technical Decisions trên không làm thay đổi phạm vi nghiệp vụ chính đã được xác định trong Requirement Specification.
 
@@ -1577,5 +1565,4 @@ Các nghiệp vụ trọng tâm bao gồm:
 13. Admin Order Management
 14. Error Handling
 15. Basic Testing
-16. Deployment
 
