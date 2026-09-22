@@ -102,7 +102,6 @@ Rules:
 - Email phải là duy nhất.
 - Password không được lưu dưới dạng plain text.
 - Password phải được hash bằng cơ chế bảo mật như BCrypt hoặc Argon2.
-- Tài khoản phải thực hiện email verification theo yêu cầu của hệ thống.
 
 ---
 
@@ -461,8 +460,6 @@ Hệ thống phải validate lại Stock sau mỗi thay đổi.
 ### FR-CART-07 — Remove CartItem
 
 Customer phải có thể xóa Product khỏi Cart.
-
-Guest cũng phải có thể xóa CartItem khỏi LocalStorage Cart.
 
 ---
 
