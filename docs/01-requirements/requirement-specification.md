@@ -619,6 +619,7 @@ Order phải lưu:
 - Shipping Information
 - Order Status
 - Payment Status
+- Paid At
 - Created Date
 - Updated Date
 
@@ -626,6 +627,10 @@ Payment Status chỉ được sử dụng để biểu diễn trạng thái than
 
 - `UNPAID`
 - `PAID`
+
+Khi đơn hàng chuyển sang DELIVERED:
+- `payment_status` được tự động chuyển thành PAID.
+- `paid_at` được tự động gán thời điểm hiện tại.
 
 MVP không triển khai Payment Entity riêng, Payment Gateway hoặc các phương thức thanh toán trực tuyến.
 
@@ -1325,6 +1330,7 @@ Các Business Rule quan trọng của hệ thống:
 | BR-22 | Admin API phải được bảo vệ bằng role authorization.                          |
 | BR-23 | Coupon/Promotion không nằm trong MVP.                                        |
 | BR-24 | Admin auditing không nằm trong MVP.                                          |
+| BR-25 | Payment Status on Delivery                                                   |
 
 ---
 
