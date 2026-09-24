@@ -514,13 +514,13 @@ Cho phép Customer xóa một sản phẩm ra khỏi giỏ hàng.
 
 ---
 
-# 8. Checkout & Payment Use Cases
+# 8. Checkout Use Cases
 
 ## UC-CHECKOUT-01 — Checkout & Place Order
 
 ### Description
 
-Cho phép Customer nhập thông tin giao hàng, kiểm tra lại đơn hàng và hoàn tất đặt hàng (sử dụng phương thức thanh toán mặc định COD).
+Cho phép Customer nhập thông tin giao hàng, kiểm tra lại đơn hàng và hoàn tất đặt hàng.
 
 | Item                 | Description                                   |
 | -------------------- | --------------------------------------------- |
@@ -535,14 +535,14 @@ Cho phép Customer nhập thông tin giao hàng, kiểm tra lại đơn hàng v�
 
 ### Main Success Flow
 
-1. Customer mở giỏ hàng và nhấn "Thanh toán / Checkout".
-2. Backend validate: Customer authenticated, Cart không rỗng, tất cả sản phẩm đều ACTIVE và `cart_quantity <= stock_quantity`.
-3. Customer nhập thông tin giao hàng: Full Name, Phone Number, Address, Province/City, District/Ward.
-4. Hệ thống hiển thị Phương thức giao hàng mặc định ("Giao hàng tiêu chuẩn") và Phương thức thanh toán mặc định (COD).
-5. Customer xác nhận thông tin và nhấn "Đặt hàng / Place Order".
-6. Hệ thống chuyển sang thực hiện **UC-ORDER-01 — Create Order** trong một Database Transaction.
-7. Đơn hàng được tạo thành công ở trạng thái `PENDING`, Payment Status là `UNPAID`.
-8. Frontend chuyển sang trang Xác nhận đơn hàng (Order Confirmation).
+1. Customer mở giỏ hàng và nhấn "Checkout".
+2. Backend validate Customer authenticated, Cart không rỗng và các Product hợp lệ.
+3. Customer nhập thông tin giao hàng.
+4. Hệ thống hiển thị thông tin Order để Customer kiểm tra.
+5. Customer xác nhận và nhấn "Đặt hàng".
+6. Hệ thống thực hiện UC-ORDER-01 — Create Order trong Database Transaction.
+7. Order được tạo với Order Status = PENDING và Payment Status = UNPAID.
+8. Frontend chuyển sang Order Confirmation.
 
 ### Alternative / Exception Flows
 
@@ -578,7 +578,7 @@ Thực hiện tạo Order và OrderItems trong Database, trừ tồn kho và là
 
 1. Backend bắt đầu Transaction.
 2. Backend kiểm tra tồn kho chính xác của từng sản phẩm tại thời điểm tạo đơn (Stock Validation).
-3. Backend tạo bản ghi `Order` mới (Order Status = `PENDING`, Payment Status = `UNPAID`, Payment Method = `COD`).
+3. Backend tạo bản ghi `Order` mới (Order Status = `PENDING`, Payment Status = `UNPAID`).
 4. Với mỗi sản phẩm trong Cart, Backend tạo bản ghi `OrderItem` tương ứng và **lưu giá sản phẩm tại thời điểm mua** (`price_at_purchase`).
 5. Backend tính tổng giá trị đơn hàng (`Total Amount`).
 6. Backend trừ `stock_quantity` của từng sản phẩm tương ứng với số lượng mua.
@@ -939,7 +939,6 @@ Cho phép Admin xem toàn bộ danh sách đơn hàng, tìm kiếm, lọc đơn 
 | FR-CAT                       | UC-ADMIN-CAT-01                                                 |
 | FR-CART                      | UC-CART-01, UC-CART-02, UC-CART-03, UC-CART-04                  |
 | FR-CHECKOUT                  | UC-CHECKOUT-01, UC-ORDER-01                                     |
-| FR-PAY                       | UC-CHECKOUT-01, UC-ORDER-01                                     |
 | FR-ORDER                     | UC-ORDER-01, UC-ORDER-02, UC-ORDER-03, UC-ORDER-04, UC-ORDER-05 |
 | FR-ADMIN-PROD                | UC-ADMIN-PROD-01                                                |
 | FR-ADMIN-CAT                 | UC-ADMIN-CAT-01                                                 |
