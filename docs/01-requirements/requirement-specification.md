@@ -594,25 +594,6 @@ MVP không hỗ trợ:
 
 ---
 
-## FR-PAY — Payment
-
-### FR-PAY-01 — COD Order
-
-Với COD:
-
-```text
-Payment Method = COD
-Payment Status = UNPAID
-```
-
-Order vẫn có thể được tạo với trạng thái:
-
-```text
-PENDING
-```
-
----
-
 ## FR-ORDER — Order Management
 
 ### FR-ORDER-01 — Create Order
@@ -640,6 +621,13 @@ Order phải lưu:
 - Payment Status
 - Created Date
 - Updated Date
+
+Payment Status chỉ được sử dụng để biểu diễn trạng thái thanh toán của Order:
+
+- `UNPAID`
+- `PAID`
+
+MVP không triển khai Payment Entity riêng, Payment Gateway hoặc các phương thức thanh toán trực tuyến.
 
 ---
 
@@ -1023,7 +1011,13 @@ Cart UI phải hiển thị:
 
 ## FR-UI-05 — Checkout Page
 
-Checkout UI phải cho phép Customer nhập Shipping Information và lựa chọn Payment Method.
+Checkout UI phải cho phép Customer:
+
+- Nhập Shipping Information.
+- Kiểm tra lại thông tin Order.
+- Xác nhận đặt hàng.
+
+MVP không yêu cầu Customer lựa chọn Payment Method.
 
 ---
 
