@@ -2,9 +2,9 @@
 
 ## 1. Mục đích
 
-Tài liệu này mô tả các REST API chính của **Hệ thống Quản lý Bán hàng Mini (Mini E-commerce)**.
+Mô tả các REST API chính của **Hệ thống Quản lý Bán hàng Mini (Mini E-commerce)**.
 
-Tài liệu bao gồm:
+Bao gồm:
 
 - Danh sách endpoint.
 - HTTP method.
