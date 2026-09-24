@@ -16,7 +16,7 @@
 |---|---|---|---|
 | Q01 | Hệ thống có bao nhiêu loại tài khoản? | Có 2 loại tài khoản chính: Customer và Admin. | Hệ thống sẽ phân quyền chức năng dựa trên role của tài khoản. |
 | Q02 | Khách vãng lai (Guest) có được xem sản phẩm không? | Có. Guest có thể xem danh sách sản phẩm, tìm kiếm sản phẩm và xem chi tiết sản phẩm. | Không yêu cầu đăng nhập đối với các chức năng xem sản phẩm. |
-| Q03 | Guest có được thêm sản phẩm vào giỏ hàng không? | Có. Guest có thể chọn và thêm sản phẩm vào giỏ hàng. | Giỏ hàng của Guest được lưu tại LocalStorage/Session của trình duyệt. |
+| Q03 | Guest có được thêm sản phẩm vào giỏ hàng không? | Không. Guest chỉ được xem, tìm kiếm và xem chi tiết sản phẩm. | Cart chỉ dành cho Customer đã đăng nhập. Không triển khai Guest Cart. |
 | Q04 | Customer có bắt buộc đăng nhập trước khi đặt hàng không? | Có. Người dùng phải đăng ký/đăng nhập để có thể đặt hàng. | Customer phải đăng nhập trước khi hoàn tất đặt hàng. |
 | Q05 | Admin có được tự đăng ký tài khoản không? | Không. | Không mở API/Form đăng ký tài khoản Admin trên UI công khai. |
 | Q06 | Admin account được tạo như thế nào? | Tạo thông qua Database Seed/Migration ban đầu hoặc do một Super Admin tạo từ trang Quản trị. | Trong MVP, hệ thống sẽ seed 1 tài khoản Admin mặc định khi khởi tạo Database. |
@@ -88,7 +88,10 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q33 | Nếu không tích hợp payment gateway, Order có được tạo ngay sau khi Customer xác nhận Checkout không? | Có. | Đơn hàng được tạo ở trạng thái `PENDING` ngay khi Customer nhấn "Đặt hàng". |
+| Q33 | MVP có cần tích hợp Payment Gateway không? | Không. | Không triển khai Payment Gateway trong MVP. |
+| Q34 | MVP có hỗ trợ Bank Transfer, E-Wallet hoặc Online Payment không? | Không. | Không triển khai các phương thức thanh toán trực tuyến trong MVP. |
+| Q35 | Có cần tạo bảng `payments` riêng không? | Không. | Không tạo Entity/Table `payments`; chỉ lưu `payment_status` trong `orders`. |
+| Q36 | Order cần quản lý trạng thái thanh toán như thế nào? | Chỉ cần biết đơn hàng đã thanh toán hay chưa. | `payment_status` gồm `UNPAID` và `PAID`. |
 
 ---
 
@@ -96,14 +99,14 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q34 | Một Order cần lưu những thông tin nào? | Order ID, Customer, Order Items, Total Amount, Shipping Information, Order Status, Payment Status, Created Date, Updated Date. | Tạo cấu trúc bảng `Order` và `OrderItem`. |
-| Q35 | Order có những trạng thái nào? | `PENDING`, `CONFIRMED`, `SHIPPING`, `DELIVERED`, `CANCELLED`. | Sử dụng Enum cho trạng thái đơn hàng. |
-| Q36 | Customer có được hủy Order không? | Có. | Chỉ cho phép hủy khi Order ở trạng thái `PENDING`. |
-| Q37 | Admin có được thay đổi trạng thái Order không? | Có. | Admin có quyền cập nhật Order theo luồng trạng thái được phép. |
-| Q38 | Admin có được chỉnh sửa Order sau khi Customer đã đặt hàng không? | Không. | Admin chỉ được thay đổi trạng thái, không được chỉnh sửa Product/Quantity hoặc địa chỉ của Order. |
-| Q39 | Order có cần lưu lại giá sản phẩm tại thời điểm mua không? | Bắt buộc. | Lưu trường `price` trực tiếp trong bảng `OrderItem` để bảo toàn lịch sử giá. |
-| Q40 | Khi Order được tạo, tồn kho có được trừ ngay không? | Có. | Giảm `stock_quantity` ngay khi Checkout thành công. |
-| Q41 | Nếu Order bị hủy, số lượng tồn kho có được hoàn lại không? | Có. | Cộng ngược số lượng vào `stock_quantity` khi Order chuyển sang `CANCELLED`. |
+| Q37 | Một Order cần lưu những thông tin nào? | Order ID, Customer, Order Items, Total Amount, Shipping Information, Order Status, Payment Status, Created Date, Updated Date. | Tạo cấu trúc bảng `Order` và `OrderItem`. |
+| Q38 | Order có những trạng thái nào? | `PENDING`, `CONFIRMED`, `SHIPPING`, `DELIVERED`, `CANCELLED`. | Sử dụng Enum cho trạng thái đơn hàng. |
+| Q39 | Customer có được hủy Order không? | Có. | Chỉ cho phép hủy khi Order ở trạng thái `PENDING`. |
+| Q40 | Admin có được thay đổi trạng thái Order không? | Có. | Admin có quyền cập nhật Order theo luồng trạng thái được phép. |
+| Q41 | Admin có được chỉnh sửa Order sau khi Customer đã đặt hàng không? | Không. | Admin chỉ được thay đổi trạng thái, không được chỉnh sửa Product/Quantity hoặc địa chỉ của Order. |
+| Q42 | Order có cần lưu lại giá sản phẩm tại thời điểm mua không? | Bắt buộc. | Lưu trường `price` trực tiếp trong bảng `OrderItem` để bảo toàn lịch sử giá. |
+| Q43 | Khi Order được tạo, tồn kho có được trừ ngay không? | Có. | Giảm `stock_quantity` ngay khi Checkout thành công. |
+| Q44 | Nếu Order bị hủy, số lượng tồn kho có được hoàn lại không? | Có. | Cộng ngược số lượng vào `stock_quantity` khi Order chuyển sang `CANCELLED`. |
 
 ---
 
@@ -111,9 +114,9 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q42 | Customer có được xem danh sách các Order của chính mình không? | Có. | Cung cấp API `GET /api/orders/my-orders`. |
-| Q43 | Customer có được xem chi tiết từng Order không? | Có. | Cung cấp API `GET /api/orders/{id}` và kiểm tra quyền sở hữu Order. |
-| Q44 | Customer có được xem lại các Order đã hủy hoặc đã hoàn thành không? | Có. | Màn hình danh sách Order hỗ trợ filter theo status. |
+| Q45 | Customer có được xem danh sách các Order của chính mình không? | Có. | Cung cấp API `GET /api/orders/my-orders`. |
+| Q46 | Customer có được xem chi tiết từng Order không? | Có. | Cung cấp API `GET /api/orders/{id}` và kiểm tra quyền sở hữu Order. |
+| Q47 | Customer có được xem lại các Order đã hủy hoặc đã hoàn thành không? | Có. | Màn hình danh sách Order hỗ trợ filter theo status. |
 
 ---
 
@@ -121,8 +124,8 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q45 | Admin có thể thực hiện những thao tác nào với Product? | View, Search, Create, Update, Delete (Soft Delete), Activate/Deactivate. | Cấp đầy đủ API quản trị Product cho Admin. |
-| Q46 | Admin có được quản lý số lượng tồn kho trực tiếp không? | Có. | Admin cập nhật `stock_quantity` thông qua màn hình Edit Product. |
+| Q48 | Admin có thể thực hiện những thao tác nào với Product? | View, Search, Create, Update, Delete (Soft Delete), Activate/Deactivate. | Cấp đầy đủ API quản trị Product cho Admin. |
+| Q49 | Admin có được quản lý số lượng tồn kho trực tiếp không? | Có. | Admin cập nhật `stock_quantity` thông qua màn hình Edit Product. |
 
 ---
 
@@ -130,7 +133,7 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q47 | Admin có thể thực hiện những thao tác nào với Category? | View, Create, Update, Delete. Category chỉ được xóa khi không có Product thuộc về. | Cấp đầy đủ API quản trị Category cho Admin. |
+| Q50 | Admin có thể thực hiện những thao tác nào với Category? | View, Create, Update, Delete. Category chỉ được xóa khi không có Product thuộc về. | Cấp đầy đủ API quản trị Category cho Admin. |
 
 ---
 
@@ -138,10 +141,10 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q48 | Admin có thể xem toàn bộ Order của hệ thống không? | Có. | Cung cấp API `GET /api/admin/orders`. |
-| Q49 | Admin có thể tìm kiếm Order theo những thông tin nào? | Order ID, Customer Name, Customer Email và Phone Number. | Bổ sung parameter search vào API Admin Order. |
-| Q50 | Admin có thể filter Order theo status không? | Có. | Hỗ trợ lọc Order theo trạng thái. |
-| Q51 | Admin có thể xem chi tiết Order không? | Có. | Hiển thị thông tin người nhận, danh sách Item và giá trị Order. |
+| Q51 | Admin có thể xem toàn bộ Order của hệ thống không? | Có. | Cung cấp API `GET /api/admin/orders`. |
+| Q52 | Admin có thể tìm kiếm Order theo những thông tin nào? | Order ID, Customer Name, Customer Email và Phone Number. | Bổ sung parameter search vào API Admin Order. |
+| Q53 | Admin có thể filter Order theo status không? | Có. | Hỗ trợ lọc Order theo trạng thái. |
+| Q54 | Admin có thể xem chi tiết Order không? | Có. | Hiển thị thông tin người nhận, danh sách Item và giá trị Order. |
 
 ---
 
@@ -149,10 +152,10 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q52 | Customer có được phép truy cập Admin page/API không? | Không. | Các chức năng Admin phải được bảo vệ bằng cơ chế authorization và kiểm tra role ở Backend. |
-| Q53 | Admin có được truy cập các chức năng dành riêng cho Customer không? | Được phép xem các trang public như Product List và Product Detail. | Nếu muốn mua hàng, Admin nên sử dụng một tài khoản Customer riêng. |
-| Q54 | Password được lưu trữ như thế nào? | Hashing bảo mật. | Sử dụng `BCrypt` hoặc `Argon2`; không lưu password dạng plain text. |
-| Q55 | Backend sử dụng cơ chế authentication nào? | JWT (JSON Web Token). | Sử dụng Stateless Authentication. |
+| Q55 | Customer có được phép truy cập Admin page/API không? | Không. | Các chức năng Admin phải được bảo vệ bằng cơ chế authorization và kiểm tra role ở Backend. |
+| Q56 | Admin có được truy cập các chức năng dành riêng cho Customer không? | Được phép xem các trang public như Product List và Product Detail. | Nếu muốn mua hàng, Admin nên sử dụng một tài khoản Customer riêng. |
+| Q57 | Password được lưu trữ như thế nào? | Hashing bảo mật. | Sử dụng `BCrypt` hoặc `Argon2`; không lưu password dạng plain text. |
+| Q58 | Backend sử dụng cơ chế authentication nào? | JWT (JSON Web Token). | Sử dụng Stateless Authentication. |
 
 ---
 
@@ -160,9 +163,9 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q56 | Website có yêu cầu responsive trên mobile/tablet không? | Có. | Thiết kế Responsive UI cơ bản bằng Tailwind CSS hoặc Bootstrap. |
-| Q57 | Có yêu cầu giao diện đặc biệt về branding của A-Software không? | Không. | Sử dụng giao diện E-commerce hiện đại, sạch sẽ và tập trung vào usability. |
-| Q58 | Có cần hiển thị các trạng thái Empty / Loading / Error cho các màn hình không? | Có. | Thiết kế UI component nhất quán cho các trạng thái này. |
+| Q59 | Website có yêu cầu responsive trên mobile/tablet không? | Có. | Thiết kế Responsive UI cơ bản bằng Tailwind CSS hoặc Bootstrap. |
+| Q60 | Có yêu cầu giao diện đặc biệt về branding của A-Software không? | Không. | Sử dụng giao diện E-commerce hiện đại, sạch sẽ và tập trung vào usability. |
+| Q61 | Có cần hiển thị các trạng thái Empty / Loading / Error cho các màn hình không? | Có. | Thiết kế UI component nhất quán cho các trạng thái này. |
 
 ---
 
@@ -170,10 +173,10 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q59 | Có yêu cầu cụ thể về performance không? | Mức tiêu chuẩn. | Mục tiêu thời gian phản hồi API < 500ms cho các tác vụ thông thường. |
-| Q60 | Có yêu cầu cụ thể về số lượng người dùng hoặc quy mô dữ liệu không? | Quy mô nhỏ/Demo project. | Hướng tới quy mô < 1.000 sản phẩm và < 100 người dùng truy cập đồng thời. |
-| Q61 | Những trình duyệt nào cần được hỗ trợ? | Chrome, Firefox, Edge, Safari. | Hỗ trợ các trình duyệt hiện đại theo chuẩn web hiện hành. |
-| Q62 | Có yêu cầu logging/auditing cho các thao tác của Admin không? | Out-of-scope. | Chỉ thực hiện application logging cho lỗi ở phía Server bằng Console/File Logs. |
+| Q62 | Có yêu cầu cụ thể về performance không? | Mức tiêu chuẩn. | Mục tiêu thời gian phản hồi API < 500ms cho các tác vụ thông thường. |
+| Q63 | Có yêu cầu cụ thể về số lượng người dùng hoặc quy mô dữ liệu không? | Quy mô nhỏ/Demo project. | Hướng tới quy mô < 1.000 sản phẩm và < 100 người dùng truy cập đồng thời. |
+| Q64 | Những trình duyệt nào cần được hỗ trợ? | Chrome, Firefox, Edge, Safari. | Hỗ trợ các trình duyệt hiện đại theo chuẩn web hiện hành. |
+| Q65 | Có yêu cầu logging/auditing cho các thao tác của Admin không? | Out-of-scope. | Chỉ thực hiện application logging cho lỗi ở phía Server bằng Console/File Logs. |
 
 ---
 
@@ -181,10 +184,10 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q63 | Có yêu cầu viết unit test cho Backend không? | Có, ở mức cơ bản. | Viết Unit Test cho các Business Logic quan trọng như Checkout, trừ tồn kho và tính tổng tiền. |
-| Q64 | Có yêu cầu integration test hoặc API test không? | Sử dụng Postman / Swagger Collection để kiểm thử API. | Chuẩn bị Postman Collection hỗ trợ kiểm thử API. |
-| Q65 | API error response có cần một format thống nhất không? | Có. | Sử dụng format thống nhất: `success`, `message` và `errors`. |
-| Q66 | Khi thao tác thất bại, UI cần hiển thị thông báo lỗi như thế nào? | Toast notification hoặc Alert banner. | Sử dụng Toast Message thống nhất trên UI. |
+| Q66 | Có yêu cầu viết unit test cho Backend không? | Có, ở mức cơ bản. | Viết Unit Test cho các Business Logic quan trọng như Checkout, trừ tồn kho và tính tổng tiền. |
+| Q67 | Có yêu cầu integration test hoặc API test không? | Sử dụng Postman / Swagger Collection để kiểm thử API. | Chuẩn bị Postman Collection hỗ trợ kiểm thử API. |
+| Q68 | API error response có cần một format thống nhất không? | Có. | Sử dụng format thống nhất: `success`, `message` và `errors`. |
+| Q69 | Khi thao tác thất bại, UI cần hiển thị thông báo lỗi như thế nào? | Toast notification hoặc Alert banner. | Sử dụng Toast Message thống nhất trên UI. |
 
 ### Standard API Error Response
 
@@ -202,8 +205,8 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q67 | Trong phạm vi 6 tuần, mức độ hoàn thiện mong muốn của hệ thống là MVP hay production-ready? | MVP (Minimum Viable Product) hoạt động hoàn chỉnh end-to-end. | Tập trung hoàn thiện 100% các luồng nghiệp vụ chính. |
-| Q68 | Có yêu cầu CI/CD không? | Out-of-scope hoặc có thể triển khai đơn giản bằng GitHub Actions. | CI/CD không bắt buộc đối với đánh giá chính của dự án. |
+| Q70 | Trong phạm vi 6 tuần, mức độ hoàn thiện mong muốn của hệ thống là MVP hay production-ready? | MVP (Minimum Viable Product) hoạt động hoàn chỉnh end-to-end. | Tập trung hoàn thiện 100% các luồng nghiệp vụ chính. |
+| Q71 | Có yêu cầu CI/CD không? | Out-of-scope hoặc có thể triển khai đơn giản bằng GitHub Actions. | CI/CD không bắt buộc đối với đánh giá chính của dự án. |
 
 ---
 
