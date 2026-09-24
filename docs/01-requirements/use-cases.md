@@ -531,7 +531,7 @@ Cho phép Customer nhập thông tin giao hàng, kiểm tra lại đơn hàng v�
 | Trigger              | Customer chọn Checkout từ trang Cart          |
 | Preconditions        | Customer đã đăng nhập; Cart không rỗng và chứa sản phẩm hợp lệ |
 | Postconditions       | Order được tạo (`PENDING`), Stock bị trừ, Cart được làm sạch |
-| Related Requirements | FR-CHECKOUT-01 đến FR-CHECKOUT-09, FR-PAY-01 |
+| Related Requirements | FR-CHECKOUT-01 đến FR-CHECKOUT-09 |
 
 ### Main Success Flow
 
@@ -572,7 +572,7 @@ Thực hiện tạo Order và OrderItems trong Database, trừ tồn kho và là
 | Trigger              | Customer xác nhận Đặt hàng từ UC-CHECKOUT-01                               |
 | Preconditions        | Thông tin Checkout hợp lệ                                                  |
 | Postconditions       | Order được lưu, Stock giảm, CartItem bị xóa                                |
-| Related Requirements | FR-CHECKOUT-05 đến 09, FR-ORDER-01 đến 04, FR-PAY-01, NFR-05, BR-12, BR-15|
+| Related Requirements | FR-CHECKOUT-05 đến 09, FR-ORDER-01 đến 04, NFR-05, BR-12, BR-15            |
 
 ### Main Success Flow (Trong 1 Database Transaction)
 
