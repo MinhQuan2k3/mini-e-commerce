@@ -691,6 +691,11 @@ CONFIRMED
 SHIPPING
    ↓
 DELIVERED
+   ↓
+payment_status = PAID
+   ↓
+paid_at = current timestamp
+
 ```
 
 Ngoài ra:
