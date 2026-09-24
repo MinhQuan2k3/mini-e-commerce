@@ -156,6 +156,7 @@ erDiagram
         VARCHAR ward
         ENUM order_status
         ENUM payment_status
+        DATETIME paid_at
         DATETIME created_at
         DATETIME updated_at
     }
@@ -320,6 +321,7 @@ Lưu thông tin đơn hàng.
 | `ward` | `VARCHAR` | NOT NULL | Phường/xã |
 | `order_status` | `ENUM` | NOT NULL | Trạng thái đơn hàng |
 | `payment_status` | `ENUM` | NOT NULL | Trạng thái thanh toán |
+| `paid_at` | `DATETIME` | NOT NULL | Thời gian thanh toán |
 | `created_at` | `DATETIME` | NOT NULL | Thời gian tạo |
 | `updated_at` | `DATETIME` | NOT NULL | Thời gian cập nhật |
 
