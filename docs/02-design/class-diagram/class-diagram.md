@@ -201,10 +201,7 @@ classDiagram
         +confirm()
         +cancel()
         +startShipping()
-        +markDelivered()
-        orderStatus = DELIVERED
-        paymentStatus = PAID
-        paidAt = current timestamp
+        +markDelivered() orderStatus = DELIVERED; paymentStatus = PAID; paidAt = current timestamp
     }
 
     class OrderItem {
