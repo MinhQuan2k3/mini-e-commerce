@@ -402,6 +402,7 @@ Một Product chỉ xuất hiện một lần trong cùng một Cart.
 | `ward` | `String` | Phường/xã |
 | `orderStatus` | `OrderStatus` | Trạng thái đơn hàng |
 | `paymentStatus` | `PaymentStatus` | Trạng thái thanh toán |
+| `paidAt` | `LocalDateTime` | Thời gian thanh toán |
 | `createdAt` | `LocalDateTime` | Thời gian tạo |
 | `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
 
