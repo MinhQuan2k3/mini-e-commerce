@@ -17,11 +17,9 @@ Thiết kế tập trung vào phạm vi MVP, tránh đưa thêm các chức năn
 
 ---
 
-## 2. Nguyên tắc thiết kế
+# 2. Nguyên tắc thiết kế
 
-Class Diagram được xây dựng theo các nguyên tắc sau:
-
-### 2.1. Bám sát Requirement
+## 2.1. Bám sát Requirement
 
 Các lớp được thiết kế dựa trên các nghiệp vụ đã được xác định trong:
 
@@ -31,22 +29,23 @@ Các lớp được thiết kế dựa trên các nghiệp vụ đã được x�
 
 Không tự bổ sung các nghiệp vụ ngoài phạm vi MVP.
 
-### 2.2. Đồng bộ với ERD
+## 2.2. Đồng bộ với ERD
 
 Các lớp chính tương ứng với các Entity trong ERD:
 
-| Class       | Entity tương ứng |
-| ----------- | ---------------- |
-| `User`      | `users`          |
-| `Category`  | `categories`     |
-| `Product`   | `products`       |
-| `Cart`      | `carts`          |
-| `CartItem`  | `cart_items`     |
-| `Order`     | `orders`         |
-| `OrderItem` | `order_items`    |
-| `Payment`   | `payments`       |
+| Class | Entity tương ứng |
+|---|---|
+| `User` | `users` |
+| `Category` | `categories` |
+| `Product` | `products` |
+| `Cart` | `carts` |
+| `CartItem` | `cart_items` |
+| `Order` | `orders` |
+| `OrderItem` | `order_items` |
 
-### 2.3. Encapsulation
+Không có `Payment` class vì hệ thống không sử dụng bảng `payments`.
+
+## 2.3. Encapsulation
 
 Các thuộc tính của class được quản lý thông qua `private` và chỉ được truy cập hoặc thay đổi thông qua các phương thức phù hợp.
 
@@ -59,7 +58,7 @@ private int stockQuantity;
 
 Không nên cho phép các lớp khác tùy ý thay đổi trực tiếp các thuộc tính quan trọng như giá sản phẩm hoặc số lượng tồn kho.
 
-### 2.4. Role không sử dụng kế thừa
+## 2.4. Role không sử dụng kế thừa
 
 Hệ thống có hai nhóm tài khoản:
 
@@ -68,29 +67,21 @@ Hệ thống có hai nhóm tài khoản:
 
 Tuy nhiên, `Customer` và `Admin` không được thiết kế thành hai subclass của `User`.
 
-Thay vào đó, `User` sử dụng:
-
-```text
-Role
-├── CUSTOMER
-└── ADMIN
-```
+Thay vào đó, `User` sử dụng `Role`.
 
 Lý do:
 
 - Cả Customer và Admin đều có chung thông tin tài khoản.
-- Sự khác biệt chính nằm ở quyền truy cập và nghiệp vụ được phép thực hiện.
+- Sự khác biệt chính nằm ở quyền truy cập.
 - Không có nhóm thuộc tính riêng đủ lớn để cần tạo hai subclass.
 - Tránh sử dụng inheritance không cần thiết.
 - Phù hợp với cấu trúc bảng `users` trong ERD.
 
-Việc kiểm soát quyền được thực hiện thông qua `Role` và cơ chế authorization của Spring Security.
+Việc kiểm soát quyền được thực hiện thông qua `Role` và authorization của Spring Security.
 
 ---
 
 # 3. Tổng quan các lớp
-
-Hệ thống gồm các nhóm class chính:
 
 ### User Management
 
@@ -114,11 +105,6 @@ Hệ thống gồm các nhóm class chính:
 - `Order`
 - `OrderItem`
 - `OrderStatus`
-
-### Payment
-
-- `Payment`
-- `PaymentMethod`
 - `PaymentStatus`
 
 ---
@@ -133,7 +119,6 @@ classDiagram
         -String email
         -String passwordHash
         -Role role
-        -Boolean emailVerified
         -LocalDateTime createdAt
         -LocalDateTime updatedAt
     }
@@ -220,6 +205,7 @@ classDiagram
 
     class OrderItem {
         -Long id
+        -Product product
         -String productNameSnapshot
         -String skuSnapshot
         -BigDecimal unitPrice
@@ -237,32 +223,10 @@ classDiagram
         CANCELLED
     }
 
-    class Payment {
-        -Long id
-        -Long orderId
-        -PaymentMethod paymentMethod
-        -PaymentStatus paymentStatus
-        -String provider
-        -String transactionReference
-        -LocalDateTime paidAt
-        -LocalDateTime createdAt
-        -LocalDateTime updatedAt
-    }
-
-    class PaymentMethod {
-        <<enumeration>>
-        COD
-        BANK_TRANSFER
-        E_WALLET
-        ONLINE_PAYMENT
-    }
-
     class PaymentStatus {
         <<enumeration>>
         UNPAID
-        PENDING
         PAID
-        FAILED
     }
 
     User "1" --> "0..*" Order : places
@@ -276,15 +240,11 @@ classDiagram
     Order "1" *-- "1..*" OrderItem : contains
     OrderItem "*" --> "1" Product : references
 
-    Order "1" --> "1" Payment : has
-
     User --> Role
     Category --> CategoryStatus
     Product --> ProductStatus
     Order --> OrderStatus
     Order --> PaymentStatus
-    Payment --> PaymentMethod
-    Payment --> PaymentStatus
 ```
 
 ---
@@ -295,17 +255,14 @@ classDiagram
 
 Đại diện cho tài khoản người dùng trong hệ thống.
 
-### Thuộc tính
-
-| Thuộc tính      | Kiểu dữ liệu    | Mô tả                     |
-| --------------- | --------------- | ------------------------- |
-| `id`            | `Long`          | ID duy nhất của tài khoản |
-| `email`         | `String`        | Email đăng nhập           |
-| `passwordHash`  | `String`        | Mật khẩu đã được mã hóa   |
-| `role`          | `Role`          | Vai trò của tài khoản     |
-| `emailVerified` | `Boolean`       | Trạng thái xác thực email |
-| `createdAt`     | `LocalDateTime` | Thời gian tạo             |
-| `updatedAt`     | `LocalDateTime` | Thời gian cập nhật        |
+| Thuộc tính | Kiểu dữ liệu | Mô tả |
+|---|---|---|
+| `id` | `Long` | ID duy nhất của tài khoản |
+| `email` | `String` | Email đăng nhập |
+| `passwordHash` | `String` | Mật khẩu đã được mã hóa |
+| `role` | `Role` | Vai trò của tài khoản |
+| `createdAt` | `LocalDateTime` | Thời gian tạo |
+| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
 
 ### Role
 
@@ -324,16 +281,14 @@ ADMIN
 
 Đại diện cho danh mục sản phẩm.
 
-### Thuộc tính
-
-| Thuộc tính    | Kiểu dữ liệu     | Mô tả               |
-| ------------- | ---------------- | ------------------- |
-| `id`          | `Long`           | ID danh mục         |
-| `name`        | `String`         | Tên danh mục        |
-| `description` | `String`         | Mô tả danh mục      |
-| `status`      | `CategoryStatus` | Trạng thái danh mục |
-| `createdAt`   | `LocalDateTime`  | Thời gian tạo       |
-| `updatedAt`   | `LocalDateTime`  | Thời gian cập nhật  |
+| Thuộc tính | Kiểu dữ liệu | Mô tả |
+|---|---|---|
+| `id` | `Long` | ID danh mục |
+| `name` | `String` | Tên danh mục |
+| `description` | `String` | Mô tả danh mục |
+| `status` | `CategoryStatus` | Trạng thái danh mục |
+| `createdAt` | `LocalDateTime` | Thời gian tạo |
+| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
 
 ### CategoryStatus
 
@@ -342,28 +297,24 @@ ACTIVE
 INACTIVE
 ```
 
-Danh mục `INACTIVE` không được sử dụng cho các thao tác kinh doanh mới nhưng vẫn có thể được giữ lại để bảo toàn dữ liệu.
-
 ---
 
 # 7. Product
 
 Đại diện cho sản phẩm được bán trên hệ thống.
 
-### Thuộc tính
-
-| Thuộc tính      | Kiểu dữ liệu    | Mô tả                |
-| --------------- | --------------- | -------------------- |
-| `id`            | `Long`          | ID sản phẩm          |
-| `sku`           | `String`        | Mã sản phẩm duy nhất |
-| `name`          | `String`        | Tên sản phẩm         |
-| `description`   | `String`        | Mô tả sản phẩm       |
-| `price`         | `BigDecimal`    | Giá sản phẩm         |
-| `stockQuantity` | `Integer`       | Số lượng tồn kho     |
-| `imageUrl`      | `String`        | URL hình ảnh         |
-| `status`        | `ProductStatus` | Trạng thái sản phẩm  |
-| `createdAt`     | `LocalDateTime` | Thời gian tạo        |
-| `updatedAt`     | `LocalDateTime` | Thời gian cập nhật   |
+| Thuộc tính | Kiểu dữ liệu | Mô tả |
+|---|---|---|
+| `id` | `Long` | ID sản phẩm |
+| `sku` | `String` | Mã sản phẩm duy nhất |
+| `name` | `String` | Tên sản phẩm |
+| `description` | `String` | Mô tả sản phẩm |
+| `price` | `BigDecimal` | Giá sản phẩm |
+| `stockQuantity` | `Integer` | Số lượng tồn kho |
+| `imageUrl` | `String` | URL hình ảnh |
+| `status` | `ProductStatus` | Trạng thái sản phẩm |
+| `createdAt` | `LocalDateTime` | Thời gian tạo |
+| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
 
 ### ProductStatus
 
@@ -371,8 +322,6 @@ Danh mục `INACTIVE` không được sử dụng cho các thao tác kinh doanh 
 ACTIVE
 INACTIVE
 ```
-
-Sản phẩm `INACTIVE` không được hiển thị hoặc sử dụng cho các thao tác mua hàng mới.
 
 ---
 
@@ -382,24 +331,26 @@ Sản phẩm `INACTIVE` không được hiển thị hoặc sử dụng cho các
 
 Một Customer có tối đa một Cart đang hoạt động.
 
+Guest không có Cart trong Database.
+
 ### Thuộc tính
 
-| Thuộc tính   | Kiểu dữ liệu    | Mô tả                       |
-| ------------ | --------------- | --------------------------- |
-| `id`         | `Long`          | ID giỏ hàng                 |
-| `customerId` | `Long`          | ID Customer sở hữu giỏ hàng |
-| `createdAt`  | `LocalDateTime` | Thời gian tạo               |
-| `updatedAt`  | `LocalDateTime` | Thời gian cập nhật          |
+| Thuộc tính | Kiểu dữ liệu | Mô tả |
+|---|---|---|
+| `id` | `Long` | ID giỏ hàng |
+| `customerId` | `Long` | ID Customer sở hữu giỏ hàng |
+| `createdAt` | `LocalDateTime` | Thời gian tạo |
+| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
 
 ### Phương thức chính
 
-| Phương thức        | Mô tả                          |
-| ------------------ | ------------------------------ |
-| `addItem()`        | Thêm sản phẩm vào giỏ          |
-| `updateItem()`     | Cập nhật số lượng sản phẩm     |
-| `removeItem()`     | Xóa sản phẩm khỏi giỏ          |
-| `clear()`          | Xóa toàn bộ sản phẩm trong giỏ |
-| `calculateTotal()` | Tính tổng giá trị giỏ hàng     |
+| Phương thức | Mô tả |
+|---|---|
+| `addItem()` | Thêm sản phẩm vào giỏ |
+| `updateItem()` | Cập nhật số lượng sản phẩm |
+| `removeItem()` | Xóa sản phẩm khỏi giỏ |
+| `clear()` | Xóa toàn bộ sản phẩm trong giỏ |
+| `calculateTotal()` | Tính tổng giá trị giỏ hàng |
 
 ---
 
@@ -409,11 +360,11 @@ Một Customer có tối đa một Cart đang hoạt động.
 
 ### Thuộc tính
 
-| Thuộc tính | Kiểu dữ liệu | Mô tả        |
-| ---------- | ------------ | ------------ |
-| `id`       | `Long`       | ID Cart Item |
-| `product`  | `Product`    | Sản phẩm     |
-| `quantity` | `Integer`    | Số lượng     |
+| Thuộc tính | Kiểu dữ liệu | Mô tả |
+|---|---|---|
+| `id` | `Long` | ID Cart Item |
+| `product` | `Product` | Sản phẩm |
+| `quantity` | `Integer` | Số lượng |
 
 ### Phương thức
 
@@ -427,7 +378,7 @@ Tính:
 subtotal = product.price × quantity
 ```
 
-Một sản phẩm chỉ xuất hiện một lần trong cùng một Cart. Nếu Customer thêm lại sản phẩm đã có, hệ thống cập nhật `quantity` thay vì tạo thêm một `CartItem`.
+Một Product chỉ xuất hiện một lần trong cùng một Cart.
 
 ---
 
@@ -437,37 +388,35 @@ Một sản phẩm chỉ xuất hiện một lần trong cùng một Cart. Nếu
 
 ### Thuộc tính
 
-| Thuộc tính      | Kiểu dữ liệu    | Mô tả                 |
-| --------------- | --------------- | --------------------- |
-| `id`            | `Long`          | ID đơn hàng           |
-| `customerId`    | `Long`          | Customer tạo đơn      |
-| `totalAmount`   | `BigDecimal`    | Tổng giá trị đơn hàng |
-| `recipientName` | `String`        | Tên người nhận        |
-| `phone`         | `String`        | Số điện thoại         |
-| `address`       | `String`        | Địa chỉ               |
-| `provinceCity`  | `String`        | Tỉnh/thành phố        |
-| `district`      | `String`        | Quận/huyện            |
-| `ward`          | `String`        | Phường/xã             |
-| `orderStatus`   | `OrderStatus`   | Trạng thái đơn hàng   |
+| Thuộc tính | Kiểu dữ liệu | Mô tả |
+|---|---|---|
+| `id` | `Long` | ID đơn hàng |
+| `customerId` | `Long` | Customer tạo đơn |
+| `totalAmount` | `BigDecimal` | Tổng giá trị đơn hàng |
+| `recipientName` | `String` | Tên người nhận |
+| `phone` | `String` | Số điện thoại |
+| `address` | `String` | Địa chỉ |
+| `provinceCity` | `String` | Tỉnh/thành phố |
+| `district` | `String` | Quận/huyện |
+| `ward` | `String` | Phường/xã |
+| `orderStatus` | `OrderStatus` | Trạng thái đơn hàng |
 | `paymentStatus` | `PaymentStatus` | Trạng thái thanh toán |
-| `createdAt`     | `LocalDateTime` | Thời gian tạo         |
-| `updatedAt`     | `LocalDateTime` | Thời gian cập nhật    |
+| `createdAt` | `LocalDateTime` | Thời gian tạo |
+| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
 
 ### Phương thức
 
-| Phương thức        | Mô tả                            |
-| ------------------ | -------------------------------- |
-| `calculateTotal()` | Tính tổng tiền đơn hàng          |
-| `confirm()`        | Xác nhận đơn hàng                |
-| `cancel()`         | Hủy đơn hàng                     |
-| `startShipping()`  | Chuyển sang trạng thái đang giao |
-| `markDelivered()`  | Đánh dấu đã giao hàng            |
+| Phương thức | Mô tả |
+|---|---|
+| `calculateTotal()` | Tính tổng tiền đơn hàng |
+| `confirm()` | Xác nhận đơn hàng |
+| `cancel()` | Hủy đơn hàng |
+| `startShipping()` | Chuyển sang trạng thái đang giao |
+| `markDelivered()` | Đánh dấu đã giao hàng |
 
 ---
 
 # 11. OrderStatus
-
-Trạng thái của đơn hàng:
 
 ```text
 PENDING
@@ -477,7 +426,7 @@ DELIVERED
 CANCELLED
 ```
 
-Luồng trạng thái chính:
+Luồng chính:
 
 ```text
 PENDING
@@ -488,35 +437,44 @@ PENDING
    └──> CANCELLED
 ```
 
-Không cho phép chuyển trạng thái tùy ý.
+---
 
-Ví dụ:
+# 12. PaymentStatus
 
-- `PENDING` → `CONFIRMED`: hợp lệ.
-- `PENDING` → `CANCELLED`: hợp lệ.
-- `CONFIRMED` → `SHIPPING`: hợp lệ.
-- `SHIPPING` → `DELIVERED`: hợp lệ.
-- `DELIVERED` → `PENDING`: không hợp lệ.
-- `CANCELLED` → `CONFIRMED`: không hợp lệ.
+MVP chỉ quản lý trạng thái thanh toán trực tiếp trên `Order`.
+
+```text
+UNPAID
+PAID
+```
+
+Không có:
+
+- `Payment` class.
+- `PaymentMethod`.
+- Payment Gateway.
+- Provider.
+- Transaction Reference.
+
+`paymentStatus` là một thuộc tính của `Order`, không phải một Entity độc lập.
 
 ---
 
-# 12. OrderItem
+# 13. OrderItem
 
 Đại diện cho một sản phẩm tại thời điểm đơn hàng được tạo.
 
-Khác với `CartItem`, `OrderItem` lưu thông tin snapshot của sản phẩm.
-
 ### Thuộc tính
 
-| Thuộc tính            | Kiểu dữ liệu | Mô tả                               |
-| --------------------- | ------------ | ----------------------------------- |
-| `id`                  | `Long`       | ID Order Item                       |
-| `productNameSnapshot` | `String`     | Tên sản phẩm tại thời điểm đặt hàng |
-| `skuSnapshot`         | `String`     | SKU tại thời điểm đặt hàng          |
-| `unitPrice`           | `BigDecimal` | Giá tại thời điểm đặt hàng          |
-| `quantity`            | `Integer`    | Số lượng                            |
-| `itemTotal`           | `BigDecimal` | Thành tiền                          |
+| Thuộc tính | Kiểu dữ liệu | Mô tả |
+|---|---|---|
+| `id` | `Long` | ID Order Item |
+| `product` | `Product` | Product gốc |
+| `productNameSnapshot` | `String` | Tên sản phẩm tại thời điểm đặt hàng |
+| `skuSnapshot` | `String` | SKU tại thời điểm đặt hàng |
+| `unitPrice` | `BigDecimal` | Giá tại thời điểm đặt hàng |
+| `quantity` | `Integer` | Số lượng |
+| `itemTotal` | `BigDecimal` | Thành tiền |
 
 ### Công thức
 
@@ -526,118 +484,31 @@ itemTotal = unitPrice × quantity
 
 Việc lưu snapshot giúp bảo toàn lịch sử đơn hàng.
 
-Ví dụ:
-
-```text
-Ngày 01:
-Product A
-Price = 100.000 VNĐ
-
-Customer đặt hàng:
-OrderItem.unitPrice = 100.000 VNĐ
-
-Ngày 05:
-Product A được đổi giá thành 120.000 VNĐ
-```
-
-Đơn hàng cũ vẫn giữ giá `100.000 VNĐ`.
-
 ---
 
-# 13. Payment
+# 14. Quan hệ giữa các Class
 
-Đại diện cho thông tin thanh toán của một đơn hàng.
-
-Một Order có tối đa một Payment tương ứng trong phạm vi MVP.
-
-### Thuộc tính
-
-| Thuộc tính             | Kiểu dữ liệu    | Mô tả                          |
-| ---------------------- | --------------- | ------------------------------ |
-| `id`                   | `Long`          | ID thanh toán                  |
-| `orderId`              | `Long`          | ID đơn hàng                    |
-| `paymentMethod`        | `PaymentMethod` | Phương thức thanh toán         |
-| `paymentStatus`        | `PaymentStatus` | Trạng thái thanh toán          |
-| `provider`             | `String`        | Nhà cung cấp thanh toán nếu có |
-| `transactionReference` | `String`        | Mã giao dịch                   |
-| `paidAt`               | `LocalDateTime` | Thời gian thanh toán           |
-| `createdAt`            | `LocalDateTime` | Thời gian tạo                  |
-| `updatedAt`            | `LocalDateTime` | Thời gian cập nhật             |
-
----
-
-# 14. PaymentMethod
-
-Các phương thức thanh toán được hỗ trợ trong thiết kế hiện tại:
-
-```text
-COD
-BANK_TRANSFER
-E_WALLET
-ONLINE_PAYMENT
-```
-
-Trong đó:
-
-- `COD`: Thanh toán khi nhận hàng.
-- `BANK_TRANSFER`: Chuyển khoản ngân hàng.
-- `E_WALLET`: Ví điện tử.
-- `ONLINE_PAYMENT`: Thanh toán trực tuyến.
-
-Nếu requirement cuối cùng chỉ xác nhận một phương thức `COD`, class `Payment` và enum `PaymentMethod` có thể được đơn giản hóa trong quá trình implementation.
-
----
-
-# 15. PaymentStatus
-
-Trạng thái thanh toán:
-
-```text
-UNPAID
-PENDING
-PAID
-FAILED
-```
-
-Ví dụ với COD:
-
-```text
-UNPAID
-   ↓
-PAID
-```
-
-Trạng thái `PAID` được cập nhật khi hệ thống xác định khoản thanh toán đã hoàn tất.
-
----
-
-# 16. Quan hệ giữa các Class
-
-## 16.1. User - Cart
+## 14.1. User - Cart
 
 ```text
 User 1 -------- 0..1 Cart
 ```
 
-Một Customer có tối đa một giỏ hàng.
-
-Admin không sử dụng Cart để mua hàng.
+Một Customer có tối đa một Cart.
 
 ---
 
-## 16.2. User - Order
+## 14.2. User - Order
 
 ```text
 User 1 -------- 0..* Order
 ```
 
-Một Customer có thể tạo nhiều đơn hàng.
-
-Một Order thuộc về một Customer.
+Một Customer có thể tạo nhiều Order.
 
 ---
 
-## 16.3. Category - Product
+## 14.3. Category - Product
 
 ```text
 Category 1 -------- 0..* Product
@@ -645,11 +516,9 @@ Category 1 -------- 0..* Product
 
 Một Category có thể chứa nhiều Product.
 
-Mỗi Product thuộc một Category trong phạm vi thiết kế MVP hiện tại.
-
 ---
 
-## 16.4. Cart - CartItem
+## 14.4. Cart - CartItem
 
 ```text
 Cart 1 -------- 0..* CartItem
@@ -657,23 +526,19 @@ Cart 1 -------- 0..* CartItem
 
 Một Cart có thể chứa nhiều CartItem.
 
-Khi Cart bị xóa, các CartItem thuộc Cart cũng được xử lý theo quan hệ composition.
-
 ---
 
-## 16.5. CartItem - Product
+## 14.5. CartItem - Product
 
 ```text
 CartItem * -------- 1 Product
 ```
 
-Mỗi CartItem tham chiếu đến một Product.
-
 Một Product có thể xuất hiện trong nhiều Cart khác nhau.
 
 ---
 
-## 16.6. Order - OrderItem
+## 14.6. Order - OrderItem
 
 ```text
 Order 1 -------- 1..* OrderItem
@@ -681,35 +546,21 @@ Order 1 -------- 1..* OrderItem
 
 Một Order phải có ít nhất một OrderItem.
 
-Một OrderItem chỉ thuộc về một Order.
-
 ---
 
-## 16.7. OrderItem - Product
+## 14.7. OrderItem - Product
 
 ```text
 OrderItem * -------- 1 Product
 ```
 
-OrderItem tham chiếu đến Product gốc nhưng đồng thời lưu snapshot của thông tin quan trọng.
-
-Điều này giúp lịch sử đơn hàng không bị ảnh hưởng khi Product được chỉnh sửa sau này.
+OrderItem tham chiếu đến Product gốc và lưu snapshot của dữ liệu quan trọng.
 
 ---
 
-## 16.8. Order - Payment
+# 15. Inheritance và Polymorphism
 
-```text
-Order 1 -------- 0..1 Payment
-```
-
-Một Order có tối đa một Payment trong phạm vi MVP.
-
----
-
-# 17. Inheritance và Polymorphism
-
-## 17.1. Không sử dụng Inheritance cho User Role
+## 15.1. Không sử dụng Inheritance cho User Role
 
 Không thiết kế:
 
@@ -729,15 +580,15 @@ User
   +-- Role.ADMIN
 ```
 
-Đây là lựa chọn phù hợp hơn với hệ thống hiện tại vì Customer và Admin có cùng cấu trúc tài khoản.
+Đây là thiết kế phù hợp với domain model hiện tại.
 
 ---
 
-## 17.2. Không lạm dụng Polymorphism
+## 15.2. Không lạm dụng Polymorphism
 
 MVP hiện tại chưa có các đối tượng có hành vi khác biệt đủ lớn để cần xây dựng hierarchy bằng interface hoặc abstract class.
 
-Ví dụ không cần tạo:
+Đặc biệt không cần xây dựng các class:
 
 ```text
 Payment
@@ -747,44 +598,20 @@ Payment
 └── OnlinePayment
 ```
 
-ở giai đoạn hiện tại.
-
-Thay vào đó:
-
-```text
-Payment
-    |
-    +-- PaymentMethod
-```
-
-được sử dụng để xác định phương thức thanh toán.
-
-Nếu hệ thống trong tương lai tích hợp nhiều payment gateway với các quy trình xử lý hoàn toàn khác nhau, có thể refactor sang Strategy Pattern hoặc một interface như:
-
-```java
-interface PaymentProcessor {
-    PaymentResult process(Payment payment);
-}
-```
-
-Tuy nhiên, đây chưa phải yêu cầu của MVP.
+vì hệ thống không triển khai các loại thanh toán này trong MVP.
 
 ---
 
-# 18. Các nguyên tắc OOP được áp dụng
+# 16. Các nguyên tắc OOP được áp dụng
 
 ## Encapsulation
 
 Các thuộc tính quan trọng được khai báo `private`.
 
-Ví dụ:
-
 ```java
 private BigDecimal price;
 private Integer stockQuantity;
 ```
-
-Việc thay đổi dữ liệu phải đi qua các phương thức nghiệp vụ phù hợp.
 
 ---
 
@@ -795,35 +622,24 @@ Ví dụ:
 ```text
 CartItem → Product
 OrderItem → Product
-Order → Payment
 ```
-
-Các đối tượng có liên hệ với nhau nhưng không nhất thiết có vòng đời phụ thuộc hoàn toàn.
 
 ---
 
 ## Composition
 
-Composition được sử dụng cho các thành phần phụ thuộc vào đối tượng cha.
-
-Ví dụ:
+Composition được sử dụng cho:
 
 ```text
 Cart *-- CartItem
 Order *-- OrderItem
 ```
 
-`CartItem` tồn tại như một phần của `Cart`.
-
-`OrderItem` tồn tại như một phần của `Order`.
-
 ---
 
 ## Enum
 
-Các trạng thái có tập giá trị cố định được biểu diễn bằng `enum`.
-
-Ví dụ:
+Các trạng thái cố định được biểu diễn bằng enum:
 
 ```java
 enum Role {
@@ -831,8 +647,6 @@ enum Role {
     ADMIN
 }
 ```
-
-và:
 
 ```java
 enum OrderStatus {
@@ -844,13 +658,16 @@ enum OrderStatus {
 }
 ```
 
-Điều này giúp hạn chế giá trị không hợp lệ và làm rõ domain model.
+```java
+enum PaymentStatus {
+    UNPAID,
+    PAID
+}
+```
 
 ---
 
-# 19. Domain Rules quan trọng
-
-Class Diagram không chỉ mô tả cấu trúc dữ liệu mà còn phải phản ánh một số business rule quan trọng.
+# 17. Domain Rules quan trọng
 
 ### Product
 
@@ -880,21 +697,18 @@ itemTotal = unitPrice × quantity
 
 ```text
 totalAmount = tổng itemTotal của các OrderItem
+paymentStatus ∈ {UNPAID, PAID}
 ```
 
 ### Order Status
 
 Chỉ cho phép chuyển trạng thái theo flow được định nghĩa.
 
-### Payment
-
-Một Order không được có nhiều Payment active trong phạm vi MVP.
-
 ---
 
-# 20. Mapping với Backend Spring Boot
+# 18. Mapping với Backend Spring Boot
 
-Các class domain chính có thể được triển khai dưới dạng JPA Entity:
+Các Entity chính:
 
 ```text
 entity/
@@ -904,8 +718,7 @@ entity/
 ├── Cart.java
 ├── CartItem.java
 ├── Order.java
-├── OrderItem.java
-└── Payment.java
+└── OrderItem.java
 ```
 
 Các enum:
@@ -916,11 +729,10 @@ entity/enums/
 ├── CategoryStatus.java
 ├── ProductStatus.java
 ├── OrderStatus.java
-├── PaymentMethod.java
 └── PaymentStatus.java
 ```
 
-Service layer có thể được tổ chức tương ứng với các nhóm nghiệp vụ:
+Service layer:
 
 ```text
 service/
@@ -928,8 +740,7 @@ service/
 ├── ProductService.java
 ├── CategoryService.java
 ├── CartService.java
-├── OrderService.java
-└── PaymentService.java
+└── OrderService.java
 ```
 
 Repository:
@@ -942,18 +753,22 @@ repository/
 ├── CartRepository.java
 ├── CartItemRepository.java
 ├── OrderRepository.java
-├── OrderItemRepository.java
-└── PaymentRepository.java
+└── OrderItemRepository.java
 ```
 
-Các class này là định hướng tổ chức code cho Backend, không phải yêu cầu bắt buộc phải triển khai toàn bộ ngay từ đầu.
+Không có `PaymentService`, `PaymentRepository` hoặc `Payment.java`.
 
 ---
 
-# 21. Những thành phần chưa đưa vào Class Diagram
+# 19. Những thành phần chưa đưa vào Class Diagram
 
-Để giữ phạm vi MVP, các class sau chưa được đưa vào:
+Các thành phần sau không thuộc phạm vi MVP:
 
+- `Payment`
+- `PaymentGateway`
+- `PaymentMethod`
+- `PaymentProvider`
+- `TransactionReference`
 - `Address`
 - `Coupon`
 - `Review`
@@ -962,16 +777,12 @@ Các class này là định hướng tổ chức code cho Backend, không phải
 - `InventoryTransaction`
 - `RefreshToken`
 - `Notification`
-- `PaymentGateway`
-- `ShippingProvider`
-
-Nếu các chức năng tương ứng được bổ sung trong requirement ở các giai đoạn sau, Class Diagram có thể được mở rộng.
 
 ---
 
-# 22. Tính nhất quán với ERD
+# 20. Tính nhất quán với ERD
 
-Class Diagram và ERD sử dụng cùng một mô hình domain chính:
+Class Diagram và ERD sử dụng cùng một mô hình:
 
 ```text
 User
@@ -980,27 +791,25 @@ User
  │    └── CartItem ── Product ── Category
  │
  └── Order
-      ├── OrderItem ── Product
-      └── Payment
+      └── OrderItem ── Product
 ```
 
 Trong đó:
 
 - `User` quản lý tài khoản và vai trò.
-- `Category` quản lý nhóm sản phẩm.
-- `Product` quản lý thông tin và tồn kho.
+- `Category` quản lý danh mục.
+- `Product` quản lý sản phẩm và tồn kho.
 - `Cart` và `CartItem` quản lý giỏ hàng.
 - `Order` và `OrderItem` quản lý đơn hàng.
-- `Payment` quản lý thông tin thanh toán.
-- Các `enum` quản lý role, trạng thái và phương thức thanh toán.
+- `Order.paymentStatus` quản lý trạng thái thanh toán.
 
-Thiết kế này đảm bảo Class Diagram có thể ánh xạ tương đối trực tiếp xuống ERD và thuận lợi cho việc triển khai bằng Spring Boot + JPA.
+Không có `Payment` Entity.
 
 ---
 
-# 23. Kết luận
+# 21. Kết luận
 
-Class Diagram của Mini E-commerce tập trung vào các đối tượng cốt lõi của hệ thống và giữ phạm vi phù hợp với MVP.
+Class Diagram của Mini E-commerce được giữ ở mức đơn giản, phù hợp với MVP và đồng bộ với Requirement và ERD.
 
 Các nguyên tắc chính:
 
@@ -1009,8 +818,11 @@ Các nguyên tắc chính:
 - Áp dụng Encapsulation.
 - Sử dụng `enum` cho các tập giá trị cố định.
 - Sử dụng Composition cho `CartItem` và `OrderItem`.
-- Không sử dụng inheritance cho `Customer` và `Admin` khi chưa cần thiết.
-- Không lạm dụng Polymorphism hoặc Design Pattern khi requirement chưa yêu cầu.
-- Giữ thiết kế đủ đơn giản để có thể triển khai và kiểm thử trong phạm vi dự án.
+- Không sử dụng inheritance cho `Customer` và `Admin`.
+- Không tạo Payment Entity.
+- Chỉ quản lý `paymentStatus` trực tiếp trên `Order`.
+- Không triển khai Guest Cart hoặc Merge Cart.
+- Không bổ sung cơ chế thanh toán trực tuyến.
+- Không bổ sung các Entity chưa cần thiết trong MVP.
 
-Class Diagram này sẽ là cơ sở cho các bước tiếp theo như thiết kế API, cấu trúc Backend Spring Boot và triển khai Database.
+Class Diagram này là cơ sở cho thiết kế API, Backend Spring Boot và triển khai Database.
