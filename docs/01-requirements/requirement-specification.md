@@ -1532,7 +1532,6 @@ Một số chi tiết không còn là business requirement nhưng cần được
 | TD-05 | Xác định format của SKU nếu auto-generated          | Database/API Design     |
 | TD-06 | Xác định chi tiết Order Status Transition Matrix    | Use Case/API Design     |
 | TD-07 | Xác định cơ chế concurrency control cho Stock       | Backend/Database Design |
-| TD-08 | Thiết kế chi tiết Payment Status                    | ERD/API Design          |
 
 Các Technical Decisions trên không làm thay đổi phạm vi nghiệp vụ chính đã được xác định trong Requirement Specification.
 
