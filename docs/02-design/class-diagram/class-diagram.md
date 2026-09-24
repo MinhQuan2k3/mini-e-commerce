@@ -194,13 +194,14 @@ classDiagram
         -String ward
         -OrderStatus orderStatus
         -PaymentStatus paymentStatus
+        -LocalDateTime paidAt
         -LocalDateTime createdAt
         -LocalDateTime updatedAt
         +calculateTotal() BigDecimal
         +confirm()
         +cancel()
         +startShipping()
-        +markDelivered()
+        +markDelivered(): orderStatus = DELIVERED; paymentStatus = PAID; paidAt = current timestamp
     }
 
     class OrderItem {
