@@ -2,14 +2,14 @@
 
 ## Hướng dẫn sử dụng file này
 
-Đây là danh sách các **đầu việc lớn (epic)** cần hoàn thành trong 5 tuần còn lại của dự án, dựa trên thiết kế em đã làm ở Tuần 1. File này **không chia sẵn theo ngày** — nhiệm vụ của em là:
+Đây là danh sách các **đầu việc lớn (epic)** cần hoàn thành trong 5 tuần còn lại của dự án, dựa trên thiết kế đã làm ở Tuần 1. File này **không chia sẵn theo ngày** — nhiệm vụ ở đây là:
 
-1. Với mỗi đầu việc lớn bên dưới, **tự chia nhỏ thành các task chi tiết hơn** (mỗi task nên đủ nhỏ để làm trong khoảng 0.5 ngày đến 1 ngày).
-2. **Tự ước lượng số giờ** cần để hoàn thành từng task, dựa trên: độ phức tạp, việc có cần học thêm công nghệ mới không, có phụ thuộc vào task khác không (Estimate theo giờ).
+1. Với mỗi đầu việc lớn bên dưới, **chia nhỏ thành các task chi tiết hơn** (mỗi task nên đủ nhỏ để làm trong khoảng 0.5 ngày đến 1 ngày).
+2. **Uớc lượng số giờ** cần để hoàn thành từng task, dựa trên: độ phức tạp, việc có cần học thêm công nghệ mới không, có phụ thuộc vào task khác không (Estimate theo giờ).
 3. Điền toàn bộ vào **Bảng tổng hợp ước lượng** ở cuối file.
-4. Gửi lại bảng này cho anh để trao đổi và thống nhất kế hoạch trước khi bắt đầu Tuần 2.
+4. Gửi lại bảng này để người ta có thể trao đổi và thống nhất kế hoạch trước khi bắt đầu Tuần 2.
 
-> Việc ước lượng không cần chính xác tuyệt đối — mục đích là để em tập thói quen lập kế hoạch, và để anh cùng em theo dõi tiến độ thực tế so với dự kiến trong các tuần tiếp theo.
+> Việc ước lượng không cần chính xác tuyệt đối — mục đích ở đây là tập thói quen lập kế hoạch, và để người ta theo dõi tiến độ thực tế so với dự kiến trong các tuần tiếp theo.
 
 ---
 
@@ -87,7 +87,7 @@
 
 ---
 
-## BẢNG TỔNG HỢP ƯỚC LƯỢNG (Em tự điền)
+## BẢNG TỔNG HỢP ƯỚC LƯỢNG (Cần điền)
 
 | Tuần | Đầu việc lớn | Task chi tiết (tự chia nhỏ) | Ước lượng (giờ) | Ghi chú (phụ thuộc/rủi ro nếu có) |
 |---|---|---|---|---|
