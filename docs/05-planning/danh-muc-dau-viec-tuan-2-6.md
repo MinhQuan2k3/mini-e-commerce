@@ -90,17 +90,70 @@
 ## BẢNG TỔNG HỢP ƯỚC LƯỢNG (Em tự điền)
 
 | Tuần | Đầu việc lớn | Task chi tiết (tự chia nhỏ) | Ước lượng (giờ) | Ghi chú (phụ thuộc/rủi ro nếu có) |
-|---|---|---|---|---|
-| 2 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-| 3 | | | | |
-| 4 | | | | |
-| 4 | | | | |
-| 5 | | | | |
-| 5 | | | | |
-| 6 | | | | |
-| **Tổng cộng** | | | **___ giờ** | |
+|---|---|---|---:|---|
+| 2 | Setup Backend | Khởi tạo Spring Boot project, cấu hình dependencies và cấu trúc package | 2 | Nền tảng cho toàn bộ Backend |
+| 2 | Database & JPA | Cấu hình kết nối MySQL, JPA/Hibernate và kiểm tra kết nối | 3 | Phụ thuộc database đã chuẩn bị |
+| 2 | Configuration | Cấu hình environment variables và bảo vệ thông tin kết nối, không commit secret | 2 | Cần thống nhất cách cấu hình local |
+| 2 | Entity | Tạo Entity User, Product, Category và mapping quan hệ | 3 | Phụ thuộc thiết kế ERD/Class Diagram |
+| 2 | Repository | Tạo Repository cho các Entity chính | 2 | Phụ thuộc Entity |
+| 2 | Global Exception Handling | Xây dựng Global Exception Handler và chuẩn hóa error response | 3 | Nên hoàn thành trước CRUD |
+| 2 | CORS | Cấu hình CORS cho phép Frontend gọi API | 1 | Cần thiết cho Tuần 4 |
+| 2 | Category CRUD | Implement API tạo, xem, cập nhật, vô hiệu hóa/xóa Category theo business rule | 3 | Phụ thuộc Entity/Repository/Exception Handler |
+| 2 | Product CRUD | Implement API tạo, xem, cập nhật, vô hiệu hóa Product + validation | 4 | Phụ thuộc Category |
+| 2 | Seed Data | Tạo dữ liệu mẫu: Category, Product và tài khoản Admin mặc định | 2 | Phụ thuộc Entity và repository |
+| 2 | Authentication cơ bản | Implement Register/Login, password hashing và kiểm tra thông tin đăng nhập | 4 | Chưa cần JWT; là nền tảng cho Tuần 3 |
+|  | **Tổng Tuần 2** | | **29 giờ** | |
+| 3 | Spring Security | Cấu hình Spring Security và authentication flow | 3 | Phụ thuộc Authentication cơ bản Tuần 2 |
+| 3 | JWT | Implement tạo, validate và parse JWT | 4 | Phụ thuộc Spring Security |
+| 3 | Authorization | Phân quyền ADMIN/CUSTOMER và bảo vệ các endpoint | 3 | Phụ thuộc JWT |
+| 3 | Cart | Tạo API lấy/tạo Cart và thêm Product vào Cart | 4 | Phụ thuộc User/Product |
+| 3 | Cart | Cập nhật số lượng và xóa CartItem | 3 | Phụ thuộc Cart |
+| 3 | Cart Validation | Kiểm tra Product ACTIVE và quantity không vượt stock | 2 | Phụ thuộc Product/Cart |
+| 3 | Checkout | Tạo Order + OrderItem từ Cart và lưu snapshot thông tin sản phẩm | 4 | Phụ thuộc Cart |
+| 3 | Checkout | Tính tổng tiền và validate shipping information | 2 | Phụ thuộc Checkout |
+| 3 | Inventory Transaction | Trừ stock khi Checkout thành công và rollback khi transaction thất bại | 4 | Phần nghiệp vụ quan trọng; cần kiểm thử kỹ |
+| 3 | Order | Xem danh sách/chi tiết đơn hàng của Customer | 2 | Phụ thuộc Order |
+| 3 | Cancel Order | Hủy đơn PENDING và hoàn lại stock | 3 | Phụ thuộc Order status + Inventory |
+| 3 | Product Search | Search, filter, sort và pagination Product | 3 | Phụ thuộc Product API |
+| 3 | Edge Cases | Xử lý Cart rỗng, hết hàng, Product INACTIVE và các trường hợp invalid input | 2 | Phụ thuộc các nghiệp vụ tương ứng |
+| 3 | Unit Test | Viết Unit Test cho các nghiệp vụ tính toán/validation quan trọng | 3 | Nên thực hiện sau khi nghiệp vụ ổn định |
+| 3 | API Test | Cập nhật Postman/Swagger collection cho các API mới | 2 | Dùng để test Backend độc lập |
+|  | **Tổng Tuần 3** | | **44 giờ** | |
+| 4 | Frontend Setup | Khởi tạo React project, routing và cấu hình environment/API base URL | 3 | Phụ thuộc Backend API |
+| 4 | API Layer | Xây dựng API client/service layer để gọi Backend | 3 | Phụ thuộc API specification |
+| 4 | Authentication UI | Xây dựng Login/Register và kết nối API | 4 | Phụ thuộc Auth API |
+| 4 | Authentication State | Quản lý trạng thái đăng nhập và protected routes | 4 | Phụ thuộc Login/JWT |
+| 4 | Product List | Xây dựng trang danh sách sản phẩm | 4 | Phụ thuộc Product API |
+| 4 | Product Search/Filter | Kết nối search, filter, sort và pagination | 3 | Phụ thuộc Product List API |
+| 4 | Product Detail | Xây dựng trang chi tiết sản phẩm + Add to Cart | 3 | Phụ thuộc Product API và Cart API |
+| 4 | Cart UI | Xây dựng giỏ hàng + cập nhật/xóa sản phẩm | 4 | Phụ thuộc Cart API |
+| 4 | Checkout UI | Xây dựng Checkout + shipping information + Order Summary | 4 | Phụ thuộc Checkout API |
+| 4 | My Orders | Xây dựng trang đơn hàng của Customer + trạng thái + Cancel | 3 | Phụ thuộc Order API |
+| 4 | Loading/Error State | Xử lý loading, error và empty state khi gọi API | 2 | Thực hiện sau khi các màn hình chính hoạt động |
+| 4 | Responsive | Responsive cơ bản cho các trang Customer chính | 3 | Không yêu cầu UI quá phức tạp |
+|  | **Tổng Tuần 4** | | **40 giờ** | |
+| 5 | Admin Layout | Xây dựng Admin layout, navigation và protected route | 3 | Phụ thuộc JWT/RBAC |
+| 5 | Admin Product | Trang quản lý Product: danh sách, tìm kiếm/lọc và thao tác CRUD | 5 | Phụ thuộc Product API |
+| 5 | Admin Product Form | Form tạo/cập nhật Product + validation | 3 | Phụ thuộc Product API |
+| 5 | Admin Category | Trang quản lý Category + CRUD | 4 | Phụ thuộc Category API |
+| 5 | Admin Order | Trang danh sách Order + filter/search cơ bản | 3 | Phụ thuộc Order API |
+| 5 | Admin Order Detail | Xem chi tiết Order và cập nhật trạng thái | 4 | Phụ thuộc Order status rules |
+| 5 | Test Case | Viết Test Case cho các chức năng Customer, Admin và edge cases | 5 | Phụ thuộc chức năng chính đã hoàn thành |
+| 5 | Execute Testing | Thực thi Test Case, ghi nhận kết quả và tạo danh sách bug | 3 | Phụ thuộc Test Case |
+| 5 | Debug & Fix | Phân tích, sửa bug và regression test các chức năng bị ảnh hưởng | 4 | Estimate có thể tăng nếu phát sinh bug phức tạp |
+| 5 | DoD Review | Đối chiếu toàn bộ chức năng với Definition of Done/checklist nghiệm thu | 3 | Thực hiện cuối tuần |
+|  | **Tổng Tuần 5** | | **37 giờ** | |
+| 6 | Regression Testing | Test lại toàn bộ Customer/Admin flow sau các thay đổi Tuần 5 | 4 | Phụ thuộc kết quả Tuần 5 |
+| 6 | Final Bug Fix | Fix các bug còn sót lại và regression test | 5 | Có rủi ro tăng thời gian nếu còn bug nghiêm trọng |
+| 6 | UI Polish | Chỉnh layout, spacing, consistency và các lỗi UI nhỏ | 3 | Không mở rộng thêm feature |
+| 6 | Project Configuration | Kiểm tra lại configuration và khả năng chạy Backend/Frontend/Database | 2 | Phụ thuộc environment setup |
+| 6 | README | Viết README hướng dẫn setup và chạy toàn bộ project | 3 | Phụ thuộc cấu hình cuối cùng |
+| 6 | Demo Preparation | Chuẩn bị kịch bản và dữ liệu cho demo | 2 | Dựa trên các flow chính |
+| 6 | Slides/Documentation | Chuẩn bị slide và tài liệu phục vụ demo | 3 | Nội dung lấy từ project hiện tại |
+| 6 | Demo & Feedback | Demo sản phẩm, ghi nhận feedback và thực hiện chỉnh sửa nhỏ nếu cần | 1 | Estimate cho chỉnh sửa nhỏ |
+| 6 | Retrospective | So sánh Estimate với Actual Time và ghi nhận bài học kinh nghiệm | 1 | Thực hiện cuối dự án |
+|  | **Tổng Tuần 6** | | **24 giờ** | |
+| **Tổng cộng** | | | **174 giờ** | Baseline Estimate trước khi bắt đầu Tuần 2 |
 
 *(Em có thể thêm/bớt số dòng tùy theo số task thực tế của mình)*
 
