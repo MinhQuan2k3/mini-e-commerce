@@ -102,8 +102,8 @@
 | 6 | | | | |
 | **Tổng cộng** | | | **___ giờ** | |
 
-*(Em có thể thêm/bớt số dòng tùy theo số task thực tế của mình)*
+*(Có thể thêm/bớt số dòng tùy theo số task thực tế của mình)*
 
 ---
 
-*File này dùng để em tự lập kế hoạch — không cần làm đúng thứ tự tuyệt đối như liệt kê, miễn đảm bảo logic phụ thuộc (VD: phải có API trước khi Frontend gọi được).*
+*File này dùng để tự lập kế hoạch — không cần làm đúng thứ tự tuyệt đối như liệt kê, miễn đảm bảo logic phụ thuộc (VD: phải có API trước khi Frontend gọi được).*
