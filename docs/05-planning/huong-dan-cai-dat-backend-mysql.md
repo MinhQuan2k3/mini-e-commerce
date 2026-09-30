@@ -768,15 +768,15 @@ git push -u origin feature/setup-backend
 ## Checklist cuối cùng
 
 ### Java & IDE
-- [ ] `java -version` ra phiên bản **17**.
-- [ ] `javac -version` ra phiên bản **17**.
-- [ ] `echo $env:JAVA_HOME` in ra đúng thư mục JDK 17.
-- [ ] IntelliJ mở được project `backend`, Project SDK = 17.
+- [x] `java -version` ra phiên bản **17**.
+- [x] `javac -version` ra phiên bản **17**.
+- [x] `echo $env:JAVA_HOME` in ra đúng thư mục JDK 17.
+- [x] IntelliJ mở được project `backend`, Project SDK = 17.
 
 ### Spring Boot
-- [ ] Project được tạo từ start.spring.io, `pom.xml` nằm ngay trong `backend/`.
-- [ ] Chạy app không lỗi, log có `Started BackendApplication`.
-- [ ] `http://localhost:8080/api/hello` trả về Hello World.
+- [x] Project được tạo từ start.spring.io, `pom.xml` nằm ngay trong `backend/`.
+- [x] Chạy app không lỗi, log có `Started BackendApplication`.
+- [x] `http://localhost:8080/api/hello` trả về Hello World.
 
 ### MySQL
 - [ ] MySQL Server đang chạy (Services → `MySQL84` = Running).
