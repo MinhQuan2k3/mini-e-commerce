@@ -779,16 +779,16 @@ git push -u origin feature/setup-backend
 - [x] `http://localhost:8080/api/hello` trả về Hello World.
 
 ### MySQL
-- [ ] MySQL Server đang chạy (Services → `MySQL84` = Running).
-- [ ] Đăng nhập được Workbench bằng `root`.
-- [ ] Database `mini_ecommerce` đã tạo với `utf8mb4`.
-- [ ] User `mini_ecommerce_app` đăng nhập được, chỉ có quyền trên `mini_ecommerce`.
-- [ ] Bảng `connection_test` có dữ liệu.
+- [x] MySQL Server đang chạy (Services → `MySQL84` = Running).
+- [x] Đăng nhập được Workbench bằng `root`.
+- [x] Database `mini_ecommerce` đã tạo với `utf8mb4`.
+- [x] User `mini_ecommerce_app` đăng nhập được, chỉ có quyền trên `mini_ecommerce`.
+- [x] Bảng `connection_test` có dữ liệu.
 
 ### Kết nối
-- [ ] Log có `HikariPool-1 - Start completed`.
-- [ ] `http://localhost:8080/api/db-check` trả về `"status": "CONNECTED"`.
-- [ ] Mật khẩu database **không** nằm trong bất kỳ file nào được commit.
+- [x] Log có `HikariPool-1 - Start completed`.
+- [x] `http://localhost:8080/api/db-check` trả về `"status": "CONNECTED"`.
+- [x] Mật khẩu database **không** nằm trong bất kỳ file nào được commit.
 
 ### Việc tiếp theo (Tuần 2)
 Sau khi hoàn thành hướng dẫn này, em đã xong task **"Setup Backend"** và **"Database & JPA"** (phần kết nối) trong `docs/05-planning/danh-muc-dau-viec-tuan-2-6.md`. Bước tiếp theo:
