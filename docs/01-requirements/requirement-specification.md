@@ -94,14 +94,16 @@ Thông tin đăng ký tối thiểu:
 
 - Email
 - Password
-- Các thông tin bắt buộc khác nếu được xác định trong UI
+- Confirm Password (chỉ dùng để kiểm tra ở Frontend, không lưu vào Database).
 
 Rules:
 
-- Email phải đúng định dạng.
-- Email phải là duy nhất.
+- Email phải đúng định dạng và là duy nhất.
+- Password phải có tối thiểu 8 ký tự.
 - Password không được lưu dưới dạng plain text.
-- Password phải được hash bằng cơ chế bảo mật như BCrypt hoặc Argon2.
+- Password phải được hash bằng BCrypt hoặc Argon2 trước khi lưu.
+- Hệ thống chỉ tạo tài khoản có role CUSTOMER thông qua public registration.
+- Admin không được đăng ký thông qua public registration form.
 
 ---
 
@@ -253,15 +255,16 @@ Product `INACTIVE` không được phép được mua.
 
 ### FR-PROD-07 — Product Soft Delete
 
-Khi Admin xóa Product, hệ thống không được hard-delete Product nếu việc xóa có thể ảnh hưởng đến dữ liệu Order lịch sử.
+Khi Admin xóa Product, hệ thống phải thực hiện Soft Delete bằng cách chuyển trạng thái Product sang `INACTIVE`.
 
-Hệ thống phải sử dụng Soft Delete, ví dụ:
+Rules:
 
-```text
-Status = INACTIVE
-```
+- Không xóa vật lý Product khỏi Database.
+- Product đã bị xóa theo cách này không được xuất hiện trong danh sách sản phẩm công khai và không được phép mua.
+- Product vẫn được giữ lại để bảo toàn dữ liệu Order lịch sử.
+- Nếu cần hiển thị lại Product, Admin có thể chuyển trạng thái từ `INACTIVE` sang `ACTIVE` thông qua chức năng quản lý Product, nếu Product đáp ứng các điều kiện hợp lệ.
 
-hoặc cơ chế `deleted_at`.
+Trong MVP, thao tác Delete và Deactivate có cùng kết quả dữ liệu: `status = INACTIVE`.
 
 ---
 
@@ -379,13 +382,15 @@ Admin phải có thể cập nhật thông tin Category.
 
 Admin có thể xóa Category nếu Category không còn Product nào tham chiếu.
 
-Nếu Category vẫn có Product:
+Nếu vẫn còn Product tham chiếu:
 
-```text
-Delete = Blocked
-```
+- Hệ thống phải từ chối thao tác xóa.
+- Trả về HTTP `409 Conflict`.
+- Không thay đổi dữ liệu Category hoặc Product liên quan.
 
-Hệ thống phải trả về lỗi phù hợp.
+Nếu Admin muốn ẩn Category đang được sử dụng, Admin phải cập nhật Category sang `status = INACTIVE` thay vì xóa.
+
+Category `INACTIVE` không được hiển thị trong danh sách Category công khai hoặc được sử dụng để tạo Product mới. Các Product đang tham chiếu Category đó vẫn được giữ lại trong Database.
 
 ---
 
@@ -632,7 +637,14 @@ Khi đơn hàng chuyển sang DELIVERED:
 - `payment_status` được tự động chuyển thành PAID.
 - `paid_at` được tự động gán thời điểm hiện tại.
 
-MVP không triển khai Payment Entity riêng, Payment Gateway hoặc các phương thức thanh toán trực tuyến.
+Quy tắc dữ liệu thanh toán:
+
+- `payment_status` chỉ nhận `UNPAID` hoặc `PAID`.
+- Order mới được tạo với `payment_status = UNPAID` và `paid_at = NULL`.
+- Khi Order chuyển sang `DELIVERED`, hệ thống tự động cập nhật `payment_status = PAID` và gán `paid_at` bằng thời điểm hiện tại.
+- Với các trạng thái Order khác `DELIVERED`, `payment_status` phải là `UNPAID` và `paid_at = NULL`.
+- Không cho phép Client tự quyết định hoặc gửi giá trị `payment_status`/`paid_at` để ghi đè quy tắc nghiệp vụ.
+- MVP không triển khai Payment Entity riêng, Payment Gateway hoặc thanh toán trực tuyến.
 
 ---
 
@@ -751,21 +763,13 @@ Admin chỉ được thay đổi Order Status theo quyền được cấp.
 
 ### FR-ORDER-10 — Inventory Restoration
 
-Khi Order chuyển sang `CANCELLED`, hệ thống phải hoàn lại Stock tương ứng.
+Khi Order chuyển từ `PENDING` sang `CANCELLED`, hệ thống phải hoàn lại số lượng tồn kho tương ứng với từng OrderItem.
 
-Ví dụ:
+Quy tắc áp dụng cho cả thao tác hủy của Customer và thao tác hủy của Admin.
 
-```text
-Stock trước Order = 10
-Order Quantity    = 3
-Stock sau Order   = 7
+Việc chuyển trạng thái Order và hoàn kho phải được xử lý trong cùng một Database Transaction. Chỉ hoàn kho khi trạng thái hiện tại là `PENDING` và thao tác chuyển sang `CANCELLED` thành công. Nếu Order đã bị hủy, hệ thống không được hoàn kho lần thứ hai.
 
-Order Cancel
-        ↓
-Stock = 10
-```
-
-Việc hoàn Stock chỉ được thực hiện một lần cho mỗi Order.
+Nếu một bước thất bại, transaction phải rollback để bảo đảm tính nhất quán dữ liệu.
 
 ---
 
@@ -938,12 +942,18 @@ GET /api/admin/orders
 
 ### FR-ADMIN-ORDER-02 — Search Orders
 
-Admin phải có thể tìm kiếm Order theo:
+Admin phải có thể tìm kiếm Order theo từ khóa `keyword`.
 
-- Order ID
-- Customer Name
-- Customer Email
-- Customer Phone
+Từ khóa được đối chiếu với các trường:
+
+- Order ID.
+- `recipient_name`: tên người nhận hàng được lưu trong Order.
+- Email của Customer liên kết với Order.
+- `phone`: số điện thoại người nhận hàng được lưu trong Order.
+
+Việc tìm kiếm theo tên và số điện thoại sử dụng thông tin giao hàng tại thời điểm đặt hàng. Hệ thống không yêu cầu bổ sung trường `name` hoặc `phone` vào User chỉ để phục vụ chức năng tìm kiếm này.
+
+Tìm kiếm phải hỗ trợ kết hợp với bộ lọc Order Status và phân trang.
 
 ---
 
@@ -1351,11 +1361,11 @@ Product List
 Search / Filter / Sort
   ↓
 Product Detail
-  ↓
-Add to Cart
 ```
 
-Guest không cần đăng nhập cho các bước trên.
+Guest có thể xem danh sách, tìm kiếm, lọc, sắp xếp và xem chi tiết sản phẩm mà không cần đăng nhập.
+
+Guest không được thêm sản phẩm vào Cart, quản lý Cart hoặc Checkout. Khi muốn mua hàng, Guest phải đăng nhập hoặc đăng ký tài khoản Customer trước.
 
 ---
 
