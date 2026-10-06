@@ -1961,4 +1961,3 @@ MVP tập trung vào các nghiệp vụ bán hàng và quản lý tồn kho cố
 
 Hệ thống không triển khai Payment Gateway, Online Payment hoặc Payment Entity riêng. Trạng thái thanh toán chỉ được quản lý thông qua `payment_status` và `paid_at` trên Order; Order được tạo ở trạng thái `UNPAID` và tự động chuyển sang `PAID` khi Order đạt trạng thái `DELIVERED`.
 
-Requirement Specification này là cơ sở để tiếp tục hoàn thiện Use Cases, ERD, Class Diagram, API Specification, Wireframes và Implementation.
