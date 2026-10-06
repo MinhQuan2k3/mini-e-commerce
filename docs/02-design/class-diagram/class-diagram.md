@@ -1,126 +1,149 @@
 # Class Diagram
 
-## 1. Mục đích
+## 1. Information
 
-Tài liệu này mô tả cấu trúc các lớp chính của hệ thống Mini E-commerce dựa trên các yêu cầu đã được review và chốt trong thư mục `01-requirements`.
-
-Class Diagram được sử dụng để:
-
-- Mô tả các lớp chính trong hệ thống.
-- Xác định thuộc tính và phương thức quan trọng của từng lớp.
-- Thể hiện mối quan hệ giữa các lớp.
-- Làm cơ sở cho việc triển khai Backend bằng Java Spring Boot.
-- Đảm bảo thiết kế hướng đối tượng thống nhất với ERD.
-- Làm rõ việc sử dụng `enum`, encapsulation và các quan hệ giữa các đối tượng.
-
-Thiết kế tập trung vào phạm vi MVP, tránh đưa thêm các chức năng không có trong requirement.
-
----
-
-# 2. Nguyên tắc thiết kế
-
-## 2.1. Bám sát Requirement
-
-Các lớp được thiết kế dựa trên các nghiệp vụ đã được xác định trong:
-
-- `requirement-clarification.md`
-- `requirement-specification.md`
-- `use-cases.md`
-
-Không tự bổ sung các nghiệp vụ ngoài phạm vi MVP.
-
-## 2.2. Đồng bộ với ERD
-
-Các lớp chính tương ứng với các Entity trong ERD:
-
-| Class | Entity tương ứng |
+| Item | Description |
 |---|---|
-| `User` | `users` |
-| `Category` | `categories` |
-| `Product` | `products` |
-| `Cart` | `carts` |
-| `CartItem` | `cart_items` |
-| `Order` | `orders` |
-| `OrderItem` | `order_items` |
+| Project | Mini E-commerce / Inventory Management |
+| Document | Class Diagram |
+| Status | Draft for Design |
+| Backend | Java Spring Boot |
+| Database | MySQL |
 
-Không có `Payment` class vì hệ thống không sử dụng bảng `payments`.
+* * *
 
-## 2.3. Encapsulation
+# 2. Purpose
 
-Các thuộc tính của class được quản lý thông qua `private` và chỉ được truy cập hoặc thay đổi thông qua các phương thức phù hợp.
+Class Diagram mô tả cấu trúc các class chính của hệ thống Mini E-commerce / Inventory Management.
 
-Ví dụ:
+Class Diagram được xây dựng dựa trên:
 
-```java
-private BigDecimal price;
-private int stockQuantity;
+* Requirement Specification.
+* Entity Relationship Diagram.
+* Các business rules của MVP.
+* REST API design.
+
+Mục tiêu của Class Diagram là xác định:
+
+* Domain entities.
+* Attributes.
+* Relationships.
+* Business behavior quan trọng.
+* Service responsibilities.
+* Enum/constant được sử dụng trong hệ thống.
+
+Thiết kế tập trung vào các nghiệp vụ:
+
+```text
+Authentication
+Product Management
+Category Management
+Shopping Cart
+Checkout
+Order Management
+Inventory Management
 ```
 
-Không nên cho phép các lớp khác tùy ý thay đổi trực tiếp các thuộc tính quan trọng như giá sản phẩm hoặc số lượng tồn kho.
+* * *
 
-## 2.4. Role không sử dụng kế thừa
-
-Hệ thống có hai nhóm tài khoản:
-
-- `CUSTOMER`
-- `ADMIN`
-
-Tuy nhiên, `Customer` và `Admin` không được thiết kế thành hai subclass của `User`.
-
-Thay vào đó, `User` sử dụng `Role`.
-
-Lý do:
-
-- Cả Customer và Admin đều có chung thông tin tài khoản.
-- Sự khác biệt chính nằm ở quyền truy cập.
-- Không có nhóm thuộc tính riêng đủ lớn để cần tạo hai subclass.
-- Tránh sử dụng inheritance không cần thiết.
-- Phù hợp với cấu trúc bảng `users` trong ERD.
-
-Việc kiểm soát quyền được thực hiện thông qua `Role` và authorization của Spring Security.
-
----
-
-# 3. Tổng quan các lớp
-
-### User Management
-
-- `User`
-- `Role`
-
-### Product Management
-
-- `Product`
-- `Category`
-- `ProductStatus`
-- `CategoryStatus`
-
-### Shopping Cart
-
-- `Cart`
-- `CartItem`
-
-### Order Management
-
-- `Order`
-- `OrderItem`
-- `OrderStatus`
-- `PaymentStatus`
-
----
-
-# 4. Class Diagram
+# 3. Class Diagram Overview
 
 ```mermaid
 classDiagram
 
     class User {
-        -Long id
-        -String email
-        -String passwordHash
-        -Role role
-        -LocalDateTime createdAt
-        -LocalDateTime updatedAt
+        +Long id
+        +String email
+        +String password
+        +Role role
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+    }
+
+    class Category {
+        +Long id
+        +String name
+        +String description
+        +CategoryStatus status
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+    }
+
+    class Product {
+        +Long id
+        +String sku
+        +String name
+        +String description
+        +BigDecimal price
+        +Integer stockQuantity
+        +String imageUrl
+        +Category category
+        +ProductStatus status
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+        +boolean isAvailable()
+        +void decreaseStock(Integer quantity)
+        +void increaseStock(Integer quantity)
+    }
+
+    class Cart {
+        +Long id
+        +User user
+        +List~CartItem~ items
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+        +void addItem(Product product, Integer quantity)
+        +void updateItemQuantity(Long productId, Integer quantity)
+        +void removeItem(Long productId)
+        +boolean isEmpty()
+    }
+
+    class CartItem {
+        +Long id
+        +Cart cart
+        +Product product
+        +Integer quantity
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+        +void increaseQuantity(Integer quantity)
+        +void updateQuantity(Integer quantity)
+    }
+
+    class Order {
+        +Long id
+        +User customer
+        +List~OrderItem~ items
+        +BigDecimal totalAmount
+        +String recipientName
+        +String phone
+        +String address
+        +String provinceCity
+        +String district
+        +String ward
+        +OrderStatus orderStatus
+        +PaymentStatus paymentStatus
+        +LocalDateTime paidAt
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+        +void confirm()
+        +void ship()
+        +void deliver()
+        +void cancel()
+        +boolean canCancel()
+        +void markAsPaid()
+        +BigDecimal calculateTotal()
+    }
+
+    class OrderItem {
+        +Long id
+        +Order order
+        +Product product
+        +String productName
+        +String sku
+        +BigDecimal unitPrice
+        +Integer quantity
+        +BigDecimal itemTotal
+        +BigDecimal calculateItemTotal()
     }
 
     class Role {
@@ -129,90 +152,16 @@ classDiagram
         ADMIN
     }
 
-    class Category {
-        -Long id
-        -String name
-        -String description
-        -CategoryStatus status
-        -LocalDateTime createdAt
-        -LocalDateTime updatedAt
-    }
-
-    class CategoryStatus {
-        <<enumeration>>
-        ACTIVE
-        INACTIVE
-    }
-
-    class Product {
-        -Long id
-        -String sku
-        -String name
-        -String description
-        -BigDecimal price
-        -Integer stockQuantity
-        -String imageUrl
-        -ProductStatus status
-        -LocalDateTime createdAt
-        -LocalDateTime updatedAt
-    }
-
     class ProductStatus {
         <<enumeration>>
         ACTIVE
         INACTIVE
     }
 
-    class Cart {
-        -Long id
-        -Long customerId
-        -LocalDateTime createdAt
-        -LocalDateTime updatedAt
-        +addItem(Product product, int quantity)
-        +updateItem(Product product, int quantity)
-        +removeItem(Product product)
-        +clear()
-        +calculateTotal() BigDecimal
-    }
-
-    class CartItem {
-        -Long id
-        -Product product
-        -Integer quantity
-        +calculateSubtotal() BigDecimal
-    }
-
-    class Order {
-        -Long id
-        -Long customerId
-        -BigDecimal totalAmount
-        -String recipientName
-        -String phone
-        -String address
-        -String provinceCity
-        -String district
-        -String ward
-        -OrderStatus orderStatus
-        -PaymentStatus paymentStatus
-        -LocalDateTime paidAt
-        -LocalDateTime createdAt
-        -LocalDateTime updatedAt
-        +calculateTotal() BigDecimal
-        +confirm()
-        +cancel()
-        +startShipping()
-        +markDelivered() orderStatus = DELIVERED; paymentStatus = PAID; paidAt = current timestamp
-    }
-
-    class OrderItem {
-        -Long id
-        -Product product
-        -String productNameSnapshot
-        -String skuSnapshot
-        -BigDecimal unitPrice
-        -Integer quantity
-        -BigDecimal itemTotal
-        +calculateSubtotal() BigDecimal
+    class CategoryStatus {
+        <<enumeration>>
+        ACTIVE
+        INACTIVE
     }
 
     class OrderStatus {
@@ -230,195 +179,505 @@ classDiagram
         PAID
     }
 
-    User "1" --> "0..*" Order : places
     User "1" --> "0..1" Cart : owns
+    User "1" --> "0..*" Order : places
 
     Category "1" --> "0..*" Product : contains
 
     Cart "1" *-- "0..*" CartItem : contains
-    CartItem "*" --> "1" Product : references
+    Product "1" --> "0..*" CartItem : referenced by
 
     Order "1" *-- "1..*" OrderItem : contains
-    OrderItem "*" --> "1" Product : references
+    Product "1" --> "0..*" OrderItem : referenced by
 
     User --> Role
-    Category --> CategoryStatus
     Product --> ProductStatus
+    Category --> CategoryStatus
     Order --> OrderStatus
     Order --> PaymentStatus
 ```
 
----
+* * *
 
-# 5. Đặc tả các Class
+# 4. Domain Classes
 
-## 5.1. User
+## 4.1. User
 
-Đại diện cho tài khoản người dùng trong hệ thống.
+`User` đại diện cho tài khoản Customer hoặc Admin.
 
-| Thuộc tính | Kiểu dữ liệu | Mô tả |
+### Attributes
+
+| Attribute | Type | Description |
 |---|---|---|
-| `id` | `Long` | ID duy nhất của tài khoản |
-| `email` | `String` | Email đăng nhập |
-| `passwordHash` | `String` | Mật khẩu đã được mã hóa |
-| `role` | `Role` | Vai trò của tài khoản |
-| `createdAt` | `LocalDateTime` | Thời gian tạo |
-| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
+| `id` | Long | User ID |
+| `email` | String | Email đăng nhập |
+| `password` | String | Password đã hash |
+| `role` | Role | `CUSTOMER` hoặc `ADMIN` |
+| `createdAt` | LocalDateTime | Thời điểm tạo |
+| `updatedAt` | LocalDateTime | Thời điểm cập nhật |
 
-### Role
+### Business Rules
+
+* `email` phải unique.
+* Password không được lưu plain text.
+* Password phải được hash trước khi lưu.
+* Public registration chỉ tạo `CUSTOMER`.
+* `ADMIN` được tạo thông qua seed/migration.
+* MVP không có `accountStatus`.
+
+### Relationships
+
+```text
+User 1 ───── 0..1 Cart
+User 1 ───── 0..N Order
+```
+
+Một User có thể chưa có Cart hoặc Order.
+
+Customer tối đa có một Cart active.
+
+* * *
+
+## 4.2. Category
+
+`Category` đại diện cho danh mục sản phẩm.
+
+### Attributes
+
+| Attribute | Type | Description |
+|---|---|---|
+| `id` | Long | Category ID |
+| `name` | String | Category Name |
+| `description` | String | Mô tả |
+| `status` | CategoryStatus | ACTIVE / INACTIVE |
+| `createdAt` | LocalDateTime | Thời điểm tạo |
+| `updatedAt` | LocalDateTime | Thời điểm cập nhật |
+
+### Business Rules
+
+* `name` phải unique.
+* Category không có hierarchy.
+* Category có thể ACTIVE hoặc INACTIVE.
+* Không được xóa Category khi còn Product tham chiếu.
+* Có thể chuyển Category sang `INACTIVE` để ẩn.
+
+### Relationships
+
+```text
+Category 1 ───── 0..N Product
+```
+
+* * *
+
+## 4.3. Product
+
+`Product` đại diện cho sản phẩm được bán trong hệ thống.
+
+### Attributes
+
+| Attribute | Type | Description |
+|---|---|---|
+| `id` | Long | Product ID |
+| `sku` | String | SKU duy nhất |
+| `name` | String | Product Name |
+| `description` | String | Mô tả |
+| `price` | BigDecimal | Giá sản phẩm |
+| `stockQuantity` | Integer | Tồn kho |
+| `imageUrl` | String | URL ảnh chính |
+| `category` | Category | Category của Product |
+| `status` | ProductStatus | ACTIVE / INACTIVE |
+| `createdAt` | LocalDateTime | Thời điểm tạo |
+| `updatedAt` | LocalDateTime | Thời điểm cập nhật |
+
+### Business Rules
+
+* `sku` phải unique.
+* `price > 0`.
+* `stockQuantity >= 0`.
+* Product phải thuộc một Category.
+* Product `INACTIVE` không được mua.
+* Product có `stockQuantity = 0` là Out of Stock.
+* Delete Product là Soft Delete bằng cách chuyển `status = INACTIVE`.
+
+### Domain Behavior
+
+#### `isAvailable()`
+
+Product được xem là khả dụng khi:
+
+```text
+status = ACTIVE
+AND
+stockQuantity > 0
+```
+
+#### `decreaseStock(quantity)`
+
+Giảm tồn kho khi Checkout thành công.
+
+Điều kiện:
+
+```text
+quantity > 0
+stockQuantity >= quantity
+```
+
+Không cho phép kết quả:
+
+```text
+stockQuantity < 0
+```
+
+#### `increaseStock(quantity)`
+
+Tăng tồn kho khi Order được Cancel hợp lệ.
+
+Điều kiện:
+
+```text
+quantity > 0
+```
+
+### Relationships
+
+```text
+Category 1 ───── 0..N Product
+Product 1 ───── 0..N CartItem
+Product 1 ───── 0..N OrderItem
+```
+
+* * *
+
+# 5. Cart Classes
+
+## 5.1. Cart
+
+`Cart` đại diện cho giỏ hàng của Customer.
+
+### Attributes
+
+| Attribute | Type | Description |
+|---|---|---|
+| `id` | Long | Cart ID |
+| `user` | User | Customer sở hữu Cart |
+| `items` | List<CartItem> | Danh sách CartItem |
+| `createdAt` | LocalDateTime | Thời điểm tạo |
+| `updatedAt` | LocalDateTime | Thời điểm cập nhật |
+
+### Business Rules
+
+* Một Customer tối đa có một Cart.
+* Cart chỉ tồn tại cho Customer đã đăng nhập.
+* Guest không có Cart persistent.
+* Cart có thể rỗng.
+* Một Product chỉ xuất hiện một lần trong cùng Cart.
+
+### Domain Behavior
+
+#### `addItem(product, quantity)`
+
+Nếu Product chưa tồn tại:
+
+```text
+Create CartItem
+```
+
+Nếu Product đã tồn tại:
+
+```text
+Increase existing quantity
+```
+
+Quantity phải được validate với Stock hiện tại.
+
+#### `updateItemQuantity(productId, quantity)`
+
+Cập nhật Quantity của CartItem.
+
+Quantity phải:
+
+```text
+> 0
+AND
+<= current stock
+```
+
+#### `removeItem(productId)`
+
+Xóa CartItem khỏi Cart.
+
+#### `isEmpty()`
+
+Trả về `true` nếu Cart không có CartItem.
+
+### Relationships
+
+```text
+User 1 ───── 0..1 Cart
+
+Cart 1 *──── 0..N CartItem
+```
+
+Composition được sử dụng giữa Cart và CartItem vì CartItem thuộc về Cart.
+
+* * *
+
+## 5.2. CartItem
+
+`CartItem` đại diện cho một Product và Quantity trong Cart.
+
+### Attributes
+
+| Attribute | Type | Description |
+|---|---|---|
+| `id` | Long | CartItem ID |
+| `cart` | Cart | Cart sở hữu |
+| `product` | Product | Product |
+| `quantity` | Integer | Số lượng |
+| `createdAt` | LocalDateTime | Thời điểm tạo |
+| `updatedAt` | LocalDateTime | Thời điểm cập nhật |
+
+### Business Rules
+
+* `quantity > 0`.
+* `(cart, product)` phải unique.
+* Quantity không được vượt quá Stock hiện tại khi thao tác Add/Update Cart.
+
+### Domain Behavior
+
+#### `increaseQuantity(quantity)`
+
+Tăng Quantity.
+
+#### `updateQuantity(quantity)`
+
+Cập nhật Quantity mới.
+
+Validation Stock được thực hiện ở application/service layer kết hợp với dữ liệu Product hiện tại.
+
+* * *
+
+# 6. Order Classes
+
+## 6.1. Order
+
+`Order` đại diện cho đơn hàng của Customer.
+
+### Attributes
+
+| Attribute | Type | Description |
+|---|---|---|
+| `id` | Long | Order ID |
+| `customer` | User | Customer tạo Order |
+| `items` | List<OrderItem> | Danh sách OrderItem |
+| `totalAmount` | BigDecimal | Tổng tiền |
+| `recipientName` | String | Tên người nhận |
+| `phone` | String | Số điện thoại |
+| `address` | String | Địa chỉ |
+| `provinceCity` | String | Tỉnh/Thành phố |
+| `district` | String | Quận/Huyện |
+| `ward` | String | Phường/Xã |
+| `orderStatus` | OrderStatus | Trạng thái Order |
+| `paymentStatus` | PaymentStatus | Trạng thái Payment |
+| `paidAt` | LocalDateTime | Thời điểm thanh toán |
+| `createdAt` | LocalDateTime | Thời điểm tạo |
+| `updatedAt` | LocalDateTime | Thời điểm cập nhật |
+
+### Initial State
+
+Khi Order được tạo:
+
+```text
+orderStatus   = PENDING
+paymentStatus = UNPAID
+paidAt        = NULL
+```
+
+### Order Status Transition
+
+```text
+PENDING
+   ├──→ CONFIRMED
+   │       ↓
+   │    SHIPPING
+   │       ↓
+   │    DELIVERED
+   │
+   └──→ CANCELLED
+```
+
+Chỉ các transition sau được phép:
+
+```text
+PENDING → CONFIRMED
+PENDING → CANCELLED
+CONFIRMED → SHIPPING
+SHIPPING → DELIVERED
+```
+
+### Payment State
+
+Khi:
+
+```text
+SHIPPING → DELIVERED
+```
+
+hệ thống tự động:
+
+```text
+paymentStatus = PAID
+paidAt = current timestamp
+```
+
+Với các trạng thái khác `DELIVERED`:
+
+```text
+paymentStatus = UNPAID
+paidAt = NULL
+```
+
+### Domain Behavior
+
+#### `confirm()`
+
+```text
+PENDING → CONFIRMED
+```
+
+Chỉ được gọi khi Order đang `PENDING`.
+
+#### `ship()`
+
+```text
+CONFIRMED → SHIPPING
+```
+
+Chỉ được gọi khi Order đang `CONFIRMED`.
+
+#### `deliver()`
+
+```text
+SHIPPING → DELIVERED
+```
+
+Khi thành công:
+
+```text
+orderStatus = DELIVERED
+paymentStatus = PAID
+paidAt = current timestamp
+```
+
+#### `cancel()`
+
+```text
+PENDING → CANCELLED
+```
+
+Chỉ được gọi khi Order đang `PENDING`.
+
+Việc restore Stock phải được thực hiện trong cùng transaction ở application/service layer.
+
+#### `canCancel()`
+
+Trả về `true` khi:
+
+```text
+orderStatus = PENDING
+```
+
+#### `markAsPaid()`
+
+Chỉ được thực hiện theo business rule khi Order chuyển sang `DELIVERED`.
+
+#### `calculateTotal()`
+
+Tính:
+
+```text
+Order Total = Σ OrderItem.itemTotal
+```
+
+`totalAmount` không được lấy trực tiếp từ Client.
+
+* * *
+
+## 6.2. OrderItem
+
+`OrderItem` đại diện cho một Product trong Order và lưu snapshot dữ liệu tại thời điểm mua.
+
+### Attributes
+
+| Attribute | Type | Description |
+|---|---|---|
+| `id` | Long | OrderItem ID |
+| `order` | Order | Order |
+| `product` | Product | Product reference |
+| `productName` | String | Product Name snapshot |
+| `sku` | String | SKU snapshot |
+| `unitPrice` | BigDecimal | Giá tại thời điểm mua |
+| `quantity` | Integer | Số lượng |
+| `itemTotal` | BigDecimal | Thành tiền |
+
+### Business Rules
+
+* `quantity > 0`.
+* `unitPrice > 0`.
+* `itemTotal >= 0`.
+* Product Name, SKU và Unit Price phải được snapshot tại thời điểm Checkout.
+* Thay đổi Product sau này không được làm thay đổi OrderItem cũ.
+
+### Domain Behavior
+
+#### `calculateItemTotal()`
+
+```text
+itemTotal = unitPrice × quantity
+```
+
+* * *
+
+# 7. Enumerations
+
+## 7.1. Role
 
 ```text
 CUSTOMER
 ADMIN
 ```
 
-`CUSTOMER` sử dụng các chức năng mua hàng.
+`Role` xác định quyền truy cập hệ thống.
 
-`ADMIN` sử dụng các chức năng quản trị sản phẩm, danh mục và đơn hàng.
+Guest không phải một Role trong Database.
 
----
+* * *
 
-# 6. Category
-
-Đại diện cho danh mục sản phẩm.
-
-| Thuộc tính | Kiểu dữ liệu | Mô tả |
-|---|---|---|
-| `id` | `Long` | ID danh mục |
-| `name` | `String` | Tên danh mục |
-| `description` | `String` | Mô tả danh mục |
-| `status` | `CategoryStatus` | Trạng thái danh mục |
-| `createdAt` | `LocalDateTime` | Thời gian tạo |
-| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
-
-### CategoryStatus
+## 7.2. ProductStatus
 
 ```text
 ACTIVE
 INACTIVE
 ```
 
----
+* `ACTIVE`: Product có thể được mua nếu còn Stock.
+* `INACTIVE`: Product không được mua.
 
-# 7. Product
+* * *
 
-Đại diện cho sản phẩm được bán trên hệ thống.
-
-| Thuộc tính | Kiểu dữ liệu | Mô tả |
-|---|---|---|
-| `id` | `Long` | ID sản phẩm |
-| `sku` | `String` | Mã sản phẩm duy nhất |
-| `name` | `String` | Tên sản phẩm |
-| `description` | `String` | Mô tả sản phẩm |
-| `price` | `BigDecimal` | Giá sản phẩm |
-| `stockQuantity` | `Integer` | Số lượng tồn kho |
-| `imageUrl` | `String` | URL hình ảnh |
-| `status` | `ProductStatus` | Trạng thái sản phẩm |
-| `createdAt` | `LocalDateTime` | Thời gian tạo |
-| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
-
-### ProductStatus
+## 7.3. CategoryStatus
 
 ```text
 ACTIVE
 INACTIVE
 ```
 
----
+* `ACTIVE`: Category đang được sử dụng.
+* `INACTIVE`: Category bị ẩn khỏi public view.
 
-# 8. Cart
+* * *
 
-Đại diện cho giỏ hàng của Customer đã đăng nhập.
-
-Một Customer có tối đa một Cart đang hoạt động.
-
-Guest không có Cart trong Database.
-
-### Thuộc tính
-
-| Thuộc tính | Kiểu dữ liệu | Mô tả |
-|---|---|---|
-| `id` | `Long` | ID giỏ hàng |
-| `customerId` | `Long` | ID Customer sở hữu giỏ hàng |
-| `createdAt` | `LocalDateTime` | Thời gian tạo |
-| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
-
-### Phương thức chính
-
-| Phương thức | Mô tả |
-|---|---|
-| `addItem()` | Thêm sản phẩm vào giỏ |
-| `updateItem()` | Cập nhật số lượng sản phẩm |
-| `removeItem()` | Xóa sản phẩm khỏi giỏ |
-| `clear()` | Xóa toàn bộ sản phẩm trong giỏ |
-| `calculateTotal()` | Tính tổng giá trị giỏ hàng |
-
----
-
-# 9. CartItem
-
-Đại diện cho một sản phẩm trong giỏ hàng.
-
-### Thuộc tính
-
-| Thuộc tính | Kiểu dữ liệu | Mô tả |
-|---|---|---|
-| `id` | `Long` | ID Cart Item |
-| `product` | `Product` | Sản phẩm |
-| `quantity` | `Integer` | Số lượng |
-
-### Phương thức
-
-```text
-calculateSubtotal()
-```
-
-Tính:
-
-```text
-subtotal = product.price × quantity
-```
-
-Một Product chỉ xuất hiện một lần trong cùng một Cart.
-
----
-
-# 10. Order
-
-Đại diện cho đơn hàng được tạo sau khi Customer checkout.
-
-### Thuộc tính
-
-| Thuộc tính | Kiểu dữ liệu | Mô tả |
-|---|---|---|
-| `id` | `Long` | ID đơn hàng |
-| `customerId` | `Long` | Customer tạo đơn |
-| `totalAmount` | `BigDecimal` | Tổng giá trị đơn hàng |
-| `recipientName` | `String` | Tên người nhận |
-| `phone` | `String` | Số điện thoại |
-| `address` | `String` | Địa chỉ |
-| `provinceCity` | `String` | Tỉnh/thành phố |
-| `district` | `String` | Quận/huyện |
-| `ward` | `String` | Phường/xã |
-| `orderStatus` | `OrderStatus` | Trạng thái đơn hàng |
-| `paymentStatus` | `PaymentStatus` | Trạng thái thanh toán |
-| `paidAt` | `LocalDateTime` | Thời gian thanh toán |
-| `createdAt` | `LocalDateTime` | Thời gian tạo |
-| `updatedAt` | `LocalDateTime` | Thời gian cập nhật |
-
-### Phương thức
-
-| Phương thức | Mô tả |
-|---|---|
-| `calculateTotal()` | Tính tổng tiền đơn hàng |
-| `confirm()` | Xác nhận đơn hàng |
-| `cancel()` | Hủy đơn hàng |
-| `startShipping()` | Chuyển sang trạng thái đang giao |
-| `markDelivered()` | Đánh dấu đã giao hàng |
-
----
-
-# 11. OrderStatus
+## 7.4. OrderStatus
 
 ```text
 PENDING
@@ -428,403 +687,836 @@ DELIVERED
 CANCELLED
 ```
 
-Luồng chính:
+* * *
 
-```text
-PENDING
-   ├──> CONFIRMED
-   │       └──> SHIPPING
-   │               └──> DELIVERED
-   │
-   └──> CANCELLED
-```
-
----
-
-# 12. PaymentStatus
-
-MVP chỉ quản lý trạng thái thanh toán trực tiếp trên `Order`.
+## 7.5. PaymentStatus
 
 ```text
 UNPAID
 PAID
 ```
 
-Không có:
+MVP không có Payment class/entity riêng.
 
-- `Payment` class.
-- `PaymentMethod`.
-- Payment Gateway.
-- Provider.
-- Transaction Reference.
+* * *
 
-`paymentStatus` là một thuộc tính của `Order`, không phải một Entity độc lập.
+# 8. Service Layer
 
----
+Business logic phức tạp không nên được đặt toàn bộ trong Entity.
 
-# 13. OrderItem
+Application Service/Domain Service chịu trách nhiệm phối hợp nhiều Entity và Transaction.
 
-Đại diện cho một sản phẩm tại thời điểm đơn hàng được tạo.
-
-### Thuộc tính
-
-| Thuộc tính | Kiểu dữ liệu | Mô tả |
-|---|---|---|
-| `id` | `Long` | ID Order Item |
-| `product` | `Product` | Product gốc |
-| `productNameSnapshot` | `String` | Tên sản phẩm tại thời điểm đặt hàng |
-| `skuSnapshot` | `String` | SKU tại thời điểm đặt hàng |
-| `unitPrice` | `BigDecimal` | Giá tại thời điểm đặt hàng |
-| `quantity` | `Integer` | Số lượng |
-| `itemTotal` | `BigDecimal` | Thành tiền |
-
-### Công thức
+Các Service chính:
 
 ```text
-itemTotal = unitPrice × quantity
+AuthService
+ProductService
+CategoryService
+CartService
+OrderService
+AdminOrderService
 ```
 
-Việc lưu snapshot giúp bảo toàn lịch sử đơn hàng.
+* * *
 
----
+## 8.1. AuthService
 
-# 14. Quan hệ giữa các Class
+Responsibilities:
 
-## 14.1. User - Cart
-
-```text
-User 1 -------- 0..1 Cart
-```
-
-Một Customer có tối đa một Cart.
-
----
-
-## 14.2. User - Order
-
-```text
-User 1 -------- 0..* Order
-```
-
-Một Customer có thể tạo nhiều Order.
-
----
-
-## 14.3. Category - Product
-
-```text
-Category 1 -------- 0..* Product
-```
-
-Một Category có thể chứa nhiều Product.
-
----
-
-## 14.4. Cart - CartItem
-
-```text
-Cart 1 -------- 0..* CartItem
-```
-
-Một Cart có thể chứa nhiều CartItem.
-
----
-
-## 14.5. CartItem - Product
-
-```text
-CartItem * -------- 1 Product
-```
-
-Một Product có thể xuất hiện trong nhiều Cart khác nhau.
-
----
-
-## 14.6. Order - OrderItem
-
-```text
-Order 1 -------- 1..* OrderItem
-```
-
-Một Order phải có ít nhất một OrderItem.
-
----
-
-## 14.7. OrderItem - Product
-
-```text
-OrderItem * -------- 1 Product
-```
-
-OrderItem tham chiếu đến Product gốc và lưu snapshot của dữ liệu quan trọng.
-
----
-
-# 15. Inheritance và Polymorphism
-
-## 15.1. Không sử dụng Inheritance cho User Role
-
-Không thiết kế:
-
-```text
-User
-├── Customer
-└── Admin
-```
-
-mà sử dụng:
-
-```text
-User
-  |
-  +-- Role.CUSTOMER
-  |
-  +-- Role.ADMIN
-```
-
-Đây là thiết kế phù hợp với domain model hiện tại.
-
----
-
-## 15.2. Không lạm dụng Polymorphism
-
-MVP hiện tại chưa có các đối tượng có hành vi khác biệt đủ lớn để cần xây dựng hierarchy bằng interface hoặc abstract class.
-
-Đặc biệt không cần xây dựng các class:
-
-```text
-Payment
-├── CODPayment
-├── BankTransferPayment
-├── EWalletPayment
-└── OnlinePayment
-```
-
-vì hệ thống không triển khai các loại thanh toán này trong MVP.
-
----
-
-# 16. Các nguyên tắc OOP được áp dụng
-
-## Encapsulation
-
-Các thuộc tính quan trọng được khai báo `private`.
-
-```java
-private BigDecimal price;
-private Integer stockQuantity;
-```
-
----
-
-## Association
+* Register Customer.
+* Login Customer/Admin.
+* Password hashing.
+* JWT generation.
+* Authentication validation.
 
 Ví dụ:
 
 ```text
-CartItem → Product
-OrderItem → Product
++ register(email, password)
++ login(email, password)
++ generateToken(user)
 ```
 
----
+* * *
 
-## Composition
+## 8.2. ProductService
 
-Composition được sử dụng cho:
+Responsibilities:
+
+* View Product.
+* Search Product.
+* Filter Product.
+* Sort Product.
+* Create Product.
+* Update Product.
+* Soft Delete Product.
+* Activate/Deactivate Product.
+* Manage Stock.
+
+Ví dụ:
 
 ```text
-Cart *-- CartItem
-Order *-- OrderItem
++ getProducts(...)
++ getProductById(id)
++ createProduct(...)
++ updateProduct(id, ...)
++ deactivateProduct(id)
++ activateProduct(id)
++ updateStock(id, quantity)
 ```
 
----
+* * *
 
-## Enum
+## 8.3. CategoryService
 
-Các trạng thái cố định được biểu diễn bằng enum:
+Responsibilities:
 
-```java
-enum Role {
-    CUSTOMER,
-    ADMIN
+* View Categories.
+* Create Category.
+* Update Category.
+* Delete Category.
+* Activate/Deactivate Category.
+
+Khi Delete Category:
+
+```text
+if category has referenced products:
+    reject with conflict
+else:
+    delete according to persistence strategy
+```
+
+Category đang được Product tham chiếu không được xóa.
+
+* * *
+
+## 8.4. CartService
+
+Responsibilities:
+
+* Get Customer Cart.
+* Add Product.
+* Update Quantity.
+* Remove CartItem.
+* Validate Cart availability.
+
+Ví dụ:
+
+```text
++ getCart(customerId)
++ addItem(customerId, productId, quantity)
++ updateItemQuantity(customerId, productId, quantity)
++ removeItem(customerId, productId)
++ validateCart(customerId)
+```
+
+CartService phải kiểm tra:
+
+* Product Status.
+* Stock.
+* Quantity.
+* Cart ownership.
+
+* * *
+
+## 8.5. OrderService
+
+Responsibilities:
+
+* Checkout.
+* Create Order.
+* Create OrderItems.
+* Calculate Total.
+* Deduct Stock.
+* Clear Cart.
+* Customer Order History.
+* Customer Order Detail.
+* Customer Cancel Order.
+
+Ví dụ:
+
+```text
++ checkout(customerId, shippingInformation)
++ getMyOrders(customerId, ...)
++ getMyOrderDetail(customerId, orderId)
++ cancelOrder(customerId, orderId)
+```
+
+### Checkout Transaction
+
+```text
+BEGIN TRANSACTION
+
+Validate Customer
+       ↓
+Validate Cart
+       ↓
+Validate Products
+       ↓
+Validate Stock
+       ↓
+Create Order
+       ↓
+Create OrderItems
+       ↓
+Conditional Stock Deduction
+       ↓
+Clear Cart
+
+COMMIT
+```
+
+Nếu bất kỳ bước nào thất bại:
+
+```text
+ROLLBACK
+```
+
+* * *
+
+## 8.6. AdminOrderService
+
+Responsibilities:
+
+* View All Orders.
+* Search Orders.
+* Filter Orders.
+* View Order Detail.
+* Update Order Status.
+* Cancel Pending Order.
+* Restore Stock.
+* Automatically mark Payment as PAID when delivered.
+
+Ví dụ:
+
+```text
++ getOrders(...)
++ getOrderDetail(orderId)
++ updateOrderStatus(orderId, newStatus)
+```
+
+### Admin Cancel Transaction
+
+```text
+BEGIN TRANSACTION
+
+Validate Order = PENDING
+       ↓
+Order = CANCELLED
+       ↓
+Restore Stock
+
+COMMIT
+```
+
+Không được restore Stock lần thứ hai.
+
+### Delivery Transaction
+
+Khi:
+
+```text
+SHIPPING → DELIVERED
+```
+
+Service phải đảm bảo:
+
+```text
+orderStatus = DELIVERED
+paymentStatus = PAID
+paidAt = current timestamp
+```
+
+* * *
+
+# 9. Controller Layer
+
+REST Controller chịu trách nhiệm nhận HTTP Request và trả HTTP Response.
+
+Controllers chính:
+
+```text
+AuthController
+ProductController
+CategoryController
+CartController
+OrderController
+AdminProductController
+AdminCategoryController
+AdminOrderController
+```
+
+* * *
+
+## 9.1. AuthController
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+```
+
+* * *
+
+## 9.2. ProductController
+
+```text
+GET /api/products
+GET /api/products/{id}
+```
+
+Public Product API chỉ hiển thị Product `ACTIVE` trong Product List.
+
+Product Detail có thể trả Product `INACTIVE` với trạng thái không khả dụng.
+
+* * *
+
+## 9.3. CategoryController
+
+```text
+GET /api/categories
+GET /api/categories/{id}
+```
+
+* * *
+
+## 9.4. CartController
+
+```text
+GET /api/cart
+POST /api/cart/items
+PUT /api/cart/items/{productId}
+DELETE /api/cart/items/{productId}
+```
+
+Các API này yêu cầu Customer authentication.
+
+* * *
+
+## 9.5. OrderController
+
+```text
+POST /api/orders/checkout
+GET /api/orders/my
+GET /api/orders/{id}
+PATCH /api/orders/{id}/cancel
+```
+
+Customer chỉ được truy cập Order của chính mình.
+
+* * *
+
+## 9.6. AdminProductController
+
+```text
+GET /api/admin/products
+GET /api/admin/products/{id}
+POST /api/admin/products
+PUT /api/admin/products/{id}
+DELETE /api/admin/products/{id}
+```
+
+Yêu cầu role:
+
+```text
+ADMIN
+```
+
+* * *
+
+## 9.7. AdminCategoryController
+
+```text
+GET /api/admin/categories
+POST /api/admin/categories
+PUT /api/admin/categories/{id}
+DELETE /api/admin/categories/{id}
+```
+
+Yêu cầu role:
+
+```text
+ADMIN
+```
+
+* * *
+
+## 9.8. AdminOrderController
+
+```text
+GET /api/admin/orders
+GET /api/admin/orders/{id}
+PATCH /api/admin/orders/{id}/status
+```
+
+Yêu cầu role:
+
+```text
+ADMIN
+```
+
+* * *
+
+# 10. DTO Layer
+
+Entity không nên được expose trực tiếp qua REST API.
+
+Hệ thống sử dụng DTO để:
+
+* Validate Request.
+* Kiểm soát Response.
+* Không expose sensitive fields.
+* Tách API contract khỏi Database Entity.
+
+Các DTO chính:
+
+```text
+RegisterRequest
+LoginRequest
+LoginResponse
+
+ProductRequest
+ProductResponse
+ProductListResponse
+
+CategoryRequest
+CategoryResponse
+
+CartResponse
+CartItemResponse
+
+CheckoutRequest
+OrderResponse
+OrderItemResponse
+
+AdminOrderResponse
+UpdateOrderStatusRequest
+```
+
+* * *
+
+# 11. Important DTO Rules
+
+## 11.1. CheckoutRequest
+
+Client chỉ được gửi:
+
+```text
+recipientName
+phone
+address
+provinceCity
+district
+ward
+```
+
+Client không được quyết định:
+
+```text
+customerId
+totalAmount
+orderStatus
+paymentStatus
+paidAt
+unitPrice
+```
+
+Backend phải lấy Customer từ authenticated JWT và tính các giá trị còn lại.
+
+* * *
+
+## 11.2. UpdateOrderStatusRequest
+
+Client/Admin chỉ gửi trạng thái mới:
+
+```text
+newStatus
+```
+
+Backend phải:
+
+1. Kiểm tra quyền Admin.
+2. Load Order.
+3. Kiểm tra transition hợp lệ.
+4. Thực hiện business logic tương ứng.
+5. Commit transaction.
+
+* * *
+
+# 12. Repository Layer
+
+Repository chịu trách nhiệm truy cập Database.
+
+Các Repository chính:
+
+```text
+UserRepository
+CategoryRepository
+ProductRepository
+CartRepository
+CartItemRepository
+OrderRepository
+OrderItemRepository
+```
+
+Ví dụ:
+
+```text
+UserRepository
+    + findByEmail(email)
+
+ProductRepository
+    + findBySku(sku)
+    + search(...)
+    + findActiveProducts(...)
+    + decreaseStockIfAvailable(...)
+
+CartRepository
+    + findByUserId(userId)
+
+OrderRepository
+    + findByUserId(...)
+    + searchAdminOrders(...)
+```
+
+Stock deduction phải hỗ trợ conditional update:
+
+```sql
+UPDATE products
+SET stock_quantity = stock_quantity - :quantity
+WHERE id = :productId
+  AND stock_quantity >= :quantity;
+```
+
+Repository phải trả về số rows affected để Service xác định thao tác có thành công hay không.
+
+* * *
+
+# 13. Exception Handling
+
+Hệ thống nên sử dụng custom exceptions cho các business error.
+
+Ví dụ:
+
+```text
+ResourceNotFoundException
+ValidationException
+BusinessException
+ConflictException
+UnauthorizedException
+ForbiddenException
+InvalidOrderStatusTransitionException
+InsufficientStockException
+```
+
+Global exception handler nên chuyển exception thành API Error Response thống nhất:
+
+```json
+{
+  "success": false,
+  "message": "Error description",
+  "errors": []
 }
 ```
 
-```java
-enum OrderStatus {
-    PENDING,
-    CONFIRMED,
-    SHIPPING,
-    DELIVERED,
-    CANCELLED
-}
-```
+* * *
 
-```java
-enum PaymentStatus {
-    UNPAID,
-    PAID
-}
-```
+# 14. Business Rules Mapping
 
----
+| Business Rule | Responsible Class/Layer |
+|---|---|
+| Email unique | User / UserRepository |
+| Password hashing | AuthService |
+| Role authorization | Security / Controller |
+| Product price > 0 | Product + Validation |
+| Stock >= 0 | Product + Database |
+| SKU unique | Product / ProductRepository |
+| Product soft delete | ProductService |
+| Category cannot delete if referenced | CategoryService |
+| Cart quantity > 0 | CartItem / CartService |
+| Cart quantity <= stock | CartService |
+| Checkout validation | OrderService |
+| Stock concurrency | ProductRepository + OrderService |
+| Order total calculation | Order / OrderItem |
+| Order status transition | Order + OrderService/AdminOrderService |
+| Customer cancel only PENDING | OrderService |
+| Admin cancel only PENDING | AdminOrderService |
+| Restore stock on cancellation | OrderService/AdminOrderService |
+| Restore stock only once | Transaction + status validation |
+| Product snapshot | OrderItem |
+| Shipping snapshot | Order |
+| DELIVERED → PAID | Order / AdminOrderService |
+| Customer can only access own Order | OrderService + Authorization |
 
-# 17. Domain Rules quan trọng
+* * *
 
-### Product
+# 15. Entity Relationship vs Class Relationship
 
-```text
-price >= 0
-stockQuantity >= 0
-sku không được trùng
-```
+| ERD Entity | Java Domain Class |
+|---|---|
+| `users` | `User` |
+| `categories` | `Category` |
+| `products` | `Product` |
+| `carts` | `Cart` |
+| `cart_items` | `CartItem` |
+| `orders` | `Order` |
+| `order_items` | `OrderItem` |
 
-### CartItem
+Enum mapping:
 
-```text
-quantity > 0
-```
+| Database Concept | Java Enum |
+|---|---|
+| User Role | `Role` |
+| Product Status | `ProductStatus` |
+| Category Status | `CategoryStatus` |
+| Order Status | `OrderStatus` |
+| Payment Status | `PaymentStatus` |
 
-Không được thêm số lượng vượt quá tồn kho.
+* * *
 
-### OrderItem
+# 16. Composition vs Association
 
-```text
-quantity > 0
-unitPrice >= 0
-itemTotal = unitPrice × quantity
-```
+## 16.1. Cart → CartItem
 
-### Order
-
-```text
-totalAmount = tổng itemTotal của các OrderItem
-paymentStatus ∈ {UNPAID, PAID}
-```
-
-### Order Status
-
-Chỉ cho phép chuyển trạng thái theo flow được định nghĩa.
-
----
-
-# 18. Mapping với Backend Spring Boot
-
-Các Entity chính:
-
-```text
-entity/
-├── User.java
-├── Category.java
-├── Product.java
-├── Cart.java
-├── CartItem.java
-├── Order.java
-└── OrderItem.java
-```
-
-Các enum:
+Sử dụng Composition:
 
 ```text
-entity/enums/
-├── Role.java
-├── CategoryStatus.java
-├── ProductStatus.java
-├── OrderStatus.java
-└── PaymentStatus.java
+Cart 1 *──── 0..N CartItem
+```
+
+CartItem thuộc về Cart.
+
+* * *
+
+## 16.2. Order → OrderItem
+
+Sử dụng Composition:
+
+```text
+Order 1 *──── 1..N OrderItem
+```
+
+OrderItem tồn tại như một phần của Order.
+
+* * *
+
+## 16.3. Product → CartItem
+
+Sử dụng Association:
+
+```text
+Product 1 ──── 0..N CartItem
+```
+
+CartItem tham chiếu Product.
+
+* * *
+
+## 16.4. Product → OrderItem
+
+Sử dụng Association:
+
+```text
+Product 1 ──── 0..N OrderItem
+```
+
+OrderItem giữ Product reference nhưng đồng thời snapshot các dữ liệu quan trọng.
+
+Product có thể thay đổi sau khi Order được tạo mà không làm thay đổi dữ liệu snapshot của OrderItem.
+
+* * *
+
+## 16.5. User → Order
+
+Sử dụng Association:
+
+```text
+User 1 ──── 0..N Order
+```
+
+Một Customer có thể tạo nhiều Order.
+
+* * *
+
+# 17. Design Principles
+
+Class Diagram tuân theo các nguyên tắc:
+
+### 17.1. Single Responsibility
+
+Mỗi Service chịu trách nhiệm cho một nhóm nghiệp vụ.
+
+### 17.2. Encapsulation
+
+Business behavior quan trọng không nên được thực hiện bằng cách thay đổi trực tiếp các field từ Controller.
+
+Ví dụ:
+
+```text
+order.cancel()
+```
+
+thay vì:
+
+```text
+order.orderStatus = CANCELLED
+```
+
+### 17.3. Separation of Concerns
+
+Tách:
+
+```text
+Controller
+    ↓
+Service
+    ↓
+Repository
+    ↓
+Database
+```
+
+### 17.4. DTO Separation
+
+Không expose trực tiếp Entity qua REST API.
+
+### 17.5. Transaction Boundary
+
+Transaction được đặt ở Service layer cho các nghiệp vụ nhiều bước như:
+
+* Checkout.
+* Cancel Order.
+* Update Order Status.
+
+* * *
+
+# 18. Out of Scope
+
+Class Diagram không bao gồm:
+
+* Payment class/entity.
+* Payment Gateway integration.
+* Inventory class/entity riêng.
+* Address class/entity riêng.
+* GuestCart.
+* Coupon.
+* Discount.
+* Promotion.
+* EmailVerification.
+* PasswordReset.
+* ProductImageGallery.
+* Category hierarchy.
+* AuditLog.
+* Analytics/Reporting.
+
+Các class này chỉ được bổ sung nếu phạm vi hệ thống được mở rộng.
+
+* * *
+
+# 19. Final Class Structure
+
+Cấu trúc domain chính:
+
+```text
+User
+ ├── Cart
+ │    └── CartItem
+ │          └── Product
+ │
+ └── Order
+      └── OrderItem
+            └── Product
+
+Category
+ └── Product
 ```
 
 Service layer:
 
 ```text
-service/
-├── UserService.java
-├── ProductService.java
-├── CategoryService.java
-├── CartService.java
-└── OrderService.java
+AuthService
+ProductService
+CategoryService
+CartService
+OrderService
+AdminOrderService
 ```
 
-Repository:
+Controller layer:
 
 ```text
-repository/
-├── UserRepository.java
-├── CategoryRepository.java
-├── ProductRepository.java
-├── CartRepository.java
-├── CartItemRepository.java
-├── OrderRepository.java
-└── OrderItemRepository.java
+AuthController
+ProductController
+CategoryController
+CartController
+OrderController
+AdminProductController
+AdminCategoryController
+AdminOrderController
 ```
 
-Không có `PaymentService`, `PaymentRepository` hoặc `Payment.java`.
+Repository layer:
 
----
+```text
+UserRepository
+CategoryRepository
+ProductRepository
+CartRepository
+CartItemRepository
+OrderRepository
+OrderItemRepository
+```
 
-# 19. Những thành phần chưa đưa vào Class Diagram
+* * *
 
-Các thành phần sau không thuộc phạm vi MVP:
+# 20. Conclusion
 
-- `Payment`
-- `PaymentGateway`
-- `PaymentMethod`
-- `PaymentProvider`
-- `TransactionReference`
-- `Address`
-- `Coupon`
-- `Review`
-- `Wishlist`
-- `ProductImage`
-- `InventoryTransaction`
-- `RefreshToken`
-- `Notification`
-
----
-
-# 20. Tính nhất quán với ERD
-
-Class Diagram và ERD sử dụng cùng một mô hình:
+Class Diagram của Mini E-commerce MVP được xây dựng trên 7 domain classes chính:
 
 ```text
 User
- │
- ├── Cart
- │    └── CartItem ── Product ── Category
- │
- └── Order
-      └── OrderItem ── Product
+Category
+Product
+Cart
+CartItem
+Order
+OrderItem
 ```
 
-Trong đó:
+Các enum chính:
 
-- `User` quản lý tài khoản và vai trò.
-- `Category` quản lý danh mục.
-- `Product` quản lý sản phẩm và tồn kho.
-- `Cart` và `CartItem` quản lý giỏ hàng.
-- `Order` và `OrderItem` quản lý đơn hàng.
-- `Order.paymentStatus` quản lý trạng thái thanh toán.
+```text
+Role
+ProductStatus
+CategoryStatus
+OrderStatus
+PaymentStatus
+```
 
-Không có `Payment` Entity.
+Thiết kế phản ánh trực tiếp ERD và Requirement Specification:
 
----
+* User quản lý Customer/Admin.
+* Category quản lý Product.
+* Product quản lý thông tin và Stock.
+* Cart/CartItem quản lý giỏ hàng Customer.
+* Order/OrderItem quản lý đơn hàng và snapshot lịch sử.
+* Payment chỉ được biểu diễn bằng `PaymentStatus` và `paidAt` trên Order.
+* Checkout và Cancel Order sử dụng Transaction.
+* Stock được cập nhật thông qua Service + Repository với conditional update.
+* Customer chỉ truy cập được Order của chính mình.
+* Admin có quyền quản lý Product, Category và Order.
 
-# 21. Kết luận
+Class Diagram này là cơ sở để triển khai:
 
-Class Diagram của Mini E-commerce được giữ ở mức đơn giản, phù hợp với MVP và đồng bộ với Requirement và ERD.
-
-Các nguyên tắc chính:
-
-- Bám sát requirement đã được review và chốt.
-- Đồng bộ với ERD.
-- Áp dụng Encapsulation.
-- Sử dụng `enum` cho các tập giá trị cố định.
-- Sử dụng Composition cho `CartItem` và `OrderItem`.
-- Không sử dụng inheritance cho `Customer` và `Admin`.
-- Không tạo Payment Entity.
-- Chỉ quản lý `paymentStatus` trực tiếp trên `Order`.
-- Không triển khai Guest Cart hoặc Merge Cart.
-- Không bổ sung cơ chế thanh toán trực tuyến.
-- Không bổ sung các Entity chưa cần thiết trong MVP.
-
-Class Diagram này là cơ sở cho thiết kế API, Backend Spring Boot và triển khai Database.
+```text
+Class Diagram
+      ↓
+Spring Boot Entity
+      ↓
+Repository
+      ↓
+Service
+      ↓
+Controller
+      ↓
+REST API
+```
