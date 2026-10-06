@@ -245,9 +245,16 @@ Ví dụ:
 createOrder()
 cancelOrder()
 confirmOrder()
+shipOrder()
+deliverOrder()
 updateProductStock()
 calculateOrderTotal()
 ```
+
+Khi deliverOrder() thành công:
+- orderStatus = DELIVERED
+- paymentStatus = PAID
+- paidAt = current timestamp
 
 Các logic quan trọng như Checkout phải được xử lý transaction.
 
@@ -297,10 +304,20 @@ Ví dụ:
 
 ```json
 {
-  "timestamp": "2026-09-24T10:00:00",
-  "status": 400,
+  "success": false,
   "message": "Insufficient stock",
-  "path": "/api/orders"
+  "errors": []
+}
+
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": [
+    {
+      "field": "email",
+      "message": "Invalid email format"
+    }
+  ]
 }
 ```
 
@@ -328,6 +345,9 @@ Price > 0
 Stock Quantity >= 0
 SKU không trùng
 Name không rỗng
+Password tối thiểu 8 ký tự
+Category Name không trùng
+Category phải tồn tại khi Product tham chiếu
 ```
 
 Không chỉ dựa vào validation ở Frontend.
@@ -419,7 +439,34 @@ Deduct Stock
 Clear Cart
 ```
 
-Nếu một bước thất bại, transaction phải rollback.
+Stock deduction phải được thực hiện theo cơ chế concurrency-safe,
+ví dụ conditional update:
+
+```text
+UPDATE products
+SET stock_quantity = stock_quantity - :quantity
+WHERE id = :productId
+  AND stock_quantity >= :quantity;
+```
+
+Sau đó phải kiểm tra số dòng bị ảnh hưởng.
+Nếu affected rows = 0, Stock không đủ và toàn bộ Transaction phải rollback.
+
+Cancel Order phải đảm bảo:
+
+```text
+Validate Order Status = PENDING
+↓
+Update Order Status = CANCELLED
+↓
+Restore Stock
+↓
+Commit Transaction
+```
+
+Nếu bất kỳ bước nào thất bại → Rollback.
+
+Order đã CANCELLED không được restore Stock lần thứ hai.
 
 ---
 
@@ -614,7 +661,7 @@ Dùng `snake_case`.
 Ví dụ:
 
 ```text
-customer_id
+user_id
 stock_quantity
 total_amount
 created_at
@@ -656,7 +703,7 @@ Tên Foreign Key:
 Ví dụ:
 
 ```text
-customer_id
+user_id
 category_id
 cart_id
 product_id
@@ -690,6 +737,12 @@ CANCELLED
 PaymentStatus:
 UNPAID
 PAID
+```
+
+```text
+CategoryStatus:
+ACTIVE
+INACTIVE
 ```
 
 Không dùng các string tùy ý như:
