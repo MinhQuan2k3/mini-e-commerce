@@ -1,329 +1,361 @@
-# Sơ đồ Quan hệ Thực thể (Entity Relationship Diagram)
+# Entity Relationship Diagram (ERD)
 
-## 1. Mục đích
+## 1. Information
 
-Tài liệu này mô tả cấu trúc dữ liệu và mối quan hệ giữa các Entity của hệ thống Mini E-commerce dựa trên các yêu cầu đã được review và chốt trong thư mục `01-requirements`.
-
-ERD được sử dụng để:
-
-- Xác định các Entity chính của hệ thống.
-- Xác định thuộc tính quan trọng của từng Entity.
-- Xác định Primary Key và Foreign Key.
-- Thể hiện các mối quan hệ giữa các Entity.
-- Làm cơ sở cho thiết kế cơ sở dữ liệu MySQL.
-- Đảm bảo thiết kế Database đồng bộ với Requirement và Class Diagram.
-- Giữ mô hình dữ liệu đơn giản, phù hợp với phạm vi MVP.
-
----
-
-# 2. Nguyên tắc thiết kế
-
-## 2.1. Bám sát Requirement
-
-ERD được xây dựng dựa trên:
-
-- `requirement-clarification.md`
-- `requirement-specification.md`
-- `use-cases.md`
-
-Không đưa thêm Entity hoặc chức năng ngoài phạm vi MVP.
-
-## 2.2. Mô hình đơn giản
-
-Hệ thống chỉ duy trì các Entity thực sự cần thiết:
-
-- `users`
-- `categories`
-- `products`
-- `carts`
-- `cart_items`
-- `orders`
-- `order_items`
-
-Các chức năng thanh toán không xây dựng thành Entity riêng. Hệ thống chỉ lưu `payment_status` trực tiếp trong `orders`.
-
-## 2.3. Không sử dụng Guest Cart
-
-Guest User chỉ được phép:
-
-- Xem danh sách sản phẩm.
-- Tìm kiếm sản phẩm.
-- Xem chi tiết sản phẩm.
-
-Cart chỉ được tạo cho Customer đã đăng nhập.
-
-Do đó:
-
-- Không có Guest Cart.
-- Không có dữ liệu Guest Cart trong Database.
-- Không có cơ chế Merge Cart khi đăng nhập.
-
-## 2.4. Không tích hợp thanh toán trực tuyến trong MVP
-
-MVP không triển khai:
-
-- Payment Gateway.
-- Bank Transfer.
-- E-Wallet.
-- Online Payment Provider.
-- Transaction Reference.
-- Payment Provider.
-
-Hệ thống chỉ lưu trạng thái thanh toán của Order thông qua `payment_status`.
-
-## 2.5. Không có Email Verification
-
-User không có thuộc tính `email_verified` trong Database.
-
-Email được sử dụng làm thông tin tài khoản/đăng nhập và phải là duy nhất.
-
----
-
-# 3. Tổng quan các Entity
-
-| Entity | Mục đích |
+| Item | Description |
 |---|---|
-| `users` | Quản lý tài khoản Customer và Admin |
-| `categories` | Quản lý danh mục sản phẩm |
-| `products` | Quản lý thông tin và tồn kho sản phẩm |
-| `carts` | Lưu giỏ hàng của Customer đã đăng nhập |
-| `cart_items` | Lưu các sản phẩm trong Cart |
-| `orders` | Lưu thông tin đơn hàng |
-| `order_items` | Lưu các sản phẩm thuộc một đơn hàng |
+| Project | Mini E-commerce / Inventory Management |
+| Document | Entity Relationship Diagram |
+| Status | Final for Design |
+| Database | MySQL |
 
----
+* * *
 
-# 4. Sơ đồ ERD
+# 2. Purpose
+
+ERD mô tả cấu trúc dữ liệu quan hệ của hệ thống Mini E-commerce / Inventory Management.
+
+ERD được xây dựng dựa trên Requirement Specification và tập trung vào các nghiệp vụ MVP:
+
+* Authentication & Account
+* Product Management
+* Category Management
+* Shopping Cart
+* Checkout
+* Order Management
+* Inventory Management
+
+Thiết kế ưu tiên:
+
+* Dữ liệu đơn giản, phù hợp MVP.
+* Tránh tạo Entity không cần thiết.
+* Bảo toàn dữ liệu Order lịch sử.
+* Đảm bảo các business rule quan trọng được thể hiện bằng Database Constraint và Relationship.
+
+* * *
+
+# 3. ERD Overview
 
 ```mermaid
 erDiagram
 
+    USERS ||--o{ CARTS : owns
+    USERS ||--o{ ORDERS : places
+
+    CATEGORIES ||--o{ PRODUCTS : contains
+
+    CARTS ||--o{ CART_ITEMS : contains
+    PRODUCTS ||--o{ CART_ITEMS : added_to
+
+    ORDERS ||--|{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : referenced_by
+
     USERS {
-        BIGINT id PK
-        VARCHAR email UK
-        VARCHAR password_hash
-        ENUM role
-        DATETIME created_at
-        DATETIME updated_at
+        bigint id PK
+        varchar email UK
+        varchar password
+        varchar role
+        datetime created_at
+        datetime updated_at
     }
 
     CATEGORIES {
-        BIGINT id PK
-        VARCHAR name UK
-        TEXT description
-        ENUM status
-        DATETIME created_at
-        DATETIME updated_at
+        bigint id PK
+        varchar name UK
+        varchar description
+        varchar status
+        datetime created_at
+        datetime updated_at
     }
 
     PRODUCTS {
-        BIGINT id PK
-        VARCHAR sku UK
-        VARCHAR name
-        TEXT description
-        DECIMAL price
-        INT stock_quantity
-        VARCHAR image_url
-        ENUM status
-        BIGINT category_id FK
-        DATETIME created_at
-        DATETIME updated_at
+        bigint id PK
+        varchar sku UK
+        varchar name
+        text description
+        decimal price
+        int stock_quantity
+        varchar image_url
+        bigint category_id FK
+        varchar status
+        datetime created_at
+        datetime updated_at
     }
 
     CARTS {
-        BIGINT id PK
-        BIGINT customer_id FK,UK
-        DATETIME created_at
-        DATETIME updated_at
+        bigint id PK
+        bigint user_id FK
+        datetime created_at
+        datetime updated_at
     }
 
     CART_ITEMS {
-        BIGINT id PK
-        BIGINT cart_id FK
-        BIGINT product_id FK
-        INT quantity
+        bigint id PK
+        bigint cart_id FK
+        bigint product_id FK
+        int quantity
+        datetime created_at
+        datetime updated_at
     }
 
     ORDERS {
-        BIGINT id PK
-        BIGINT customer_id FK
-        DECIMAL total_amount
-        VARCHAR recipient_name
-        VARCHAR phone
-        VARCHAR address
-        VARCHAR province_city
-        VARCHAR district
-        VARCHAR ward
-        ENUM order_status
-        ENUM payment_status
-        DATETIME paid_at
-        DATETIME created_at
-        DATETIME updated_at
+        bigint id PK
+        bigint user_id FK
+        decimal total_amount
+        varchar recipient_name
+        varchar phone
+        varchar address
+        varchar province_city
+        varchar district
+        varchar ward
+        varchar order_status
+        varchar payment_status
+        datetime paid_at
+        datetime created_at
+        datetime updated_at
     }
 
     ORDER_ITEMS {
-        BIGINT id PK
-        BIGINT order_id FK
-        BIGINT product_id FK
-        VARCHAR product_name_snapshot
-        VARCHAR sku_snapshot
-        DECIMAL unit_price
-        INT quantity
-        DECIMAL item_total
+        bigint id PK
+        bigint order_id FK
+        bigint product_id FK
+        varchar product_name
+        varchar sku
+        decimal unit_price
+        int quantity
+        decimal item_total
     }
-
-    USERS ||--o| CARTS : "owns"
-    USERS ||--o{ ORDERS : "places"
-
-    CATEGORIES ||--o{ PRODUCTS : "contains"
-
-    CARTS ||--o{ CART_ITEMS : "contains"
-    PRODUCTS ||--o{ CART_ITEMS : "appears in"
-
-    ORDERS ||--|{ ORDER_ITEMS : "contains"
-    PRODUCTS ||--o{ ORDER_ITEMS : "appears in"
 ```
 
----
+> **Lưu ý:** Guest không phải là Database Entity. Guest là người dùng chưa authenticated và không có record riêng trong Database.
 
-# 5. Đặc tả các Entity
+* * *
 
-## 5.1. `users`
+# 4. Entities
+
+Hệ thống MVP gồm 7 Entity chính:
+
+| # | Entity | Purpose |
+|---:|---|---|
+| 1 | `users` | Lưu tài khoản Customer và Admin |
+| 2 | `categories` | Lưu danh mục sản phẩm |
+| 3 | `products` | Lưu thông tin sản phẩm và tồn kho |
+| 4 | `carts` | Lưu Cart của Customer |
+| 5 | `cart_items` | Lưu Product và Quantity trong Cart |
+| 6 | `orders` | Lưu thông tin đơn hàng |
+| 7 | `order_items` | Lưu các Product thuộc Order và snapshot tại thời điểm mua |
+
+Không có các Entity sau trong MVP:
+
+* `payments`
+* `payment_transactions`
+* `addresses`
+* `shipping_methods`
+* `coupons`
+* `discounts`
+* `guest_carts`
+* `email_verifications`
+
+* * *
+
+# 5. Entity Details
+
+## 5.1. USERS
 
 Lưu thông tin tài khoản của Customer và Admin.
 
-| Thuộc tính | Kiểu dữ liệu | Ràng buộc | Mô tả |
-|---|---|---|---|
-| `id` | `BIGINT` | PK | ID tài khoản |
-| `email` | `VARCHAR` | UNIQUE, NOT NULL | Email đăng nhập |
-| `password_hash` | `VARCHAR` | NOT NULL | Mật khẩu đã mã hóa |
-| `role` | `ENUM` | NOT NULL | `CUSTOMER` hoặc `ADMIN` |
-| `created_at` | `DATETIME` | NOT NULL | Thời gian tạo |
-| `updated_at` | `DATETIME` | NOT NULL | Thời gian cập nhật |
+### Attributes
 
-### Role
+| Field | Data Type | Constraint | Description |
+|---|---|---|---|
+| `id` | BIGINT | PK | User ID |
+| `email` | VARCHAR | UNIQUE, NOT NULL | Email đăng nhập |
+| `password` | VARCHAR | NOT NULL | Password đã hash |
+| `role` | VARCHAR / ENUM | NOT NULL | `CUSTOMER` hoặc `ADMIN` |
+| `created_at` | DATETIME | NOT NULL | Thời điểm tạo |
+| `updated_at` | DATETIME | NOT NULL | Thời điểm cập nhật |
+
+### Constraints
+
+* `email` phải unique.
+* `password` không được lưu plain text.
+* `role` chỉ gồm:
+  * `CUSTOMER`
+  * `ADMIN`
+* Public Registration chỉ tạo User có role `CUSTOMER`.
+* Admin được tạo thông qua Database Seed/Migration.
+* Không cần `account_status` trong MVP.
+
+### Relationships
 
 ```text
-CUSTOMER
-ADMIN
+USERS 1 ─────── N CARTS
+USERS 1 ─────── N ORDERS
 ```
 
-Admin không được tự đăng ký từ giao diện dành cho người dùng.
+* * *
 
----
+## 5.2. CATEGORIES
 
-# 6. `categories`
+Lưu danh mục sản phẩm.
 
-Lưu thông tin danh mục sản phẩm.
+### Attributes
 
-| Thuộc tính | Kiểu dữ liệu | Ràng buộc | Mô tả |
+| Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| `id` | `BIGINT` | PK | ID danh mục |
-| `name` | `VARCHAR` | UNIQUE, NOT NULL | Tên danh mục |
-| `description` | `TEXT` | NULL | Mô tả |
-| `status` | `ENUM` | NOT NULL | Trạng thái danh mục |
-| `created_at` | `DATETIME` | NOT NULL | Thời gian tạo |
-| `updated_at` | `DATETIME` | NOT NULL | Thời gian cập nhật |
+| `id` | BIGINT | PK | Category ID |
+| `name` | VARCHAR | UNIQUE, NOT NULL | Category Name |
+| `description` | VARCHAR / TEXT | NULL | Mô tả |
+| `status` | VARCHAR / ENUM | NOT NULL | `ACTIVE` / `INACTIVE` |
+| `created_at` | DATETIME | NOT NULL | Thời điểm tạo |
+| `updated_at` | DATETIME | NOT NULL | Thời điểm cập nhật |
 
-### Category Status
+### Constraints
+
+* Category Name phải unique.
+* Category không có hierarchy.
+* Category có thể `ACTIVE` hoặc `INACTIVE`.
+* Category không được hard delete nếu vẫn còn Product tham chiếu.
+
+### Relationships
 
 ```text
-ACTIVE
-INACTIVE
+CATEGORY 1 ─────── N PRODUCTS
 ```
 
-Danh mục `INACTIVE` không được sử dụng cho các thao tác kinh doanh mới nhưng vẫn được giữ lại trong Database.
+* * *
 
----
+## 5.3. PRODUCTS
 
-# 7. `products`
+Lưu thông tin sản phẩm và tồn kho.
 
-Lưu thông tin sản phẩm.
+### Attributes
 
-| Thuộc tính | Kiểu dữ liệu | Ràng buộc | Mô tả |
+| Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| `id` | `BIGINT` | PK | ID sản phẩm |
-| `sku` | `VARCHAR` | UNIQUE, NOT NULL | Mã sản phẩm |
-| `name` | `VARCHAR` | NOT NULL | Tên sản phẩm |
-| `description` | `TEXT` | NULL | Mô tả |
-| `price` | `DECIMAL` | NOT NULL | Giá sản phẩm |
-| `stock_quantity` | `INT` | NOT NULL | Số lượng tồn kho |
-| `image_url` | `VARCHAR` | NULL | Đường dẫn hình ảnh |
-| `status` | `ENUM` | NOT NULL | Trạng thái sản phẩm |
-| `category_id` | `BIGINT` | FK, NOT NULL | Danh mục sản phẩm |
-| `created_at` | `DATETIME` | NOT NULL | Thời gian tạo |
-| `updated_at` | `DATETIME` | NOT NULL | Thời gian cập nhật |
+| `id` | BIGINT | PK | Product ID |
+| `sku` | VARCHAR | UNIQUE, NOT NULL | Stock Keeping Unit |
+| `name` | VARCHAR | NOT NULL | Product Name |
+| `description` | TEXT | NULL | Product Description |
+| `price` | DECIMAL | NOT NULL, > 0 | Giá sản phẩm |
+| `stock_quantity` | INT | NOT NULL, >= 0 | Số lượng tồn kho |
+| `image_url` | VARCHAR | NULL | URL ảnh chính |
+| `category_id` | BIGINT | FK, NOT NULL | Category |
+| `status` | VARCHAR / ENUM | NOT NULL | `ACTIVE` / `INACTIVE` |
+| `created_at` | DATETIME | NOT NULL | Thời điểm tạo |
+| `updated_at` | DATETIME | NOT NULL | Thời điểm cập nhật |
 
-### Product Status
+### Constraints
+
+* `sku` phải unique.
+* `price > 0`.
+* `stock_quantity >= 0`.
+* Product phải thuộc một Category.
+* Product `INACTIVE` không được mua.
+* Product có `stock_quantity = 0` được xem là Out of Stock.
+* Delete Product là Soft Delete bằng cách chuyển `status = INACTIVE`.
+
+### Relationships
 
 ```text
-ACTIVE
-INACTIVE
+CATEGORIES 1 ─────── N PRODUCTS
 ```
 
-Sản phẩm `INACTIVE` không được hiển thị cho các thao tác mua hàng mới.
+* * *
 
----
+## 5.4. CARTS
 
-# 8. `carts`
+Lưu Cart của Customer đã đăng nhập.
 
-Lưu giỏ hàng của Customer đã đăng nhập.
+### Attributes
 
-Mỗi Customer có tối đa một Cart.
-
-| Thuộc tính | Kiểu dữ liệu | Ràng buộc | Mô tả |
+| Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| `id` | `BIGINT` | PK | ID Cart |
-| `customer_id` | `BIGINT` | FK, UNIQUE, NOT NULL | Customer sở hữu Cart |
-| `created_at` | `DATETIME` | NOT NULL | Thời gian tạo |
-| `updated_at` | `DATETIME` | NOT NULL | Thời gian cập nhật |
+| `id` | BIGINT | PK | Cart ID |
+| `user_id` | BIGINT | FK, UNIQUE, NOT NULL | Customer sở hữu Cart |
+| `created_at` | DATETIME | NOT NULL | Thời điểm tạo |
+| `updated_at` | DATETIME | NOT NULL | Thời điểm cập nhật |
 
-`UNIQUE(customer_id)` đảm bảo một Customer không có nhiều Cart đang hoạt động.
+### Constraints
 
----
+Mỗi Customer chỉ có tối đa một Active Cart.
 
-# 9. `cart_items`
+Do MVP chỉ duy trì một Cart cho mỗi Customer, Database sử dụng:
 
-Lưu các sản phẩm trong Cart.
+```text
+UNIQUE(user_id)
+```
 
-| Thuộc tính | Kiểu dữ liệu | Ràng buộc | Mô tả |
+### Relationships
+
+```text
+USERS 1 ─────── 1 CARTS
+```
+
+* * *
+
+## 5.5. CART_ITEMS
+
+Lưu Product và Quantity trong Cart.
+
+### Attributes
+
+| Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| `id` | `BIGINT` | PK | ID Cart Item |
-| `cart_id` | `BIGINT` | FK, NOT NULL | Cart chứa sản phẩm |
-| `product_id` | `BIGINT` | FK, NOT NULL | Sản phẩm |
-| `quantity` | `INT` | NOT NULL | Số lượng |
+| `id` | BIGINT | PK | CartItem ID |
+| `cart_id` | BIGINT | FK, NOT NULL | Cart |
+| `product_id` | BIGINT | FK, NOT NULL | Product |
+| `quantity` | INT | NOT NULL, > 0 | Số lượng |
+| `created_at` | DATETIME | NOT NULL | Thời điểm tạo |
+| `updated_at` | DATETIME | NOT NULL | Thời điểm cập nhật |
 
-Ràng buộc:
+### Constraints
+
+Database phải đảm bảo Product không xuất hiện nhiều lần trong cùng một Cart:
 
 ```text
 UNIQUE(cart_id, product_id)
-quantity > 0
 ```
 
-Một Product chỉ xuất hiện một lần trong cùng một Cart.
+`quantity` phải lớn hơn `0`.
 
----
+Stock được kiểm tra ở Application/Transaction level khi:
 
-# 10. `orders`
+* Add to Cart.
+* Update Cart Quantity.
+* Checkout.
 
-Lưu thông tin đơn hàng.
+### Relationships
 
-| Thuộc tính | Kiểu dữ liệu | Ràng buộc | Mô tả |
+```text
+CARTS 1 ─────── N CART_ITEMS
+PRODUCTS 1 ─────── N CART_ITEMS
+```
+
+* * *
+
+## 5.6. ORDERS
+
+Lưu thông tin Order được tạo bởi Customer.
+
+### Attributes
+
+| Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| `id` | `BIGINT` | PK | ID đơn hàng |
-| `customer_id` | `BIGINT` | FK, NOT NULL | Customer tạo đơn |
-| `total_amount` | `DECIMAL` | NOT NULL | Tổng giá trị đơn |
-| `recipient_name` | `VARCHAR` | NOT NULL | Tên người nhận |
-| `phone` | `VARCHAR` | NOT NULL | Số điện thoại |
-| `address` | `VARCHAR` | NOT NULL | Địa chỉ |
-| `province_city` | `VARCHAR` | NOT NULL | Tỉnh/thành phố |
-| `district` | `VARCHAR` | NOT NULL | Quận/huyện |
-| `ward` | `VARCHAR` | NOT NULL | Phường/xã |
-| `order_status` | `ENUM` | NOT NULL | Trạng thái đơn hàng |
-| `payment_status` | `ENUM` | NOT NULL | Trạng thái thanh toán |
-| `paid_at` | `DATETIME` | NULL | Thời gian thanh toán |
-| `created_at` | `DATETIME` | NOT NULL | Thời gian tạo |
-| `updated_at` | `DATETIME` | NOT NULL | Thời gian cập nhật |
+| `id` | BIGINT | PK | Order ID |
+| `user_id` | BIGINT | FK, NOT NULL | Customer tạo Order |
+| `total_amount` | DECIMAL | NOT NULL, >= 0 | Tổng tiền Order |
+| `recipient_name` | VARCHAR | NOT NULL | Tên người nhận |
+| `phone` | VARCHAR | NOT NULL | Số điện thoại người nhận |
+| `address` | VARCHAR / TEXT | NOT NULL | Địa chỉ |
+| `province_city` | VARCHAR | NOT NULL | Tỉnh/Thành phố |
+| `district` | VARCHAR | NOT NULL | Quận/Huyện |
+| `ward` | VARCHAR | NOT NULL | Phường/Xã |
+| `order_status` | VARCHAR / ENUM | NOT NULL | Trạng thái Order |
+| `payment_status` | VARCHAR / ENUM | NOT NULL | `UNPAID` / `PAID` |
+| `paid_at` | DATETIME | NULL | Thời điểm thanh toán |
+| `created_at` | DATETIME | NOT NULL | Thời điểm tạo |
+| `updated_at` | DATETIME | NOT NULL | Thời điểm cập nhật |
 
 ### Order Status
 
@@ -337,336 +369,641 @@ CANCELLED
 
 ### Payment Status
 
-MVP chỉ lưu trạng thái thanh toán:
-
 ```text
 UNPAID
 PAID
 ```
 
-Không có bảng `payments` riêng và không lưu thông tin payment provider.
+### Payment Rules
 
----
+Order mới:
 
-# 11. `order_items`
+```text
+order_status   = PENDING
+payment_status = UNPAID
+paid_at        = NULL
+```
 
-Lưu các sản phẩm thuộc một đơn hàng.
+Khi Order chuyển sang:
 
-| Thuộc tính | Kiểu dữ liệu | Ràng buộc | Mô tả |
+```text
+SHIPPING → DELIVERED
+```
+
+Backend tự động cập nhật:
+
+```text
+payment_status = PAID
+paid_at        = current timestamp
+```
+
+Với các trạng thái khác `DELIVERED`:
+
+```text
+payment_status = UNPAID
+paid_at        = NULL
+```
+
+### Important Design Decision
+
+MVP không có bảng `payments`.
+
+Payment Status chỉ là thuộc tính của Order.
+
+Không lưu:
+
+* Payment Method.
+* Payment Gateway.
+* Transaction ID.
+* Payment Provider.
+* Payment Transaction History.
+
+### Shipping Information
+
+Thông tin giao hàng được lưu trực tiếp trong Order thay vì tạo bảng `addresses`.
+
+Lý do:
+
+* MVP chỉ hỗ trợ một địa chỉ giao hàng cho mỗi Order.
+* Thông tin giao hàng cần được snapshot tại thời điểm đặt hàng.
+* Không cần quản lý Address Book của Customer.
+
+### Relationships
+
+```text
+USERS 1 ─────── N ORDERS
+ORDERS 1 ─────── N ORDER_ITEMS
+```
+
+* * *
+
+## 5.7. ORDER_ITEMS
+
+Lưu các Product thuộc Order và snapshot dữ liệu tại thời điểm mua.
+
+### Attributes
+
+| Field | Data Type | Constraint | Description |
 |---|---|---|---|
-| `id` | `BIGINT` | PK | ID Order Item |
-| `order_id` | `BIGINT` | FK, NOT NULL | Đơn hàng |
-| `product_id` | `BIGINT` | FK, NOT NULL | Product gốc |
-| `product_name_snapshot` | `VARCHAR` | NOT NULL | Tên tại thời điểm đặt |
-| `sku_snapshot` | `VARCHAR` | NOT NULL | SKU tại thời điểm đặt |
-| `unit_price` | `DECIMAL` | NOT NULL | Giá tại thời điểm đặt |
-| `quantity` | `INT` | NOT NULL | Số lượng |
-| `item_total` | `DECIMAL` | NOT NULL | Thành tiền |
+| `id` | BIGINT | PK | OrderItem ID |
+| `order_id` | BIGINT | FK, NOT NULL | Order |
+| `product_id` | BIGINT | FK, NOT NULL | Product reference |
+| `product_name` | VARCHAR | NOT NULL | Product Name snapshot |
+| `sku` | VARCHAR | NOT NULL | SKU snapshot |
+| `unit_price` | DECIMAL | NOT NULL, > 0 | Giá tại thời điểm mua |
+| `quantity` | INT | NOT NULL, > 0 | Số lượng |
+| `item_total` | DECIMAL | NOT NULL, >= 0 | Thành tiền |
 
-Công thức:
+### Snapshot Principle
+
+`product_name`, `sku` và `unit_price` được snapshot tại thời điểm Checkout.
+
+Ví dụ:
 
 ```text
-item_total = unit_price × quantity
+Product:
+    name  = "Keyboard"
+    sku   = "KB-001"
+    price = 500000
+
+OrderItem:
+    product_name = "Keyboard"
+    sku          = "KB-001"
+    unit_price   = 500000
 ```
 
-Thông tin snapshot giúp bảo toàn lịch sử đơn hàng ngay cả khi Product thay đổi sau đó.
-
----
-
-# 12. Đặc tả các mối quan hệ
-
-## 12.1. User - Cart
+Nếu Admin sau đó thay đổi Product:
 
 ```text
-users 1 ---- 0..1 carts
+name
+sku
+price
 ```
 
-Một Customer có tối đa một Cart.
+thông tin lịch sử của OrderItem không được thay đổi.
 
-Không có Cart cho Guest.
-
----
-
-## 12.2. User - Order
+### Relationships
 
 ```text
-users 1 ---- 0..* orders
+ORDERS 1 ─────── N ORDER_ITEMS
+PRODUCTS 1 ─────── N ORDER_ITEMS
 ```
 
-Một Customer có thể tạo nhiều Order.
+* * *
 
-Mỗi Order thuộc về một Customer.
+# 6. Relationship Summary
 
----
+| Relationship | Cardinality | Description |
+|---|---|---|
+| User → Cart | 1 : 1 | Mỗi Customer có tối đa một Cart |
+| User → Order | 1 : N | Một Customer có nhiều Order |
+| Category → Product | 1 : N | Một Category có nhiều Product |
+| Cart → CartItem | 1 : N | Một Cart có nhiều CartItem |
+| Product → CartItem | 1 : N | Product có thể xuất hiện trong nhiều Cart |
+| Order → OrderItem | 1 : N | Một Order có một hoặc nhiều OrderItem |
+| Product → OrderItem | 1 : N | Product có thể xuất hiện trong nhiều Order lịch sử |
 
-## 12.3. Category - Product
+* * *
+
+# 7. Foreign Key Summary
+
+| Table | Foreign Key | References | Purpose |
+|---|---|---|---|
+| `products` | `category_id` | `categories.id` | Product thuộc Category |
+| `carts` | `user_id` | `users.id` | Cart thuộc Customer |
+| `cart_items` | `cart_id` | `carts.id` | CartItem thuộc Cart |
+| `cart_items` | `product_id` | `products.id` | CartItem tham chiếu Product |
+| `orders` | `user_id` | `users.id` | Order thuộc Customer |
+| `order_items` | `order_id` | `orders.id` | OrderItem thuộc Order |
+| `order_items` | `product_id` | `products.id` | OrderItem tham chiếu Product |
+
+* * *
+
+# 8. Important Database Constraints
+
+## 8.1. Unique Constraints
 
 ```text
-categories 1 ---- 0..* products
+users.email
+categories.name
+products.sku
+carts.user_id
+(cart_items.cart_id, cart_items.product_id)
 ```
 
-Một Category có thể chứa nhiều Product.
-
-Mỗi Product thuộc một Category.
-
----
-
-## 12.4. Cart - CartItem
+Trong đó:
 
 ```text
-carts 1 ---- 0..* cart_items
-```
-
-Một Cart có thể chứa nhiều CartItem.
-
----
-
-## 12.5. CartItem - Product
-
-```text
-products 1 ---- 0..* cart_items
-```
-
-Một Product có thể xuất hiện trong nhiều Cart khác nhau.
-
----
-
-## 12.6. Order - OrderItem
-
-```text
-orders 1 ---- 1..* order_items
-```
-
-Một Order phải có ít nhất một OrderItem.
-
-Một OrderItem chỉ thuộc về một Order.
-
----
-
-## 12.7. OrderItem - Product
-
-```text
-products 1 ---- 0..* order_items
-```
-
-OrderItem tham chiếu đến Product gốc nhưng đồng thời lưu snapshot của dữ liệu quan trọng.
-
----
-
-# 13. Các ràng buộc dữ liệu quan trọng
-
-## User
-
-```text
-email không được trùng
-email không được NULL
-password_hash không được NULL
-role không được NULL
-```
-
-## Category
-
-```text
-name không được trùng
-name không được NULL
-```
-
-## Product
-
-```text
-sku không được trùng
-price > 0
-stock_quantity >= 0
-```
-
-## CartItem
-
-```text
-quantity > 0
 UNIQUE(cart_id, product_id)
 ```
 
-## OrderItem
+đảm bảo một Product chỉ xuất hiện một lần trong cùng Cart.
+
+* * *
+
+## 8.2. Check Constraints
+
+Nếu MySQL version/configuration hỗ trợ và áp dụng trong implementation:
 
 ```text
-quantity > 0
-unit_price > 0
-item_total = unit_price × quantity
+products.price > 0
+products.stock_quantity >= 0
+
+cart_items.quantity > 0
+
+order_items.unit_price > 0
+order_items.quantity > 0
+order_items.item_total >= 0
 ```
 
-## Order
+Các validation nghiệp vụ quan trọng vẫn phải được kiểm tra ở Backend.
 
-```text
-total_amount = tổng item_total
-payment_status thuộc {UNPAID, PAID}
-```
+* * *
 
----
+## 8.3. Status Constraints
 
-# 14. Chiến lược Index
-
-Các index chính nên bao gồm:
-
-```text
-users(email)
-categories(name)
-products(sku)
-products(category_id)
-products(status)
-carts(customer_id)
-cart_items(cart_id, product_id)
-orders(customer_id)
-orders(order_status)
-orders(payment_status)
-orders(created_at)
-order_items(order_id)
-order_items(product_id)
-```
-
-Mục tiêu:
-
-- Tìm tài khoản theo email nhanh hơn.
-- Tìm sản phẩm theo SKU.
-- Lọc sản phẩm theo danh mục/trạng thái.
-- Truy vấn Cart của Customer.
-- Truy vấn đơn hàng theo Customer.
-- Lọc đơn hàng theo trạng thái.
-- Truy vấn Order Item theo Order.
-
----
-
-# 15. Tính toàn vẹn dữ liệu và Transaction
-
-Checkout nên được xử lý trong một Database Transaction.
-
-Quy trình:
-
-```text
-1. Kiểm tra Customer đã đăng nhập
-2. Lấy Cart của Customer
-3. Kiểm tra Cart có sản phẩm
-4. Kiểm tra Product còn ACTIVE
-5. Kiểm tra tồn kho
-6. Tạo Order
-7. Tạo OrderItem
-8. Tính total_amount
-9. Giảm stock_quantity
-10. Đặt payment_status = UNPAID
-11. Xóa các CartItem đã checkout
-12. Commit Transaction
-```
-
-Nếu xảy ra lỗi trong quá trình trên:
-
-```text
-ROLLBACK
-```
-
-Điều này đảm bảo không xảy ra tình trạng:
-
-- Đã tạo Order nhưng chưa tạo OrderItem.
-- Đã giảm tồn kho nhưng Order không được tạo.
-- Đã tạo Order nhưng Cart vẫn ở trạng thái không nhất quán.
-
----
-
-# 16. Quy tắc quản lý tồn kho
-
-Khi checkout:
-
-```text
-stock_quantity >= requested_quantity
-```
-
-Sau khi tạo Order thành công:
-
-```text
-new_stock_quantity
-    = old_stock_quantity - ordered_quantity
-```
-
-Không cho phép:
-
-```text
-stock_quantity < 0
-```
-
-Product `INACTIVE` không được đặt hàng.
-
----
-
-# 17. Quản lý trạng thái Product và Category
-
-Không nhất thiết phải xóa vật lý dữ liệu Product hoặc Category khi không còn sử dụng.
-
-Thay vào đó:
+### Product
 
 ```text
 ACTIVE
 INACTIVE
 ```
 
-được sử dụng để vô hiệu hóa dữ liệu.
+### Category
+
+```text
+ACTIVE
+INACTIVE
+```
+
+### User Role
+
+```text
+CUSTOMER
+ADMIN
+```
+
+### Order Status
+
+```text
+PENDING
+CONFIRMED
+SHIPPING
+DELIVERED
+CANCELLED
+```
+
+### Payment Status
+
+```text
+UNPAID
+PAID
+```
+
+* * *
+
+# 9. Delete and Referential Integrity Rules
+
+## 9.1. Product
+
+Product không được hard delete.
+
+Khi Admin Delete Product:
+
+```text
+products.status = INACTIVE
+```
+
+Product vẫn tồn tại để:
+
+* Bảo toàn Order history.
+* Bảo toàn Product reference trong OrderItem.
+* Có thể kiểm tra dữ liệu lịch sử.
+
+* * *
+
+## 9.2. Category
+
+Category không được Delete nếu còn Product tham chiếu.
 
 Ví dụ:
 
 ```text
-Product A
-ACTIVE → INACTIVE
+Category A
+    ↓
+Product 1
+Product 2
 ```
 
-Product vẫn tồn tại trong Database để bảo toàn dữ liệu lịch sử.
-
----
-
-# 18. Bảo toàn lịch sử đơn hàng
-
-`OrderItem` lưu:
-
-- `product_name_snapshot`
-- `sku_snapshot`
-- `unit_price`
-
-Do đó, khi Product thay đổi:
+Nếu Admin Delete Category A:
 
 ```text
-Product price: 100.000 → 120.000
+HTTP 409 Conflict
 ```
 
-Order cũ vẫn giữ:
+Không thay đổi dữ liệu.
+
+Nếu muốn ẩn Category:
 
 ```text
-OrderItem.unit_price = 100.000
+categories.status = INACTIVE
 ```
 
-Điều này đảm bảo lịch sử đơn hàng không bị thay đổi theo dữ liệu Product hiện tại.
+* * *
 
----
+## 9.3. Order
 
-# 19. Các Entity chưa đưa vào MVP
+Order không được hard delete trong nghiệp vụ thông thường.
 
-Các Entity sau **không thuộc phạm vi MVP hiện tại**:
+Order history phải được bảo toàn.
 
-- `payments`
-- `addresses`
-- `coupons`
-- `reviews`
-- `wishlists`
-- `product_images`
-- `inventory_transactions`
-- `refresh_tokens`
-- `notifications`
-- `payment_gateways`
+Customer/Admin chỉ thay đổi `order_status` theo các transition được phép.
 
-Các Entity này chỉ được xem xét khi requirement trong tương lai thực sự yêu cầu.
+* * *
 
----
+# 10. Inventory Data Rules
 
-# 20. Kết luận
+Inventory được lưu trực tiếp trong:
 
-ERD của Mini E-commerce được giữ ở mức tối giản và bám sát requirement đã chốt.
+```text
+products.stock_quantity
+```
 
-Mô hình cuối cùng gồm 7 Entity:
+Không tạo bảng Inventory riêng trong MVP.
+
+### Checkout
+
+Khi Checkout:
+
+```text
+stock_quantity = stock_quantity - order_quantity
+```
+
+Backend phải sử dụng cơ chế conditional update để tránh overselling:
+
+```sql
+UPDATE products
+SET stock_quantity = stock_quantity - :quantity
+WHERE id = :productId
+  AND stock_quantity >= :quantity;
+```
+
+Backend kiểm tra số dòng affected.
+
+Nếu:
+
+```text
+affected_rows = 0
+```
+
+thì không đủ Stock và Checkout phải thất bại.
+
+### Cancel Order
+
+Khi:
+
+```text
+PENDING → CANCELLED
+```
+
+Stock được hoàn lại:
+
+```text
+stock_quantity = stock_quantity + order_quantity
+```
+
+Việc cập nhật Order Status và restore Stock phải nằm trong cùng Transaction.
+
+Không được restore Stock lần thứ hai.
+
+* * *
+
+# 11. Data Snapshot Strategy
+
+Một số dữ liệu phải được snapshot để bảo toàn lịch sử Order.
+
+## 11.1. Product Snapshot
+
+OrderItem lưu:
+
+```text
+product_name
+sku
+unit_price
+```
+
+Không sử dụng Product hiện tại để thay thế dữ liệu lịch sử.
+
+## 11.2. Shipping Snapshot
+
+Order lưu:
+
+```text
+recipient_name
+phone
+address
+province_city
+district
+ward
+```
+
+Không tạo Address entity riêng.
+
+Điều này đảm bảo Order vẫn giữ đúng thông tin giao hàng tại thời điểm Checkout, ngay cả khi Customer thay đổi thông tin cá nhân sau đó.
+
+* * *
+
+# 12. Why These Entities Are Not Included
+
+## 12.1. Payment
+
+Không tạo `payments` vì MVP chỉ cần:
+
+```text
+Order.payment_status
+Order.paid_at
+```
+
+Thanh toán trực tuyến và Payment Gateway nằm ngoài scope.
+
+* * *
+
+## 12.2. Address
+
+Không tạo `addresses` vì MVP không hỗ trợ:
+
+* Address Book.
+* Multiple Addresses.
+* Default Address Management.
+
+Shipping Information được snapshot trực tiếp vào Order.
+
+* * *
+
+## 12.3. Inventory
+
+Không tạo `inventory` entity riêng.
+
+Stock được quản lý trực tiếp:
+
+```text
+Product.stock_quantity
+```
+
+Điều này phù hợp với quy mô Mini E-commerce và tránh over-engineering.
+
+* * *
+
+## 12.4. Guest Cart
+
+Không tạo Guest Cart.
+
+Guest chỉ có thể:
+
+* Browse Product.
+* Search.
+* Filter.
+* Sort.
+* View Product Detail.
+
+Muốn Add to Cart, Guest phải đăng nhập.
+
+* * *
+
+## 12.5. Coupon / Discount
+
+Không tạo:
+
+```text
+coupons
+discounts
+promotions
+```
+
+vì Coupon/Promotion không thuộc MVP.
+
+* * *
+
+## 12.6. Email Verification
+
+Không tạo:
+
+```text
+email_verifications
+verification_tokens
+```
+
+vì Email Verification không thuộc MVP.
+
+* * *
+
+# 13. Transaction Boundaries
+
+ERD phải hỗ trợ các transaction nghiệp vụ chính.
+
+## 13.1. Checkout Transaction
+
+```text
+BEGIN TRANSACTION
+
+1. Validate Customer
+2. Validate Cart
+3. Validate Product Status
+4. Validate Stock
+5. Create Order
+6. Create OrderItems
+7. Deduct Product Stock
+8. Clear Cart
+
+COMMIT
+```
+
+Nếu bất kỳ bước nào thất bại:
+
+```text
+ROLLBACK
+```
+
+* * *
+
+## 13.2. Cancel Order Transaction
+
+```text
+BEGIN TRANSACTION
+
+1. Check Order Status = PENDING
+2. Update Order Status = CANCELLED
+3. Restore Product Stock
+
+COMMIT
+```
+
+Nếu một bước thất bại:
+
+```text
+ROLLBACK
+```
+
+* * *
+
+# 14. Indexing Recommendations
+
+Ngoài Primary Key và Unique Index, các trường thường xuyên được sử dụng để tìm kiếm/lọc nên được xem xét index.
+
+## Recommended Indexes
+
+| Table | Column(s) | Reason |
+|---|---|---|
+| `users` | `email` | Login / lookup |
+| `products` | `sku` | SKU lookup |
+| `products` | `category_id` | Category filter |
+| `products` | `status` | Active/Inactive filter |
+| `products` | `created_at` | Newest sorting |
+| `products` | `price` | Price sorting/filter |
+| `cart_items` | `cart_id` | Load Cart |
+| `cart_items` | `product_id` | Product lookup |
+| `orders` | `user_id` | Customer Order History |
+| `orders` | `order_status` | Admin/Customer status filter |
+| `orders` | `created_at` | Order sorting |
+| `order_items` | `order_id` | Load Order Detail |
+| `order_items` | `product_id` | Product reference |
+
+Keyword search trên Product và Admin Order có thể cần database-specific optimization nếu dữ liệu tăng đáng kể. MVP chưa yêu cầu Search Engine riêng.
+
+* * *
+
+# 15. Referential Integrity Summary
+
+```text
+USERS
+ ├── 1 : 1 ── CARTS
+ │              │
+ │              └── 1 : N ── CART_ITEMS ── N : 1 ── PRODUCTS
+ │
+ └── 1 : N ── ORDERS
+                 │
+                 └── 1 : N ── ORDER_ITEMS ── N : 1 ── PRODUCTS
+
+CATEGORIES
+ └── 1 : N ── PRODUCTS
+```
+
+* * *
+
+# 16. ERD Design Decisions
+
+| Decision | Rationale |
+|---|---|
+| Guest không phải Entity | Guest không có dữ liệu persistent |
+| User chứa Customer và Admin | Chỉ có hai role trong Database |
+| Một User tối đa một Cart | Phù hợp MVP |
+| Không có Guest Cart | Guest phải login trước khi mua |
+| Product chứa stock_quantity | Tránh Inventory Entity không cần thiết |
+| Product Soft Delete | Bảo toàn dữ liệu lịch sử |
+| Category không hard delete khi còn Product | Đảm bảo Referential Integrity |
+| Order chứa Shipping Information | Snapshot dữ liệu giao hàng |
+| OrderItem chứa Product snapshot | Bảo toàn lịch sử giá/tên/SKU |
+| Không có Payment Entity | MVP chỉ quản lý payment status |
+| `paid_at` nullable | Chỉ có giá trị khi Order DELIVERED |
+| Không có Coupon/Discount Entity | Ngoài scope MVP |
+| Không có Email Verification Entity | Ngoài scope MVP |
+
+* * *
+
+# 17. Consistency Rules with Requirements
+
+ERD phải đáp ứng các requirement chính sau:
+
+| Requirement | ERD Support |
+|---|---|
+| Customer Account | `users` |
+| Admin Account | `users.role` |
+| Product Management | `products` |
+| Category Management | `categories` |
+| Product-Category | `products.category_id` |
+| Customer Cart | `carts` |
+| Cart Items | `cart_items` |
+| Checkout | `orders`, `order_items`, `products.stock_quantity` |
+| Order History | `orders`, `order_items` |
+| Inventory | `products.stock_quantity` |
+| Product Snapshot | `order_items.product_name`, `sku`, `unit_price` |
+| Shipping Snapshot | Order shipping fields |
+| Payment Status | `orders.payment_status` |
+| Payment Timestamp | `orders.paid_at` |
+| Order Status | `orders.order_status` |
+| Customer Ownership | `orders.user_id` |
+| Admin Order Search | Order shipping fields + User email |
+| Soft Delete Product | `products.status` |
+| Category Soft Hide | `categories.status` |
+
+* * *
+
+# 18. Out of Scope
+
+ERD không bao gồm các Entity cho:
+
+* Payment Gateway.
+* Payment Transaction.
+* Coupon.
+* Promotion.
+* Discount.
+* Guest Cart.
+* Address Book.
+* Shipping Method.
+* Email Verification.
+* Password Reset.
+* Product Image Gallery.
+* Category Hierarchy.
+* Audit Log.
+* Analytics.
+
+Các Entity này chỉ được bổ sung nếu phạm vi nghiệp vụ của hệ thống được mở rộng trong tương lai.
+
+* * *
+
+# 19. Conclusion
+
+ERD của Mini E-commerce MVP gồm 7 Entity chính:
 
 ```text
 users
@@ -678,18 +1015,45 @@ orders
 order_items
 ```
 
+Thiết kế tập trung vào các nghiệp vụ cốt lõi:
+
+```text
+Customer
+   ↓
+Cart
+   ↓
+Checkout
+   ↓
+Order
+   ↓
+OrderItem
+   ↓
+Product
+   ↓
+Stock
+```
+
 Trong đó:
 
-- User quản lý Customer và Admin.
-- Cart chỉ dành cho Customer đã đăng nhập.
-- Product thuộc Category.
-- Cart chứa CartItem.
-- Order chứa OrderItem.
-- Order lưu trực tiếp `payment_status`.
-- Không có bảng `payments`.
-- Không có Guest Cart.
-- Không có Merge Cart.
-- Không có Email Verification.
-- Không có Payment Gateway hoặc các phương thức thanh toán trực tuyến trong MVP.
+* `Product` quản lý thông tin sản phẩm và tồn kho.
+* `Category` quản lý phân loại sản phẩm.
+* `Cart` và `CartItem` quản lý giỏ hàng của Customer.
+* `Order` quản lý thông tin đơn hàng, shipping snapshot, order status và payment status.
+* `OrderItem` lưu snapshot của Product tại thời điểm mua.
+* `User` xác định Customer/Admin và ownership của Cart/Order.
 
-Thiết kế này phù hợp với mục tiêu giữ Database đơn giản, dễ triển khai và dễ kiểm thử trong phạm vi dự án.
+Thiết kế không tạo các Entity không cần thiết cho MVP, đặc biệt là `Payment`, `Inventory`, `Address` và `Guest Cart`.
+
+ERD này là cơ sở cho:
+
+```text
+ERD
+ ↓
+Class Diagram
+ ↓
+API Specification
+ ↓
+Implementation
+ ↓
+Testing
+```
