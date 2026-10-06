@@ -321,7 +321,7 @@ Lưu thông tin đơn hàng.
 | `ward` | `VARCHAR` | NOT NULL | Phường/xã |
 | `order_status` | `ENUM` | NOT NULL | Trạng thái đơn hàng |
 | `payment_status` | `ENUM` | NOT NULL | Trạng thái thanh toán |
-| `paid_at` | `DATETIME` | NOT NULL | Thời gian thanh toán |
+| `paid_at` | `DATETIME` | NULL | Thời gian thanh toán |
 | `created_at` | `DATETIME` | NOT NULL | Thời gian tạo |
 | `updated_at` | `DATETIME` | NOT NULL | Thời gian cập nhật |
 
@@ -475,7 +475,7 @@ name không được NULL
 
 ```text
 sku không được trùng
-price >= 0
+price > 0
 stock_quantity >= 0
 ```
 
@@ -490,7 +490,7 @@ UNIQUE(cart_id, product_id)
 
 ```text
 quantity > 0
-unit_price >= 0
+unit_price > 0
 item_total = unit_price × quantity
 ```
 
