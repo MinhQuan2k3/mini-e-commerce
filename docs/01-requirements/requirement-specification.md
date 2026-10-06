@@ -6,7 +6,7 @@ Item | Description
 --- | ---
 Project | Mini E-commerce / Inventory Management
 Company | A-Software
-Status | Final for Design
+Status | Draft for Design
 
 * * *
 
