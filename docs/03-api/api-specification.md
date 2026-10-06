@@ -1,5 +1,15 @@
 # API Specification
 
+## Information
+
+| Item | Value |
+|---|---|
+| Project | Mini E-commerce |
+| Document | API Specification |
+| Status | Revised after Review Round 1 |
+
+---
+
 ## 1. Mục đích
 
 Mô tả các REST API chính của **Hệ thống Quản lý Bán hàng Mini (Mini E-commerce)**.
@@ -143,9 +153,16 @@ Các API danh sách có thể sử dụng query parameters:
 | Parameter | Type | Default | Description |
 |---|---|---:|---|
 | `page` | Integer | `0` | Số trang, bắt đầu từ 0 |
-| `size` | Integer | `10` | Số phần tử mỗi trang |
+| `size` | Integer | `10` | Số phần tử mỗi trang, tối đa `50` |
 | `sort` | String | Tùy API | Trường dùng để sắp xếp |
 | `direction` | String | `ASC` | `ASC` hoặc `DESC` |
+
+Quy tắc:
+
+- `page` phải lớn hơn hoặc bằng `0`.
+- `size` phải lớn hơn `0`.
+- `size` không được vượt quá `50`.
+- Nếu `size > 50`, API trả về `400 Bad Request`.
 
 Ví dụ:
 
@@ -153,49 +170,84 @@ Ví dụ:
 GET /products?page=0&size=10&sort=name&direction=ASC
 ```
 
-## 4.5. Common Error Response
+## 4.5. Common API Response
+
+### Success Response
+
+Các API trả về response thành công theo format thống nhất:
 
 ```json
 {
-  "timestamp": "2026-09-24T14:30:00",
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Invalid request data",
-  "path": "/api/products"
+  "success": true,
+  "message": "Request successful",
+  "data": {}
 }
 ```
+
+`data` chứa resource hoặc dữ liệu tương ứng với từng API.
+
+### Error Response
+
+Các API trả về lỗi theo format:
+
+```json
+{
+  "success": false,
+  "message": "Invalid request data",
+  "errors": []
+}
+```
+
+Khi lỗi liên quan đến một hoặc nhiều field cụ thể:
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": [
+    {
+      "field": "price",
+      "message": "must be greater than 0"
+    }
+  ]
+}
+```
+
+Các API phải sử dụng thống nhất response format này.
 
 ---
 
 # 5. API Summary
 
-| Module | Method | Endpoint | Access |
-|---|---|---|---|
-| Authentication | `POST` | `/auth/register` | Guest |
-| Authentication | `POST` | `/auth/login` | Guest |
-| Authentication | `GET` | `/auth/me` | Customer/Admin |
-| Products | `GET` | `/products` | Public |
-| Products | `GET` | `/products/{id}` | Public |
-| Categories | `GET` | `/categories` | Public |
-| Categories | `GET` | `/categories/{id}` | Public |
-| Cart | `GET` | `/cart` | Customer |
-| Cart | `POST` | `/cart/items` | Customer |
-| Cart | `PUT` | `/cart/items/{productId}` | Customer |
-| Cart | `DELETE` | `/cart/items/{productId}` | Customer |
-| Cart | `DELETE` | `/cart` | Customer |
-| Checkout | `POST` | `/orders/checkout` | Customer |
-| Customer Orders | `GET` | `/orders/my` | Customer |
-| Customer Orders | `GET` | `/orders/{id}` | Customer/Admin |
-| Customer Orders | `PATCH` | `/orders/{id}/cancel` | Customer |
-| Admin Products | `POST` | `/admin/products` | Admin |
-| Admin Products | `PUT` | `/admin/products/{id}` | Admin |
-| Admin Products | `DELETE` | `/admin/products/{id}` | Admin |
-| Admin Categories | `POST` | `/admin/categories` | Admin |
-| Admin Categories | `PUT` | `/admin/categories/{id}` | Admin |
-| Admin Categories | `DELETE` | `/admin/categories/{id}` | Admin |
-| Admin Orders | `GET` | `/admin/orders` | Admin |
-| Admin Orders | `GET` | `/admin/orders/{id}` | Admin |
-| Admin Orders | `PATCH` | `/admin/orders/{id}/status` | Admin |
+| Module | Method | Endpoint | Access | Related FR/UC |
+|---|---|---|---|---|
+| Authentication | `POST` | `/auth/register` | Guest | FR-AUTH-01 / UC-AUTH-01 |
+| Authentication | `POST` | `/auth/login` | Guest | FR-AUTH-02 / UC-AUTH-02 |
+| Authentication | `GET` | `/auth/me` | Customer/Admin | FR-AUTH-03 |
+| Products | `GET` | `/products` | Public | FR-PROD-01 / UC-PROD-01 |
+| Products | `GET` | `/products/{id}` | Public | FR-PROD-02 / UC-PROD-02 |
+| Categories | `GET` | `/categories` | Public | FR-CAT-01 |
+| Categories | `GET` | `/categories/{id}` | Public | FR-CAT-02 |
+| Cart | `GET` | `/cart` | Customer | FR-CART-01 / UC-CART-01 |
+| Cart | `POST` | `/cart/items` | Customer | FR-CART-02 / UC-CART-02 |
+| Cart | `PUT` | `/cart/items/{productId}` | Customer | FR-CART-03 |
+| Cart | `DELETE` | `/cart/items/{productId}` | Customer | FR-CART-04 |
+| Cart | `DELETE` | `/cart` | Customer | FR-CART-05 |
+| Checkout | `POST` | `/orders/checkout` | Customer | FR-ORDER-01 / UC-ORDER-01 |
+| Customer Orders | `GET` | `/orders/my` | Customer | FR-ORDER-02 |
+| Customer Orders | `GET` | `/orders/{id}` | Customer | FR-ORDER-03 |
+| Customer Orders | `PATCH` | `/orders/{id}/cancel` | Customer | FR-ORDER-04 |
+| Admin Products | `GET` | `/admin/products` | Admin | FR-ADMIN-PROD-01 |
+| Admin Products | `GET` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-02 |
+| Admin Products | `POST` | `/admin/products` | Admin | FR-ADMIN-PROD-03 |
+| Admin Products | `PUT` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-04 |
+| Admin Products | `DELETE` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-05 |
+| Admin Categories | `POST` | `/admin/categories` | Admin | FR-ADMIN-CAT-01 |
+| Admin Categories | `PUT` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-02 |
+| Admin Categories | `DELETE` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-03 |
+| Admin Orders | `GET` | `/admin/orders` | Admin | FR-ADMIN-ORDER-01/02 |
+| Admin Orders | `GET` | `/admin/orders/{id}` | Admin | FR-ADMIN-ORDER-03 |
+| Admin Orders | `PATCH` | `/admin/orders/{id}/status` | Admin | FR-ADMIN-ORDER-04 |
 
 ---
 
@@ -235,7 +287,7 @@ Admin không được đăng ký thông qua endpoint này.
 | Field | Type | Required | Validation |
 |---|---|---:|---|
 | `email` | String | Yes | Email hợp lệ, không trùng |
-| `password` | String | Yes | Không rỗng, đáp ứng password policy |
+| `password` | String | Yes | Tối thiểu 8 ký tự |
 
 ### Success Response
 
@@ -256,6 +308,15 @@ Admin không được đăng ký thông qua endpoint này.
 |---|---|
 | `400` | Email/password không hợp lệ |
 | `409` | Email đã tồn tại |
+
+### Business Rules
+
+- Chỉ tạo tài khoản với role `CUSTOMER`.
+- Password không được lưu dưới dạng plain text.
+- Password phải được hash trước khi lưu.
+- Không có Email Verification trong MVP.
+- Không có Password Reset trong MVP.
+- `confirmPassword`, nếu có trên Frontend, chỉ dùng để validation và không được gửi/lưu như một trường Database.
 
 ---
 
@@ -309,7 +370,8 @@ Xác thực người dùng bằng email và password.
 |---|---|
 | `400` | Request không hợp lệ |
 | `401` | Email hoặc password không đúng |
-| `403` | Tài khoản bị vô hiệu hóa nếu hệ thống hỗ trợ trạng thái tài khoản |
+
+MVP không có Account Status, do đó không sử dụng lỗi `403 Account Disabled`.
 
 ---
 
@@ -382,14 +444,14 @@ Guest có thể sử dụng API này mà không cần đăng nhập.
 
 | Parameter | Type | Required | Description |
 |---|---|---:|---|
-| `keyword` | String | No | Tìm theo tên hoặc SKU |
+| `keyword` | String | No | Tìm không phân biệt hoa thường theo Name, SKU hoặc Description |
 | `categoryId` | Long | No | Lọc theo danh mục |
 | `minPrice` | Decimal | No | Giá tối thiểu |
 | `maxPrice` | Decimal | No | Giá tối đa |
 | `sort` | String | No | `name`, `price`, `createdAt` |
 | `direction` | String | No | `ASC` hoặc `DESC` |
 | `page` | Integer | No | Trang |
-| `size` | Integer | No | Kích thước trang |
+| `size` | Integer | No | Kích thước trang, tối đa `50` |
 
 ### Example Request
 
@@ -428,10 +490,12 @@ GET /products?keyword=keyboard&categoryId=2&page=0&size=10
 
 ### Business Rules
 
-- Chỉ trả về sản phẩm có `status = ACTIVE` đối với public API.
-- Không hiển thị sản phẩm đã bị vô hiệu hóa.
+- Chỉ trả về Product có `status = ACTIVE`.
+- Keyword tìm kiếm trên `name`, `sku`, `description`.
+- Tìm kiếm không phân biệt hoa thường.
 - `stockQuantity` không được âm.
-- Không cho phép giá trị `size` quá lớn.
+- `price > 0`.
+- `size` tối đa `50`.
 
 ---
 
@@ -449,11 +513,11 @@ GET /products/{id}
 Public
 ```
 
-### Path Parameters
+### Description
 
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `id` | Long | Yes | Product ID |
+Lấy thông tin chi tiết Product.
+
+Product `INACTIVE` vẫn có thể được trả về để Frontend hiển thị trạng thái không khả dụng.
 
 ### Success Response
 
@@ -482,8 +546,14 @@ Public
 
 | Status | Condition |
 |---|---|
-| `404` | Không tìm thấy sản phẩm |
-| `404` | Sản phẩm không hoạt động và không được phép hiển thị public |
+| `404` | Không tìm thấy Product |
+
+### Business Rules
+
+- Product `INACTIVE` trả về `status = INACTIVE`.
+- Frontend phải hiển thị Product không khả dụng.
+- Frontend phải disable Add to Cart đối với Product `INACTIVE`.
+- Product `INACTIVE` không được thêm vào Cart.
 
 ---
 
@@ -505,7 +575,7 @@ Public
 
 ### Description
 
-Lấy danh sách danh mục sản phẩm đang hoạt động.
+Lấy danh sách Category đang hoạt động.
 
 ### Success Response
 
@@ -527,6 +597,11 @@ Lấy danh sách danh mục sản phẩm đang hoạt động.
   }
 ]
 ```
+
+### Business Rules
+
+- Chỉ trả về Category có `status = ACTIVE`.
+- Category `INACTIVE` không được hiển thị trong public Category List.
 
 ---
 
@@ -561,7 +636,7 @@ Public
 
 | Status | Condition |
 |---|---|
-| `404` | Không tìm thấy danh mục |
+| `404` | Không tìm thấy Category |
 
 ---
 
@@ -607,12 +682,25 @@ Guest không được sử dụng Cart.
         "status": "ACTIVE"
       },
       "quantity": 2,
-      "subtotal": 1700000.00
+      "subtotal": 1700000.00,
+      "available": true,
+      "unavailableReason": null
     }
   ],
   "totalAmount": 1700000.00,
+  "checkoutAllowed": true,
   "updatedAt": "2026-09-24T14:30:00"
 }
+```
+
+### Availability Values
+
+`unavailableReason` có thể nhận:
+
+```text
+INACTIVE
+OUT_OF_STOCK
+EXCEEDS_STOCK
 ```
 
 ### Business Rules
@@ -621,6 +709,10 @@ Guest không được sử dụng Cart.
 - Cart được lưu trong Database.
 - CartItem không được trùng Product trong cùng Cart.
 - Guest không có Cart trong MVP.
+- `available = true` khi Product ACTIVE và quantity không vượt quá stock.
+- `available = false` khi Product INACTIVE, hết stock hoặc quantity vượt stock.
+- `checkoutAllowed = true` chỉ khi Cart không rỗng và tất cả CartItem đều available.
+- Frontend phải disable Checkout khi `checkoutAllowed = false`.
 
 ---
 
@@ -673,9 +765,9 @@ CUSTOMER
 |---|---|
 | `400` | Quantity không hợp lệ |
 | `401` | Chưa đăng nhập |
-| `404` | Không tìm thấy sản phẩm |
+| `404` | Không tìm thấy Product |
 | `409` | Số lượng vượt quá tồn kho |
-| `409` | Sản phẩm không hoạt động |
+| `409` | Product không hoạt động |
 
 ---
 
@@ -719,8 +811,10 @@ CUSTOMER
 | Status | Condition |
 |---|---|
 | `400` | Quantity không hợp lệ |
+| `401` | Chưa đăng nhập |
 | `404` | CartItem không tồn tại |
 | `409` | Quantity vượt quá stock |
+| `409` | Product không hoạt động |
 
 ---
 
@@ -740,7 +834,7 @@ CUSTOMER
 
 ### Description
 
-Xóa một sản phẩm khỏi Cart hiện tại.
+Xóa một Product khỏi Cart hiện tại.
 
 ### Success Response
 
@@ -811,12 +905,12 @@ Checkout bao gồm:
 
 1. Kiểm tra authentication.
 2. Kiểm tra Cart không rỗng.
-3. Kiểm tra sản phẩm còn hoạt động.
+3. Kiểm tra Product còn hoạt động.
 4. Kiểm tra tồn kho.
 5. Lấy thông tin giao hàng.
 6. Tính tổng tiền.
 7. Tạo Order.
-8. Tạo OrderItem với snapshot thông tin sản phẩm.
+8. Tạo OrderItem với snapshot thông tin Product.
 9. Trừ tồn kho.
 10. Xóa CartItem.
 11. Commit transaction.
@@ -904,7 +998,7 @@ paidAt = NULL
 | `400` | Shipping information không hợp lệ |
 | `401` | Chưa đăng nhập |
 | `409` | Cart rỗng |
-| `409` | Sản phẩm không còn hoạt động |
+| `409` | Product không còn hoạt động |
 | `409` | Không đủ tồn kho |
 | `500` | Transaction thất bại |
 
@@ -944,7 +1038,7 @@ CUSTOMER
 |---|---|---:|---|
 | `status` | String | No | Lọc theo Order Status |
 | `page` | Integer | No | Trang |
-| `size` | Integer | No | Kích thước trang |
+| `size` | Integer | No | Kích thước trang, tối đa `50` |
 | `sort` | String | No | Trường sắp xếp |
 | `direction` | String | No | `ASC` hoặc `DESC` |
 
@@ -990,12 +1084,12 @@ GET /orders/{id}
 ### Access
 
 ```text
-CUSTOMER hoặc ADMIN
+CUSTOMER
 ```
 
 ### Description
 
-Lấy thông tin chi tiết Order.
+Lấy thông tin chi tiết Order của Customer hiện tại.
 
 ### Success Response
 
@@ -1034,8 +1128,16 @@ Lấy thông tin chi tiết Order.
 ### Authorization Rules
 
 - Customer chỉ được xem Order của bản thân.
-- Admin được xem tất cả Order.
-- Không trả về dữ liệu Order nếu người dùng không có quyền.
+- Customer không được xem Order của Customer khác.
+- Admin sử dụng endpoint riêng `GET /admin/orders/{id}`.
+
+### Error Cases
+
+| Status | Condition |
+|---|---|
+| `401` | Chưa đăng nhập |
+| `403` | Không có quyền với Order |
+| `404` | Không tìm thấy Order |
 
 ---
 
@@ -1080,8 +1182,9 @@ Không yêu cầu request body.
 - Customer chỉ được hủy Order của chính mình.
 - Chỉ Order có trạng thái `PENDING` mới được hủy.
 - Khi hủy thành công, hệ thống hoàn lại stock đúng một lần.
-- Không được hủy Order đã `CONFIRMED`, `SHIPPING` hoặc `DELIVERED`.
+- Việc cập nhật trạng thái và hoàn stock phải nằm trong cùng một transaction.
 - Order đã `CANCELLED` không được hủy lại.
+- Không được hủy Order đã `CONFIRMED`, `SHIPPING` hoặc `DELIVERED`.
 
 ### Error Cases
 
@@ -1090,13 +1193,138 @@ Không yêu cầu request body.
 | `401` | Chưa đăng nhập |
 | `403` | Không có quyền với Order |
 | `404` | Không tìm thấy Order |
-| `409` | Order không ở trạng thái PENDING |
+| `409` | Order không ở trạng thái `PENDING` |
 
 ---
 
 # 12. Admin Product APIs
 
-## 12.1. Create Product
+## 12.1. Get Admin Product List
+
+### Endpoint
+
+```http
+GET /admin/products
+```
+
+### Access
+
+```text
+ADMIN
+```
+
+### Description
+
+Lấy danh sách Product dành cho Admin, bao gồm cả Product `ACTIVE` và `INACTIVE`.
+
+### Query Parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---:|---|
+| `keyword` | String | No | Tìm không phân biệt hoa thường theo Name, SKU hoặc Description |
+| `categoryId` | Long | No | Lọc theo Category |
+| `status` | String | No | `ACTIVE` hoặc `INACTIVE` |
+| `page` | Integer | No | Trang |
+| `size` | Integer | No | Kích thước trang, tối đa `50` |
+| `sort` | String | No | Trường sắp xếp |
+| `direction` | String | No | `ASC` hoặc `DESC` |
+
+### Example Request
+
+```http
+GET /admin/products?keyword=keyboard&status=ACTIVE&page=0&size=10
+```
+
+### Success Response
+
+**HTTP 200 OK**
+
+```json
+{
+  "content": [
+    {
+      "id": 1,
+      "sku": "KB-001",
+      "name": "Mechanical Keyboard",
+      "description": "Mechanical keyboard for office use",
+      "price": 850000.00,
+      "stockQuantity": 20,
+      "imageUrl": "https://example.com/images/keyboard.jpg",
+      "categoryId": 2,
+      "status": "ACTIVE",
+      "createdAt": "2026-09-24T14:30:00",
+      "updatedAt": "2026-09-24T14:30:00"
+    }
+  ],
+  "page": 0,
+  "size": 10,
+  "totalElements": 1,
+  "totalPages": 1
+}
+```
+
+### Error Cases
+
+| Status | Condition |
+|---|---|
+| `401` | Chưa đăng nhập |
+| `403` | Không phải Admin |
+| `400` | Query parameter không hợp lệ |
+
+---
+
+## 12.2. Get Admin Product Detail
+
+### Endpoint
+
+```http
+GET /admin/products/{id}
+```
+
+### Access
+
+```text
+ADMIN
+```
+
+### Description
+
+Lấy thông tin chi tiết Product dành cho Admin, bao gồm cả Product `ACTIVE` và `INACTIVE`.
+
+### Success Response
+
+**HTTP 200 OK**
+
+```json
+{
+  "id": 1,
+  "sku": "KB-001",
+  "name": "Mechanical Keyboard",
+  "description": "Mechanical keyboard for office use",
+  "price": 850000.00,
+  "stockQuantity": 20,
+  "imageUrl": "https://example.com/images/keyboard.jpg",
+  "category": {
+    "id": 2,
+    "name": "Accessories"
+  },
+  "status": "ACTIVE",
+  "createdAt": "2026-09-24T14:30:00",
+  "updatedAt": "2026-09-24T14:30:00"
+}
+```
+
+### Error Cases
+
+| Status | Condition |
+|---|---|
+| `401` | Chưa đăng nhập |
+| `403` | Không phải Admin |
+| `404` | Không tìm thấy Product |
+
+---
+
+## 12.3. Create Product
 
 ### Endpoint
 
@@ -1147,10 +1375,14 @@ ADMIN
   "id": 1,
   "sku": "KB-001",
   "name": "Mechanical Keyboard",
+  "description": "Mechanical keyboard for office use",
   "price": 850000.00,
   "stockQuantity": 20,
+  "imageUrl": "https://example.com/images/keyboard.jpg",
   "categoryId": 2,
-  "status": "ACTIVE"
+  "status": "ACTIVE",
+  "createdAt": "2026-09-24T14:30:00",
+  "updatedAt": "2026-09-24T14:30:00"
 }
 ```
 
@@ -1166,7 +1398,7 @@ ADMIN
 
 ---
 
-## 12.2. Update Product
+## 12.4. Update Product
 
 ### Endpoint
 
@@ -1204,25 +1436,38 @@ ADMIN
   "id": 1,
   "sku": "KB-001",
   "name": "Mechanical Keyboard Updated",
+  "description": "Updated description",
   "price": 900000.00,
   "stockQuantity": 25,
+  "imageUrl": "https://example.com/images/keyboard-new.jpg",
   "categoryId": 2,
   "status": "ACTIVE",
-  "message": "Product updated successfully"
+  "createdAt": "2026-09-24T14:30:00",
+  "updatedAt": "2026-09-24T15:00:00"
 }
 ```
 
+### Error Cases
+
+| Status | Condition |
+|---|---|
+| `400` | Dữ liệu không hợp lệ |
+| `401` | Chưa đăng nhập |
+| `403` | Không phải Admin |
+| `404` | Product hoặc Category không tồn tại |
+| `409` | SKU đã tồn tại |
+
 ### Business Rules
 
-- Không cho phép SKU trùng với sản phẩm khác.
-- Giá phải lớn hơn 0.
+- Không cho phép SKU trùng với Product khác.
+- Giá phải lớn hơn `0`.
 - Stock không được âm.
 - Không thay đổi dữ liệu snapshot đã lưu trong OrderItem.
 - Thay đổi giá Product không làm thay đổi `unitPrice` của OrderItem cũ.
 
 ---
 
-## 12.3. Delete or Deactivate Product
+## 12.5. Delete Product
 
 ### Endpoint
 
@@ -1238,25 +1483,39 @@ ADMIN
 
 ### Description
 
-Vô hiệu hóa sản phẩm hoặc xóa sản phẩm nếu không vi phạm ràng buộc dữ liệu.
+Xóa Product theo cơ chế Soft Delete.
 
-Để bảo toàn lịch sử Order, hệ thống nên ưu tiên chuyển:
+DELETE không xóa vật lý Product khỏi Database.
+
+Hệ thống chuyển:
 
 ```text
 status = INACTIVE
 ```
 
-thay vì xóa vật lý.
-
 ### Success Response
 
 **HTTP 204 No Content**
 
+Không trả về response body.
+
 ### Business Rules
 
-- Sản phẩm `INACTIVE` không xuất hiện trong public product list.
-- Không xóa dữ liệu sản phẩm nếu đang được tham chiếu bởi lịch sử Order.
-- Không làm mất thông tin snapshot trong OrderItem.
+- DELETE Product luôn thực hiện Soft Delete.
+- Product sau khi DELETE có `status = INACTIVE`.
+- Không xóa vật lý Product khỏi Database.
+- Product `INACTIVE` không xuất hiện trong public Product List.
+- Product `INACTIVE` không được thêm vào Cart.
+- Không làm mất dữ liệu snapshot trong OrderItem.
+- Nếu Product đã `INACTIVE`, DELETE tiếp tục không làm thay đổi dữ liệu.
+
+### Error Cases
+
+| Status | Condition |
+|---|---|
+| `401` | Chưa đăng nhập |
+| `403` | Không phải Admin |
+| `404` | Không tìm thấy Product |
 
 ---
 
@@ -1304,6 +1563,7 @@ ADMIN
 | Status | Condition |
 |---|---|
 | `400` | Dữ liệu không hợp lệ |
+| `401` | Chưa đăng nhập |
 | `403` | Không phải Admin |
 | `409` | Category name đã tồn tại |
 
@@ -1347,9 +1607,25 @@ ADMIN
 }
 ```
 
+### Error Cases
+
+| Status | Condition |
+|---|---|
+| `400` | Dữ liệu không hợp lệ |
+| `401` | Chưa đăng nhập |
+| `403` | Không phải Admin |
+| `404` | Không tìm thấy Category |
+| `409` | Category name đã tồn tại |
+
+### Business Rules
+
+- Admin có thể chuyển Category sang `ACTIVE` hoặc `INACTIVE`.
+- Category `INACTIVE` không được hiển thị trong public Category List.
+- Category `INACTIVE` không được sử dụng để tạo Product mới.
+
 ---
 
-## 13.3. Delete or Deactivate Category
+## 13.3. Delete Category
 
 ### Endpoint
 
@@ -1365,12 +1641,27 @@ ADMIN
 
 ### Description
 
-Xóa hoặc vô hiệu hóa Category.
+Xóa Category.
 
 ### Business Rules
 
-- Không xóa Category đang được Product tham chiếu.
-- Nếu Category đang có Product, hệ thống phải từ chối xóa hoặc chuyển Category sang `INACTIVE`.
+- Nếu Category không được Product nào tham chiếu, hệ thống cho phép xóa.
+- Nếu Category đang được Product tham chiếu, hệ thống phải từ chối thao tác xóa.
+- Không tự động chuyển Category sang `INACTIVE` khi gọi DELETE.
+- Nếu Admin muốn ẩn Category, sử dụng:
+
+```http
+PUT /admin/categories/{id}
+```
+
+với:
+
+```json
+{
+  "status": "INACTIVE"
+}
+```
+
 - Không làm mất dữ liệu Product hiện tại.
 
 ### Success Response
@@ -1381,6 +1672,7 @@ Xóa hoặc vô hiệu hóa Category.
 
 | Status | Condition |
 |---|---|
+| `401` | Chưa đăng nhập |
 | `403` | Không phải Admin |
 | `404` | Không tìm thấy Category |
 | `409` | Category đang được Product tham chiếu |
@@ -1407,18 +1699,19 @@ ADMIN
 
 | Parameter | Type | Required | Description |
 |---|---|---:|---|
+| `keyword` | String | No | Tìm theo Order ID, Customer Email, Recipient Name hoặc Phone |
 | `status` | String | No | Lọc theo Order Status |
 | `paymentStatus` | String | No | `UNPAID` hoặc `PAID` |
 | `customerId` | Long | No | Lọc theo Customer |
 | `page` | Integer | No | Trang |
-| `size` | Integer | No | Kích thước trang |
+| `size` | Integer | No | Kích thước trang, tối đa `50` |
 | `sort` | String | No | Trường sắp xếp |
 | `direction` | String | No | `ASC` hoặc `DESC` |
 
 ### Example Request
 
 ```http
-GET /admin/orders?status=PENDING&page=0&size=10
+GET /admin/orders?keyword=quan&status=PENDING&page=0&size=10
 ```
 
 ### Success Response
@@ -1431,6 +1724,9 @@ GET /admin/orders?status=PENDING&page=0&size=10
     {
       "id": 1001,
       "customerId": 1,
+      "customerEmail": "customer@example.com",
+      "recipientName": "Nguyen Minh Quan",
+      "phone": "0912345678",
       "totalAmount": 1700000.00,
       "orderStatus": "PENDING",
       "paymentStatus": "UNPAID",
@@ -1444,6 +1740,25 @@ GET /admin/orders?status=PENDING&page=0&size=10
   "totalPages": 1
 }
 ```
+
+### Search Rules
+
+`keyword` được đối chiếu với:
+
+- Order ID.
+- Customer Email.
+- `recipientName`.
+- `phone`.
+
+Tên và số điện thoại sử dụng thông tin giao hàng được snapshot trong Order; không yêu cầu thêm `name` hoặc `phone` vào User chỉ để phục vụ tìm kiếm.
+
+### Error Cases
+
+| Status | Condition |
+|---|---|
+| `401` | Chưa đăng nhập |
+| `403` | Không phải Admin |
+| `400` | Query parameter không hợp lệ |
 
 ---
 
@@ -1465,22 +1780,48 @@ ADMIN
 
 Lấy toàn bộ thông tin chi tiết của một Order.
 
-Response có cùng cấu trúc với:
+### Success Response
 
-```http
-GET /orders/{id}
+**HTTP 200 OK**
+
+```json
+{
+  "id": 1001,
+  "customerId": 1,
+  "customerEmail": "customer@example.com",
+  "totalAmount": 1700000.00,
+  "recipientName": "Nguyen Minh Quan",
+  "phone": "0912345678",
+  "address": "12 Example Street",
+  "provinceCity": "Ha Noi",
+  "district": "Hoan Kiem",
+  "ward": "Hang Trong",
+  "orderStatus": "PENDING",
+  "paymentStatus": "UNPAID",
+  "paidAt": null,
+  "items": [
+    {
+      "id": 5001,
+      "productId": 1,
+      "productNameSnapshot": "Mechanical Keyboard",
+      "skuSnapshot": "KB-001",
+      "unitPrice": 850000.00,
+      "quantity": 2,
+      "itemTotal": 1700000.00
+    }
+  ],
+  "createdAt": "2026-09-24T14:30:00",
+  "updatedAt": "2026-09-24T14:30:00"
+}
 ```
 
-Admin có thể xem:
+### Error Cases
 
-- Customer ID.
-- Thông tin giao hàng.
-- Order Items.
-- Tổng tiền.
-- Order Status.
-- Payment Status.
-- Paid At.
-- Thời gian tạo và cập nhật.
+| Status | Condition |
+|---|---|
+| `401` | Chưa đăng nhập |
+| `403` | Không phải Admin |
+| `404` | Không tìm thấy Order |
 
 ---
 
@@ -1530,6 +1871,16 @@ CANCELLED
 }
 ```
 
+### Error Cases
+
+| Status | Condition |
+|---|---|
+| `400` | Status không hợp lệ |
+| `401` | Chưa đăng nhập |
+| `403` | Không phải Admin |
+| `404` | Không tìm thấy Order |
+| `409` | Chuyển trạng thái không hợp lệ |
+
 ---
 
 ## 14.4. Order Status Transition Rules
@@ -1551,7 +1902,27 @@ Ví dụ:
 DELIVERED → PENDING
 CANCELLED → CONFIRMED
 SHIPPING → PENDING
+CONFIRMED → CANCELLED
 ```
+
+### Admin Cancellation and Stock Restoration
+
+Khi Admin chuyển Order từ:
+
+```text
+PENDING → CANCELLED
+```
+
+hệ thống phải:
+
+1. Kiểm tra trạng thái hiện tại là `PENDING`.
+2. Chuyển Order sang `CANCELLED`.
+3. Hoàn lại stock tương ứng với tất cả OrderItem.
+4. Commit trong cùng một transaction.
+
+Chỉ được hoàn stock khi chuyển trạng thái từ `PENDING` sang `CANCELLED` thành công.
+
+Nếu Order đã `CANCELLED`, không được hoàn stock lần thứ hai.
 
 ### Automatic Payment Update
 
@@ -1595,15 +1966,6 @@ paidAt = NULL
 
 - Không tạo Payment API riêng trong MVP.
 
-### Error Cases
-
-| Status | Condition |
-|---|---|
-| `400` | Status không hợp lệ |
-| `403` | Không phải Admin |
-| `404` | Không tìm thấy Order |
-| `409` | Chuyển trạng thái không hợp lệ |
-
 ---
 
 # 15. HTTP Status Code Convention
@@ -1634,6 +1996,7 @@ Price > 0
 Stock Quantity >= 0
 Category phải tồn tại
 Status chỉ nhận ACTIVE hoặc INACTIVE
+Keyword tìm kiếm trên Name, SKU, Description
 ```
 
 ## 16.2. Category
@@ -1643,6 +2006,7 @@ Name không được rỗng
 Name phải unique
 Status chỉ nhận ACTIVE hoặc INACTIVE
 Không xóa Category đang được Product tham chiếu
+Category đang được sử dụng có thể chuyển sang INACTIVE
 ```
 
 ## 16.3. Cart
@@ -1652,6 +2016,8 @@ Quantity > 0
 Quantity không vượt quá stock
 Mỗi Product chỉ xuất hiện một lần trong Cart
 Guest không được sử dụng Cart
+Product INACTIVE không được thêm vào Cart
+Checkout chỉ được phép khi tất cả CartItem hợp lệ
 ```
 
 ## 16.4. Order
@@ -1661,8 +2027,11 @@ Cart không được rỗng khi Checkout
 Product phải ACTIVE tại thời điểm Checkout
 Stock phải đủ
 Tổng tiền được tính tại Backend
-OrderItem lưu snapshot thông tin sản phẩm
+OrderItem lưu snapshot thông tin Product
 Customer chỉ xem/hủy Order của chính mình
+Customer chỉ hủy Order PENDING
+Admin chỉ chuyển Order theo transition matrix
+PENDING → CANCELLED phải hoàn stock đúng một lần
 ```
 
 ## 16.5. Payment
@@ -1673,6 +2042,9 @@ paidAt có thể NULL
 Khi Order = DELIVERED:
     paymentStatus = PAID
     paidAt = current timestamp
+Khi Order != DELIVERED:
+    paymentStatus = UNPAID
+    paidAt = NULL
 Không có Payment Entity/Table
 Không có Payment Method API
 Không có Payment Gateway API
@@ -1687,6 +2059,7 @@ Không có Payment Gateway API
 - Các API yêu cầu đăng nhập phải kiểm tra JWT.
 - JWT không hợp lệ phải trả `401 Unauthorized`.
 - Không lưu password dạng plain text.
+- Password phải được hash trước khi lưu.
 
 ## 17.2. Authorization
 
@@ -1728,7 +2101,7 @@ trong API response.
 
 # 18. Transactional Operations
 
-Các nghiệp vụ sau cần được xử lý trong transaction:
+Các nghiệp vụ sau cần được xử lý trong transaction.
 
 ## 18.1. Checkout
 
@@ -1749,7 +2122,33 @@ Nếu thất bại:
 Rollback toàn bộ thay đổi
 ```
 
+### Stock Concurrency
+
+Khi trừ stock trong Checkout, hệ thống phải sử dụng thao tác cập nhật có điều kiện để tránh overselling khi có nhiều request đồng thời.
+
+Ví dụ:
+
+```sql
+UPDATE products
+SET stock_quantity = stock_quantity - :quantity
+WHERE id = :productId
+  AND stock_quantity >= :quantity;
+```
+
+Backend phải kiểm tra số dòng bị ảnh hưởng:
+
+```text
+1 = Trừ stock thành công
+0 = Stock không đủ hoặc Product không còn hợp lệ
+```
+
+Nếu bất kỳ Product nào không thể trừ stock, toàn bộ Checkout transaction phải rollback.
+
+---
+
 ## 18.2. Cancel Order
+
+Customer hoặc Admin khi hủy Order:
 
 ```text
 Validate Order Status
@@ -1758,7 +2157,15 @@ Update Order Status
 Commit
 ```
 
+Chỉ được hoàn stock khi Order chuyển thành công:
+
+```text
+PENDING → CANCELLED
+```
+
 Không được hoàn stock nhiều lần nếu cùng một Order bị xử lý lại.
+
+---
 
 ## 18.3. Mark Order as Delivered
 
@@ -1801,53 +2208,91 @@ Shipping Method Selection API
 
 - [ ] Register Customer thành công.
 - [ ] Không cho phép email trùng.
+- [ ] Password dưới 8 ký tự bị từ chối.
 - [ ] Login thành công.
 - [ ] Login sai password bị từ chối.
 - [ ] API yêu cầu authentication từ chối request không có JWT.
+- [ ] Customer không thể truy cập Admin API.
 
 ## Products
 
 - [ ] Guest xem được Product List.
-- [ ] Guest tìm kiếm được sản phẩm.
+- [ ] Guest tìm kiếm được theo Name.
+- [ ] Guest tìm kiếm được theo SKU.
+- [ ] Guest tìm kiếm được theo Description.
 - [ ] Guest lọc được theo Category.
-- [ ] Không hiển thị Product INACTIVE.
+- [ ] Guest lọc được theo khoảng giá.
+- [ ] Không hiển thị Product `INACTIVE` trong public Product List.
+- [ ] Product Detail có thể trả Product `INACTIVE` với trạng thái không khả dụng.
+- [ ] Admin xem được Product `ACTIVE` và `INACTIVE`.
 - [ ] Admin tạo Product thành công.
 - [ ] Không cho phép SKU trùng.
 - [ ] Không cho phép Price `<= 0`.
 - [ ] Không cho phép Stock âm.
+- [ ] DELETE Product chuyển Product sang `INACTIVE`.
+
+## Categories
+
+- [ ] Guest xem được Category ACTIVE.
+- [ ] Admin tạo Category thành công.
+- [ ] Không cho phép Category name trùng.
+- [ ] Admin cập nhật Category.
+- [ ] Category đang được Product tham chiếu không thể DELETE.
+- [ ] DELETE Category đang được tham chiếu trả `409`.
+- [ ] Category đang được sử dụng có thể chuyển sang `INACTIVE`.
 
 ## Cart
 
 - [ ] Guest không truy cập được Cart.
 - [ ] Customer thêm Product vào Cart.
-- [ ] Không thêm Product INACTIVE.
+- [ ] Không thêm Product `INACTIVE`.
 - [ ] Không thêm số lượng vượt stock.
 - [ ] Không tạo CartItem trùng Product.
 - [ ] Customer cập nhật quantity.
 - [ ] Customer xóa CartItem.
 - [ ] Customer clear Cart.
+- [ ] Cart trả về trạng thái `available`.
+- [ ] Cart trả về `unavailableReason` khi cần.
+- [ ] Cart trả về `checkoutAllowed = false` khi Cart không hợp lệ.
 
 ## Checkout
 
 - [ ] Không checkout khi Cart rỗng.
 - [ ] Không checkout khi stock không đủ.
-- [ ] Không checkout Product INACTIVE.
+- [ ] Không checkout Product `INACTIVE`.
+- [ ] Shipping information phải đầy đủ.
 - [ ] Tổng tiền được tính đúng.
 - [ ] OrderItem lưu đúng snapshot.
 - [ ] Stock được trừ đúng.
 - [ ] Cart được clear sau Checkout thành công.
 - [ ] Transaction rollback khi có lỗi.
+- [ ] Concurrent checkout không làm stock âm hoặc overselling.
 
-## Orders
+## Customer Orders
 
 - [ ] Customer xem được Order của mình.
 - [ ] Customer không xem được Order của Customer khác.
-- [ ] Customer chỉ hủy được Order PENDING.
+- [ ] Customer chỉ hủy được Order `PENDING`.
 - [ ] Hủy Order hoàn stock đúng một lần.
+- [ ] Customer không thể hủy Order `CONFIRMED`.
+- [ ] Customer không thể hủy Order `SHIPPING`.
+- [ ] Customer không thể hủy Order `DELIVERED`.
+
+## Admin Orders
+
 - [ ] Admin xem được tất cả Order.
-- [ ] Không cho phép chuyển Order Status sai quy trình.
-- [ ] Khi Order DELIVERED, paymentStatus tự chuyển PAID.
-- [ ] Khi Order DELIVERED, paidAt được gán timestamp.
+- [ ] Admin tìm kiếm Order theo Order ID.
+- [ ] Admin tìm kiếm Order theo Customer Email.
+- [ ] Admin tìm kiếm Order theo Recipient Name.
+- [ ] Admin tìm kiếm Order theo Phone.
+- [ ] Admin lọc được theo Order Status.
+- [ ] Admin lọc được theo Payment Status.
+- [ ] Admin xem được Order Detail.
+- [ ] Admin chỉ chuyển Order theo transition matrix.
+- [ ] Admin có thể chuyển `PENDING → CANCELLED`.
+- [ ] Admin cancel Order hoàn stock đúng một lần.
+- [ ] Khi Order `DELIVERED`, paymentStatus tự chuyển `PAID`.
+- [ ] Khi Order `DELIVERED`, paidAt được gán timestamp.
 - [ ] Client không thể tự cập nhật paymentStatus hoặc paidAt.
 
 ---
@@ -1866,6 +2311,20 @@ Trong quá trình triển khai, team cần thống nhất thêm:
 - Chi tiết database migration.
 - Cách cấu hình CORS.
 - Cách version API nếu cần.
+
+Các quyết định kỹ thuật quan trọng đã được xác định trong API Specification:
+
+- Product DELETE sử dụng Soft Delete bằng `status = INACTIVE`.
+- Category đang được Product tham chiếu không được DELETE.
+- Stock Checkout phải xử lý concurrency để tránh overselling.
+- Checkout và Order Cancellation phải được xử lý trong transaction.
+- Admin Cancellation phải hoàn stock.
+- `paymentStatus` và `paidAt` do Backend kiểm soát.
+- `paymentStatus = PAID` chỉ được tự động thiết lập khi Order chuyển sang `DELIVERED`.
+- `paidAt` là nullable.
+- Guest không có Cart.
+- Customer chỉ được xem/hủy Order của chính mình.
+- Admin sử dụng Admin Order API riêng.
 
 Mọi thay đổi API làm ảnh hưởng đến requirement hoặc data model phải được cập nhật đồng bộ trong:
 
