@@ -6,7 +6,7 @@
 |---|---|
 | Project | Mini E-commerce / Inventory Management |
 | Document | Entity Relationship Diagram |
-| Status | Final for Design |
+| Status | Draft for Design |
 | Database | MySQL |
 
 * * *
