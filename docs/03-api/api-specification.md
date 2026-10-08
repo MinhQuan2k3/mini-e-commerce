@@ -929,7 +929,7 @@ paidAt = NULL
   "message": "Request successful",
   "data": {
     "id": 1001,
-    "customerId": 1,
+    "customer_id": 1,
     "totalAmount": 1700000.0,
     "recipientName": "Nguyen Minh Quan",
     "phone": "0912345678",
@@ -944,8 +944,8 @@ paidAt = NULL
       {
         "id": 5001,
         "productId": 1,
-        "productNameSnapshot": "Mechanical Keyboard",
-        "skuSnapshot": "KB-001",
+        "product_name_snapshot": "Mechanical Keyboard",
+        "sku_snapshot": "KB-001",
         "unitPriceSnapshot": 850000.0,
         "quantity": 2,
         "itemTotal": 1700000.0
@@ -1070,7 +1070,7 @@ Lấy thông tin chi tiết Order của Customer hiện tại.
   "message": "Request successful",
   "data": {
     "id": 1001,
-    "customerId": 1,
+    "customer_id": 1,
     "totalAmount": 1700000.0,
     "recipientName": "Nguyen Minh Quan",
     "phone": "0912345678",
@@ -1085,8 +1085,8 @@ Lấy thông tin chi tiết Order của Customer hiện tại.
       {
         "id": 5001,
         "productId": 1,
-        "productNameSnapshot": "Mechanical Keyboard",
-        "skuSnapshot": "KB-001",
+        "product_name_snapshot": "Mechanical Keyboard",
+        "sku_snapshot": "KB-001",
         "unitPriceSnapshot": 850000.0,
         "quantity": 2,
         "itemTotal": 1700000.0
@@ -1740,7 +1740,7 @@ ADMIN
 | `keyword` | String | No | Tìm theo Order ID, Customer Email, Recipient Name hoặc Phone |
 | `status` | String | No | Lọc theo Order Status |
 | `paymentStatus` | String | No | `UNPAID` hoặc `PAID` |
-| `customerId` | Long | No | Lọc theo Customer |
+| `customer_id` | Long | No | Lọc theo Customer |
 | `page` | Integer | No | Trang |
 | `size` | Integer | No | Kích thước trang, tối đa `50` |
 | `sort` | String | No | Trường sắp xếp |
@@ -1764,7 +1764,7 @@ GET /admin/orders?keyword=quan&status=PENDING&page=0&size=10
     "content": [
       {
         "id": 1001,
-        "customerId": 1,
+        "customer_id": 1,
         "customerEmail": "customer@example.com",
         "recipientName": "Nguyen Minh Quan",
         "phone": "0912345678",
@@ -1832,7 +1832,7 @@ Lấy toàn bộ thông tin chi tiết của một Order.
   "message": "Request successful",
   "data": {
     "id": 1001,
-    "customerId": 1,
+    "customer_id": 1,
     "customerEmail": "customer@example.com",
     "totalAmount": 1700000.0,
     "recipientName": "Nguyen Minh Quan",
@@ -1848,8 +1848,8 @@ Lấy toàn bộ thông tin chi tiết của một Order.
       {
         "id": 5001,
         "productId": 1,
-        "productNameSnapshot": "Mechanical Keyboard",
-        "skuSnapshot": "KB-001",
+        "product_name_snapshot": "Mechanical Keyboard",
+        "sku_snapshot": "KB-001",
         "unitPriceSnapshot": 850000.0,
         "quantity": 2,
         "itemTotal": 1700000.0
@@ -2124,7 +2124,7 @@ Backend phải validate request dù Frontend đã có validation.
 Không tin tưởng các giá trị sau do client gửi lên:
 
 ```text
-customerId
+customer_id
 totalAmount
 paymentStatus
 paidAt
