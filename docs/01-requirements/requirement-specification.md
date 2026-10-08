@@ -1947,3 +1947,11 @@ MVP tập trung vào các nghiệp vụ bán hàng và quản lý tồn kho cố
 
 Hệ thống không triển khai Payment Gateway, Online Payment hoặc Payment Entity riêng. Trạng thái thanh toán chỉ được quản lý thông qua `payment_status` và `paid_at` trên Order; Order được tạo ở trạng thái `UNPAID` và tự động chuyển sang `PAID` khi Order đạt trạng thái `DELIVERED`.
 
+
+---
+
+## Change Log
+
+| Version | Date | Changes |
+|---|---|---|
+| 1.1 | 2026-10-08 | Updated requirements after Review Round 2. Restored and preserved existing BR/FR/TD identifiers without renumbering previously issued IDs; new requirements are appended at the end. Clarified Order History endpoint and related requirements. Added/updated business rules for OrderItem snapshots, Product Soft Delete, Order cancellation and stock restoration, Payment Status, `paid_at`, Admin authorization, and Category deletion. Standardized naming for `customer_id`, `password_hash`, `product_name`, `sku`, and `unit_price`. Clarified Payment as an Order attribute only, with no separate Payment Entity/Table or Payment Gateway in MVP. Updated technical decisions and requirement references to remain consistent with Use Cases, ERD, Class Diagram, and API Specification. |
