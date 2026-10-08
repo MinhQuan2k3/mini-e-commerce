@@ -140,7 +140,7 @@ classDiagram
         +Product product
         +String product_name_snapshot
         +String sku_snapshot
-        +BigDecimal unitPrice
+        +BigDecimal unit_price_snapshot
         +Integer quantity
         +BigDecimal itemTotal
         +BigDecimal calculateItemTotal()
@@ -616,14 +616,14 @@ Order Total = Σ OrderItem.itemTotal
 | `product` | Product | Product reference |
 | `product_name_snapshot` | String | Product Name snapshot |
 | `sku_snapshot` | String | SKU snapshot |
-| `unitPrice` | BigDecimal | Giá tại thời điểm mua |
+| `unit_price_snapshot` | BigDecimal | Giá tại thời điểm mua |
 | `quantity` | Integer | Số lượng |
 | `itemTotal` | BigDecimal | Thành tiền |
 
 ### Business Rules
 
 * `quantity > 0`.
-* `unitPrice > 0`.
+* `unit_price_snapshot > 0`.
 * `itemTotal >= 0`.
 * Product Name, SKU và Unit Price phải được snapshot tại thời điểm Checkout.
 * Thay đổi Product sau này không được làm thay đổi OrderItem cũ.
@@ -633,7 +633,7 @@ Order Total = Σ OrderItem.itemTotal
 #### `calculateItemTotal()`
 
 ```text
-itemTotal = unitPrice × quantity
+itemTotal = unit_price_snapshot × quantity
 ```
 
 * * *
@@ -1117,7 +1117,7 @@ totalAmount
 orderStatus
 paymentStatus
 paidAt
-unitPrice
+unit_price_snapshot
 ```
 
 Backend phải lấy Customer từ authenticated JWT và tính các giá trị còn lại.
