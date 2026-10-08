@@ -6,6 +6,7 @@
 |---|---|
 | Project | Mini E-commerce / Inventory Management |
 | Company | A-Software |
+| Status | Revised after Round 2|
 
 ---
 
@@ -1408,3 +1409,11 @@ Các Use Case bao phủ các nhóm chức năng chính:
 - Admin Order Management.
 
 Các quy tắc quan trọng về Authentication, Ownership, Inventory, Stock Concurrency, Order Status, Payment Status, Category và API Error Handling được mô tả thống nhất trong tài liệu.
+
+---
+
+## Change Log
+
+| Version | Date | Changes |
+|---|---|---|
+| 1.1 | 2026-10-08 | Updated Use Cases after Review Round 2 to align with the finalized Requirement Specification and API Specification. Corrected Related Requirements mappings, restored the official Order History endpoint as `GET /api/orders/my-orders`, standardized OrderItem snapshot fields to `product_name`, `sku`, and `unit_price`, and aligned Order cancellation, stock restoration, Payment Status, `paid_at`, Category deletion, Product Soft Delete, and Admin Order management rules. Updated use-case-level design decisions and endpoint references to remain consistent with the final system design. |
