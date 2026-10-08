@@ -53,7 +53,7 @@ erDiagram
     USERS {
         bigint id PK
         varchar email UK
-        varchar password
+        varchar password_hash
         varchar role
         datetime created_at
         datetime updated_at
@@ -70,7 +70,7 @@ erDiagram
 
     PRODUCTS {
         bigint id PK
-        varchar sku UK
+        varchar sku_snapshot UK
         varchar name
         text description
         decimal price
@@ -84,7 +84,7 @@ erDiagram
 
     CARTS {
         bigint id PK
-        bigint user_id FK
+        bigint customer_id FK
         datetime created_at
         datetime updated_at
     }
@@ -100,7 +100,7 @@ erDiagram
 
     ORDERS {
         bigint id PK
-        bigint user_id FK
+        bigint customer_id FK
         decimal total_amount
         varchar recipient_name
         varchar phone
@@ -119,9 +119,9 @@ erDiagram
         bigint id PK
         bigint order_id FK
         bigint product_id FK
-        varchar product_name
-        varchar sku
-        decimal unit_price
+        varchar product_name_snapshot
+        varchar sku_snapshot
+        decimal unit_price_snapshot
         int quantity
         decimal item_total
     }
@@ -170,7 +170,7 @@ Lưu thông tin tài khoản của Customer và Admin.
 |---|---|---|---|
 | `id` | BIGINT | PK | User ID |
 | `email` | VARCHAR | UNIQUE, NOT NULL | Email đăng nhập |
-| `password` | VARCHAR | NOT NULL | Password đã hash |
+| `password_hash` | VARCHAR | NOT NULL | Password đã hash |
 | `role` | VARCHAR / ENUM | NOT NULL | `CUSTOMER` hoặc `ADMIN` |
 | `created_at` | DATETIME | NOT NULL | Thời điểm tạo |
 | `updated_at` | DATETIME | NOT NULL | Thời điểm cập nhật |
@@ -178,7 +178,7 @@ Lưu thông tin tài khoản của Customer và Admin.
 ### Constraints
 
 * `email` phải unique.
-* `password` không được lưu plain text.
+* `password_hash` không được lưu plain text.
 * `role` chỉ gồm:
   * `CUSTOMER`
   * `ADMIN`
@@ -234,7 +234,7 @@ Lưu thông tin sản phẩm và tồn kho.
 | Field | Data Type | Constraint | Description |
 |---|---|---|---|
 | `id` | BIGINT | PK | Product ID |
-| `sku` | VARCHAR | UNIQUE, NOT NULL | Stock Keeping Unit |
+| `sku_snapshot` | VARCHAR | UNIQUE, NOT NULL | Stock Keeping Unit |
 | `name` | VARCHAR | NOT NULL | Product Name |
 | `description` | TEXT | NULL | Product Description |
 | `price` | DECIMAL | NOT NULL, > 0 | Giá sản phẩm |
@@ -247,7 +247,7 @@ Lưu thông tin sản phẩm và tồn kho.
 
 ### Constraints
 
-* `sku` phải unique.
+* `sku_snapshot` phải unique.
 * `price > 0`.
 * `stock_quantity >= 0`.
 * Product phải thuộc một Category.
@@ -272,7 +272,7 @@ Lưu Cart của Customer đã đăng nhập.
 | Field | Data Type | Constraint | Description |
 |---|---|---|---|
 | `id` | BIGINT | PK | Cart ID |
-| `user_id` | BIGINT | FK, UNIQUE, NOT NULL | Customer sở hữu Cart |
+| `customer_id` | BIGINT | FK, UNIQUE, NOT NULL | Customer sở hữu Cart |
 | `created_at` | DATETIME | NOT NULL | Thời điểm tạo |
 | `updated_at` | DATETIME | NOT NULL | Thời điểm cập nhật |
 
@@ -283,7 +283,7 @@ Mỗi Customer chỉ có tối đa một Active Cart.
 Do MVP chỉ duy trì một Cart cho mỗi Customer, Database sử dụng:
 
 ```text
-UNIQUE(user_id)
+UNIQUE(customer_id)
 ```
 
 ### Relationships
@@ -343,7 +343,7 @@ Lưu thông tin Order được tạo bởi Customer.
 | Field | Data Type | Constraint | Description |
 |---|---|---|---|
 | `id` | BIGINT | PK | Order ID |
-| `user_id` | BIGINT | FK, NOT NULL | Customer tạo Order |
+| `customer_id` | BIGINT | FK, NOT NULL | Customer tạo Order |
 | `total_amount` | DECIMAL | NOT NULL, >= 0 | Tổng tiền Order |
 | `recipient_name` | VARCHAR | NOT NULL | Tên người nhận |
 | `phone` | VARCHAR | NOT NULL | Số điện thoại người nhận |
@@ -448,35 +448,35 @@ Lưu các Product thuộc Order và snapshot dữ liệu tại thời điểm mu
 | `id` | BIGINT | PK | OrderItem ID |
 | `order_id` | BIGINT | FK, NOT NULL | Order |
 | `product_id` | BIGINT | FK, NOT NULL | Product reference |
-| `product_name` | VARCHAR | NOT NULL | Product Name snapshot |
-| `sku` | VARCHAR | NOT NULL | SKU snapshot |
-| `unit_price` | DECIMAL | NOT NULL, > 0 | Giá tại thời điểm mua |
+| `product_name_snapshot` | VARCHAR | NOT NULL | Product Name snapshot |
+| `sku_snapshot` | VARCHAR | NOT NULL | SKU snapshot |
+| `unit_price_snapshot` | DECIMAL | NOT NULL, > 0 | Giá tại thời điểm mua |
 | `quantity` | INT | NOT NULL, > 0 | Số lượng |
 | `item_total` | DECIMAL | NOT NULL, >= 0 | Thành tiền |
 
 ### Snapshot Principle
 
-`product_name`, `sku` và `unit_price` được snapshot tại thời điểm Checkout.
+`product_name_snapshot`, `sku_snapshot` và `unit_price_snapshot` được snapshot tại thời điểm Checkout.
 
 Ví dụ:
 
 ```text
 Product:
     name  = "Keyboard"
-    sku   = "KB-001"
+    sku_snapshot   = "KB-001"
     price = 500000
 
 OrderItem:
-    product_name = "Keyboard"
-    sku          = "KB-001"
-    unit_price   = 500000
+    product_name_snapshot = "Keyboard"
+    sku_snapshot          = "KB-001"
+    unit_price_snapshot   = 500000
 ```
 
 Nếu Admin sau đó thay đổi Product:
 
 ```text
 name
-sku
+sku_snapshot
 price
 ```
 
@@ -510,10 +510,10 @@ PRODUCTS 1 ─────── N ORDER_ITEMS
 | Table | Foreign Key | References | Purpose |
 |---|---|---|---|
 | `products` | `category_id` | `categories.id` | Product thuộc Category |
-| `carts` | `user_id` | `users.id` | Cart thuộc Customer |
+| `carts` | `customer_id` | `users.id` | Cart thuộc Customer |
 | `cart_items` | `cart_id` | `carts.id` | CartItem thuộc Cart |
 | `cart_items` | `product_id` | `products.id` | CartItem tham chiếu Product |
-| `orders` | `user_id` | `users.id` | Order thuộc Customer |
+| `orders` | `customer_id` | `users.id` | Order thuộc Customer |
 | `order_items` | `order_id` | `orders.id` | OrderItem thuộc Order |
 | `order_items` | `product_id` | `products.id` | OrderItem tham chiếu Product |
 
@@ -526,8 +526,8 @@ PRODUCTS 1 ─────── N ORDER_ITEMS
 ```text
 users.email
 categories.name
-products.sku
-carts.user_id
+products.sku_snapshot
+carts.customer_id
 (cart_items.cart_id, cart_items.product_id)
 ```
 
@@ -551,7 +551,7 @@ products.stock_quantity >= 0
 
 cart_items.quantity > 0
 
-order_items.unit_price > 0
+order_items.unit_price_snapshot > 0
 order_items.quantity > 0
 order_items.item_total >= 0
 ```
@@ -727,9 +727,9 @@ Một số dữ liệu phải được snapshot để bảo toàn lịch sử Or
 OrderItem lưu:
 
 ```text
-product_name
-sku
-unit_price
+product_name_snapshot
+sku_snapshot
+unit_price_snapshot
 ```
 
 Không sử dụng Product hiện tại để thay thế dữ liệu lịch sử.
@@ -895,14 +895,14 @@ Ngoài Primary Key và Unique Index, các trường thường xuyên được s�
 | Table | Column(s) | Reason |
 |---|---|---|
 | `users` | `email` | Login / lookup |
-| `products` | `sku` | SKU lookup |
+| `products` | `sku_snapshot` | SKU lookup |
 | `products` | `category_id` | Category filter |
 | `products` | `status` | Active/Inactive filter |
 | `products` | `created_at` | Newest sorting |
 | `products` | `price` | Price sorting/filter |
 | `cart_items` | `cart_id` | Load Cart |
 | `cart_items` | `product_id` | Product lookup |
-| `orders` | `user_id` | Customer Order History |
+| `orders` | `customer_id` | Customer Order History |
 | `orders` | `order_status` | Admin/Customer status filter |
 | `orders` | `created_at` | Order sorting |
 | `order_items` | `order_id` | Load Order Detail |
@@ -966,12 +966,12 @@ ERD phải đáp ứng các requirement chính sau:
 | Checkout | `orders`, `order_items`, `products.stock_quantity` |
 | Order History | `orders`, `order_items` |
 | Inventory | `products.stock_quantity` |
-| Product Snapshot | `order_items.product_name`, `sku`, `unit_price` |
+| Product Snapshot | `order_items.product_name_snapshot`, `sku_snapshot`, `unit_price_snapshot` |
 | Shipping Snapshot | Order shipping fields |
 | Payment Status | `orders.payment_status` |
 | Payment Timestamp | `orders.paid_at` |
 | Order Status | `orders.order_status` |
-| Customer Ownership | `orders.user_id` |
+| Customer Ownership | `orders.customer_id` |
 | Admin Order Search | Order shipping fields + User email |
 | Soft Delete Product | `products.status` |
 | Category Soft Hide | `categories.status` |
