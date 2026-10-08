@@ -32,7 +32,7 @@
 | Q09 | Hệ thống có quản lý số lượng tồn kho (inventory/stock) không? | Có. | Mỗi sản phẩm có trường Quantity/Stock và Status đại diện cho trạng thái tồn kho khả dụng. |
 | Q10 | Khi sản phẩm hết hàng, khách hàng có được đặt hàng không? | Không. | Nút "Thêm vào giỏ" / "Mua ngay" bị vô hiệu hóa khi Quantity/Stock = 0 và Status hiển thị "Hết hàng". |
 | Q11 | Có cho phép Admin đặt sản phẩm thành Active/Inactive không? | Có. | Bổ sung trường Status dạng Enum. |
-| Q12 | Khi Admin xóa sản phẩm, sản phẩm có bị xóa hoàn toàn khỏi database không? | Không. | Áp dụng Soft Delete, sử dụng Status = INACTIVE hoặc trường `deleted_at`, nhằm giữ tính toàn vẹn của dữ liệu đơn hàng cũ. |
+| Q12 | Khi Admin xóa sản phẩm, sản phẩm có bị xóa hoàn toàn khỏi database không? | Không. | Áp dụng Soft Delete, chỉ sử dụng Status = INACTIVE nhằm giữ tính toàn vẹn của dữ liệu đơn hàng cũ. |
 | Q13 | Product có một hay nhiều hình ảnh? | Một hình ảnh đại diện chính (Primary Image) cho bản MVP. | Lưu đường dẫn hình ảnh dưới dạng chuỗi `image_url`. |
 | Q14 | Giá sản phẩm có được phép bằng 0 hoặc nhỏ hơn 0 không? | Không. | Validation: `Price > 0`. |
 | Q15 | Có cần SKU hoặc mã sản phẩm không? | Có. | SKU là chuỗi duy nhất (Unique), có thể tự động tạo hoặc do Admin nhập. |
@@ -91,7 +91,7 @@
 | Q33 | MVP có cần tích hợp Payment Gateway không? | Không. | Không triển khai Payment Gateway trong MVP. |
 | Q34 | MVP có hỗ trợ Bank Transfer, E-Wallet hoặc Online Payment không? | Không. | Không triển khai các phương thức thanh toán trực tuyến trong MVP. |
 | Q35 | Có cần tạo bảng `payments` riêng không? | Không. | Không tạo Entity/Table `payments`; chỉ lưu `payment_status` trong `orders`. |
-| Q36 | Order cần quản lý trạng thái thanh toán như thế nào? | Chỉ cần biết đơn hàng đã thanh toán hay chưa. | `payment_status` gồm `UNPAID` và `PAID`. |
+| Q36 | Order cần quản lý trạng thái thanh toán như thế nào? | Chỉ cần biết đơn hàng đã thanh toán hay chưa. | `payment_status` gồm `UNPAID` và `PAID`. Khi Order mới được tạo, `payment_status = UNPAID` và `paid_at = NULL`. Khi Order chuyển sang `DELIVERED`, hệ thống tự động cập nhật `payment_status = PAID` và `paid_at` bằng thời điểm hiện tại. |
 
 ---
 
@@ -104,9 +104,9 @@
 | Q39 | Customer có được hủy Order không? | Có. | Chỉ cho phép hủy khi Order ở trạng thái `PENDING`. |
 | Q40 | Admin có được thay đổi trạng thái Order không? | Có. | Admin có quyền cập nhật Order theo luồng trạng thái được phép. |
 | Q41 | Admin có được chỉnh sửa Order sau khi Customer đã đặt hàng không? | Không. | Admin chỉ được thay đổi trạng thái, không được chỉnh sửa Product/Quantity hoặc địa chỉ của Order. |
-| Q42 | Order có cần lưu lại giá sản phẩm tại thời điểm mua không? | Bắt buộc. | Lưu trường `price` trực tiếp trong bảng `OrderItem` để bảo toàn lịch sử giá. |
+| Q42 | Order có cần lưu lại giá sản phẩm tại thời điểm mua không? | Bắt buộc. | Lưu các trường `unit_price`, `product_name`, `sku` trực tiếp trong bảng `OrderItem` để bảo toàn lịch sử đơn hàng. |
 | Q43 | Khi Order được tạo, tồn kho có được trừ ngay không? | Có. | Giảm `stock_quantity` ngay khi Checkout thành công. |
-| Q44 | Nếu Order bị hủy, số lượng tồn kho có được hoàn lại không? | Có. | Cộng ngược số lượng vào `stock_quantity` khi Order chuyển sang `CANCELLED`. |
+| Q44 | Nếu Order bị hủy, số lượng tồn kho có được hoàn lại không? | Có. | Cộng ngược số lượng vào `stock_quantity` khi Order chuyển từ `PENDING` sang `CANCELLED`. Việc hoàn tồn kho chỉ được thực hiện một lần cho mỗi Order để tránh cộng kho nhiều lần. |
 
 ---
 
@@ -124,7 +124,7 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q48 | Admin có thể thực hiện những thao tác nào với Product? | View, Search, Create, Update, Delete (Soft Delete), Activate/Deactivate. | Cấp đầy đủ API quản trị Product cho Admin. |
+| Q48 | Admin có thể thực hiện những thao tác nào với Product? | View, Search, Create, Update, Delete (Soft Delete), Activate/Deactivate. | Cấp các chức năng quản trị Product gồm xem danh sách, xem chi tiết, tìm kiếm, tạo mới, cập nhật và Soft Delete. Thao tác Delete chuyển `status = INACTIVE`; Admin có thể Activate/Deactivate Product thông qua trường Status. |
 | Q49 | Admin có được quản lý số lượng tồn kho trực tiếp không? | Có. | Admin cập nhật `stock_quantity` thông qua màn hình Edit Product. |
 
 ---
@@ -143,7 +143,7 @@
 |---|---|---|---|
 | Q51 | Admin có thể xem toàn bộ Order của hệ thống không? | Có. | Cung cấp API `GET /api/admin/orders`. |
 | Q52 | Admin có thể tìm kiếm Order theo những thông tin nào? | Order ID, Customer Name, Customer Email và Phone Number. | Bổ sung parameter search vào API Admin Order. |
-| Q53 | Admin có thể filter Order theo status không? | Có. | Hỗ trợ lọc Order theo trạng thái. |
+| Q53 | Admin có thể filter Order theo status không? | Có. | Hỗ trợ lọc Order theo `order_status` và `payment_status`. |
 | Q54 | Admin có thể xem chi tiết Order không? | Có. | Hiển thị thông tin người nhận, danh sách Item và giá trị Order. |
 
 ---
@@ -173,7 +173,7 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q62 | Có yêu cầu cụ thể về performance không? | Mức tiêu chuẩn. | Mục tiêu thời gian phản hồi API < 500ms cho các tác vụ thông thường. |
+| Q62 | Có yêu cầu cụ thể về performance không? | Không có yêu cầu benchmark cụ thể. | Hệ thống hướng tới hiệu năng ở mức phù hợp với MVP/Demo project; không đặt SLA hoặc benchmark performance bắt buộc trong phạm vi dự án. |
 | Q63 | Có yêu cầu cụ thể về số lượng người dùng hoặc quy mô dữ liệu không? | Quy mô nhỏ/Demo project. | Hướng tới quy mô < 1.000 sản phẩm và < 100 người dùng truy cập đồng thời. |
 | Q64 | Những trình duyệt nào cần được hỗ trợ? | Chrome, Firefox, Edge, Safari. | Hỗ trợ các trình duyệt hiện đại theo chuẩn web hiện hành. |
 | Q65 | Có yêu cầu logging/auditing cho các thao tác của Admin không? | Out-of-scope. | Chỉ thực hiện application logging cho lỗi ở phía Server bằng Console/File Logs. |
@@ -186,7 +186,7 @@
 |---|---|---|---|
 | Q66 | Có yêu cầu viết unit test cho Backend không? | Có, ở mức cơ bản. | Viết Unit Test cho các Business Logic quan trọng như Checkout, trừ tồn kho và tính tổng tiền. |
 | Q67 | Có yêu cầu integration test hoặc API test không? | Sử dụng Postman / Swagger Collection để kiểm thử API. | Chuẩn bị Postman Collection hỗ trợ kiểm thử API. |
-| Q68 | API error response có cần một format thống nhất không? | Có. | Sử dụng format thống nhất: `success`, `message` và `errors`. |
+| Q68 | API error response có cần một format thống nhất không? | Có. | Error response sử dụng format thống nhất gồm `success`, `message` và `errors`. Success response sử dụng `success`, `message` và `data`. |
 | Q69 | Khi thao tác thất bại, UI cần hiển thị thông báo lỗi như thế nào? | Toast notification hoặc Alert banner. | Sử dụng Toast Message thống nhất trên UI. |
 
 ### Standard API Error Response
@@ -206,7 +206,7 @@
 | # | Question | Answer | Decision |
 |---|---|---|---|
 | Q70 | Trong phạm vi 6 tuần, mức độ hoàn thiện mong muốn của hệ thống là MVP hay production-ready? | MVP (Minimum Viable Product) hoạt động hoàn chỉnh end-to-end. | Tập trung hoàn thiện 100% các luồng nghiệp vụ chính. |
-| Q71 | Có yêu cầu CI/CD không? | Out-of-scope hoặc có thể triển khai đơn giản bằng GitHub Actions. | CI/CD không bắt buộc đối với đánh giá chính của dự án. |
+| Q71 | Có yêu cầu CI/CD không? | Không bắt buộc. | CI/CD không nằm trong phạm vi bắt buộc của MVP và không ảnh hưởng đến đánh giá chính của dự án. Có thể triển khai GitHub Actions nếu còn thời gian, nhưng không phải requirement. |
 
 ---
 
@@ -242,15 +242,19 @@
 - Product có SKU unique.
 - Product có một Primary Image trong MVP.
 - Product có Active/Inactive status.
-- Product sử dụng Soft Delete.
+- Product sử dụng Soft Delete bằng cách chuyển `status = INACTIVE`.
 - Không cho phép đặt hàng khi hết hàng.
 
 ### Order
 
 - Order có `OrderItem`.
-- `OrderItem` lưu giá tại thời điểm mua.
+- `OrderItem` lưu `product_name`, `sku` và `unit_price` tại thời điểm mua.
+- Order mới có `payment_status = UNPAID` và `paid_at = NULL`.
+- Khi Order chuyển sang `DELIVERED`, hệ thống tự động cập nhật `payment_status = PAID` và `paid_at` bằng thời điểm hiện tại.
+- Không có Payment Entity/Table hoặc Payment Gateway trong MVP.
 - Stock được trừ khi Order được tạo thành công.
-- Stock được hoàn lại khi Order bị Cancel.
+- Stock được hoàn lại khi Order chuyển sang `CANCELLED`.
+- Stock chỉ được hoàn lại một lần cho mỗi Order.
 - Order Status gồm:
   - `PENDING`
   - `CONFIRMED`
