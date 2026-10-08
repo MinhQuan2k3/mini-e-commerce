@@ -2395,4 +2395,4 @@ docs/03-api/
 
 | Version | Date | Changes |
 |---|---|---|
-| Revised after Review Round 2 | 2026-10-07 | Chuẩn hóa Success Response theo `{ success, message, data }`; cập nhật FR/UC mapping trong API Summary; bổ sung Admin Category List API; loại bỏ Clear Cart khỏi Testing Checklist; cập nhật Security Rule cho `orderStatus`; chuẩn hóa các response có `message` nằm trong `data`. |
+| Revised after Review Round 2 | 2026-10-08 | Chuẩn hóa Success Response theo `{ success, message, data }`; cập nhật FR/UC mapping trong API Summary; bổ sung Admin Category List API; loại bỏ Clear Cart khỏi Testing Checklist; cập nhật Security Rule cho `orderStatus`; chuẩn hóa các response có `message` nằm trong `data`. |
