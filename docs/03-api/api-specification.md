@@ -227,26 +227,27 @@ Các API phải sử dụng thống nhất response format này.
 | Products | `GET` | `/products/{id}` | Public | FR-PROD-02 / UC-PROD-02 |
 | Categories | `GET` | `/categories` | Public | FR-CAT-01 |
 | Categories | `GET` | `/categories/{id}` | Public | FR-CAT-02 |
-| Cart | `GET` | `/cart` | Customer | FR-CART-01, FR-CART-08 / UC-CART-02 |
-| Cart | `POST` | `/cart/items` | Customer | FR-CART-01, FR-CART-02, FR-CART-03, FR-CART-05 / UC-CART-01 |
-| Cart | `PUT` | `/cart/items/{productId}` | Customer | FR-CART-05, FR-CART-06 / UC-CART-03 |
-| Cart | `DELETE` | `/cart/items/{productId}` | Customer | FR-CART-07 / UC-CART-04 |
-| Checkout | `POST` | `/orders/checkout` | Customer | FR-CHECKOUT-01…09, FR-ORDER-01…04 / UC-CHECKOUT-01, UC-ORDER-01 |
+| Cart | `GET` | `/cart` | Customer | FR-CART-01 / UC-CART-01 |
+| Cart | `POST` | `/cart/items` | Customer | FR-CART-02 / UC-CART-02 |
+| Cart | `PUT` | `/cart/items/{productId}` | Customer | FR-CART-03 |
+| Cart | `DELETE` | `/cart/items/{productId}` | Customer | FR-CART-04 |
+| Checkout | `POST` | `/orders/checkout` | Customer | FR-ORDER-01 / UC-ORDER-01 |
 | Customer Orders | `GET` | `/orders/my-orders` | Customer | FR-ORDER-11, FR-ORDER-13 / UC-ORDER-02 |
-| Customer Orders | `GET` | `/orders/{id}` | Customer | FR-ORDER-12, FR-API-04 / UC-ORDER-03 |
-| Customer Orders | `PATCH` | `/orders/{id}/cancel` | Customer | FR-ORDER-07, FR-ORDER-10 / UC-ORDER-04 |
-| Admin Products | `GET` | `/admin/products` | Admin | FR-ADMIN-PROD-01, FR-ADMIN-PROD-02, FR-ADMIN-PROD-06 / UC-ADMIN-PROD-01 |
-| Admin Products | `GET` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-08 / UC-ADMIN-PROD-01 |
+| Customer Orders | `GET` | `/orders/{id}` | Customer | FR-ORDER-03 |
+| Customer Orders | `PATCH` | `/orders/{id}/cancel` | Customer | FR-ORDER-04 |
+| Admin Products | `GET` | `/admin/products` | Admin | FR-ADMIN-PROD-01 |
+| Admin Products | `GET` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-02 |
 | Admin Products | `POST` | `/admin/products` | Admin | FR-ADMIN-PROD-03 |
 | Admin Products | `PUT` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-04 |
-| Admin Products | `DELETE` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-05 |
+| Admin Products | `DELETE` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-07 / UC-ADMIN-PROD-01 |
 | Admin Categories | `GET` | `/admin/categories` | Admin | FR-ADMIN-CAT-01 / UC-ADMIN-CAT-01 |
-| Admin Categories | `POST` | `/admin/categories` | Admin | FR-ADMIN-CAT-01 |
-| Admin Categories | `PUT` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-02 |
-| Admin Categories | `DELETE` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-03 |
-| Admin Orders | `GET` | `/admin/orders` | Admin | FR-ADMIN-ORDER-01/02 |
-| Admin Orders | `GET` | `/admin/orders/{id}` | Admin | FR-ADMIN-ORDER-03 |
-| Admin Orders | `PATCH` | `/admin/orders/{id}/status` | Admin | FR-ADMIN-ORDER-04 |
+| Admin Categories | `POST` | `/admin/categories` | Admin | FR-ADMIN-CAT-02 / UC-ADMIN-CAT-01 |
+| Admin Categories | `PUT` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-03 / UC-ADMIN-CAT-01 |
+| Admin Categories | `DELETE` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-04 / UC-ADMIN-CAT-01 |
+| Admin Orders | `GET` | `/admin/orders` | Admin | FR-ADMIN-ORDER-01, FR-ADMIN-ORDER-02, FR-ADMIN-ORDER-03 / UC-ADMIN-ORDER-01 |
+| Admin Orders | `GET` | `/admin/orders/{id}` | Admin | FR-ADMIN-ORDER-04 / UC-ADMIN-ORDER-02 |
+| Admin Orders | `PATCH` | `/admin/orders/{id}/status` | Admin | FR-ADMIN-ORDER-05 / UC-ADMIN-ORDER-03 |
+
 
 ---
 
@@ -294,10 +295,14 @@ Admin không được đăng ký thông qua endpoint này.
 
 ```json
 {
-  "id": 1,
-  "email": "customer@example.com",
-  "role": "CUSTOMER",
-  "createdAt": "2026-09-24T14:30:00"
+  "success": true,
+  "message": "Customer registered successfully",
+  "data": {
+    "id": 1,
+    "email": "customer@example.com",
+    "role": "CUSTOMER",
+    "createdAt": "2026-09-24T14:30:00"
+  }
 }
 ```
 
@@ -352,13 +357,17 @@ Xác thực người dùng bằng email và password.
 
 ```json
 {
-  "accessToken": "eyJhbGciOiJIUzI1NiIs...",
-  "tokenType": "Bearer",
-  "expiresIn": 3600,
-  "user": {
-    "id": 1,
-    "email": "customer@example.com",
-    "role": "CUSTOMER"
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIs...",
+    "tokenType": "Bearer",
+    "expiresIn": 3600,
+    "user": {
+      "id": 1,
+      "email": "customer@example.com",
+      "role": "CUSTOMER"
+    }
   }
 }
 ```
@@ -421,26 +430,30 @@ GET /products?keyword=keyboard&categoryId=2&page=0&size=10
 
 ```json
 {
-  "content": [
-    {
-      "id": 1,
-      "sku": "KB-001",
-      "name": "Mechanical Keyboard",
-      "description": "Mechanical keyboard for office use",
-      "price": 850000.00,
-      "stockQuantity": 20,
-      "imageUrl": "https://example.com/images/keyboard.jpg",
-      "category": {
-        "id": 2,
-        "name": "Accessories"
-      },
-      "status": "ACTIVE"
-    }
-  ],
-  "page": 0,
-  "size": 10,
-  "totalElements": 1,
-  "totalPages": 1
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "sku": "KB-001",
+        "name": "Mechanical Keyboard",
+        "description": "Mechanical keyboard for office use",
+        "price": 850000.0,
+        "stockQuantity": 20,
+        "imageUrl": "https://example.com/images/keyboard.jpg",
+        "category": {
+          "id": 2,
+          "name": "Accessories"
+        },
+        "status": "ACTIVE"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 1,
+    "totalPages": 1
+  }
 }
 ```
 
@@ -481,20 +494,24 @@ Product `INACTIVE` vẫn có thể được trả về để Frontend hiển th�
 
 ```json
 {
-  "id": 1,
-  "sku": "KB-001",
-  "name": "Mechanical Keyboard",
-  "description": "Mechanical keyboard for office use",
-  "price": 850000.00,
-  "stockQuantity": 20,
-  "imageUrl": "https://example.com/images/keyboard.jpg",
-  "category": {
-    "id": 2,
-    "name": "Accessories"
-  },
-  "status": "ACTIVE",
-  "createdAt": "2026-09-24T14:30:00",
-  "updatedAt": "2026-09-24T14:30:00"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 1,
+    "sku": "KB-001",
+    "name": "Mechanical Keyboard",
+    "description": "Mechanical keyboard for office use",
+    "price": 850000.0,
+    "stockQuantity": 20,
+    "imageUrl": "https://example.com/images/keyboard.jpg",
+    "category": {
+      "id": 2,
+      "name": "Accessories"
+    },
+    "status": "ACTIVE",
+    "createdAt": "2026-09-24T14:30:00",
+    "updatedAt": "2026-09-24T14:30:00"
+  }
 }
 ```
 
@@ -538,20 +555,24 @@ Lấy danh sách Category đang hoạt động.
 **HTTP 200 OK**
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "Electronics",
-    "description": "Electronic products",
-    "status": "ACTIVE"
-  },
-  {
-    "id": 2,
-    "name": "Accessories",
-    "description": "Computer accessories",
-    "status": "ACTIVE"
-  }
-]
+{
+  "success": true,
+  "message": "Request successful",
+  "data": [
+    {
+      "id": 1,
+      "name": "Electronics",
+      "description": "Electronic products",
+      "status": "ACTIVE"
+    },
+    {
+      "id": 2,
+      "name": "Accessories",
+      "description": "Computer accessories",
+      "status": "ACTIVE"
+    }
+  ]
+}
 ```
 
 ### Business Rules
@@ -581,10 +602,14 @@ Public
 
 ```json
 {
-  "id": 2,
-  "name": "Accessories",
-  "description": "Computer accessories",
-  "status": "ACTIVE"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 2,
+    "name": "Accessories",
+    "description": "Computer accessories",
+    "status": "ACTIVE"
+  }
 }
 ```
 
@@ -624,28 +649,32 @@ Guest không được sử dụng Cart.
 
 ```json
 {
-  "id": 1,
-  "items": [
-    {
-      "id": 10,
-      "product": {
-        "id": 1,
-        "sku": "KB-001",
-        "name": "Mechanical Keyboard",
-        "price": 850000.00,
-        "stockQuantity": 20,
-        "imageUrl": "https://example.com/images/keyboard.jpg",
-        "status": "ACTIVE"
-      },
-      "quantity": 2,
-      "subtotal": 1700000.00,
-      "available": true,
-      "unavailableReason": null
-    }
-  ],
-  "totalAmount": 1700000.00,
-  "checkoutAllowed": true,
-  "updatedAt": "2026-09-24T14:30:00"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 1,
+    "items": [
+      {
+        "id": 10,
+        "product": {
+          "id": 1,
+          "sku": "KB-001",
+          "name": "Mechanical Keyboard",
+          "price": 850000.0,
+          "stockQuantity": 20,
+          "imageUrl": "https://example.com/images/keyboard.jpg",
+          "status": "ACTIVE"
+        },
+        "quantity": 2,
+        "subtotal": 1700000.0,
+        "available": true,
+        "unavailableReason": null
+      }
+    ],
+    "totalAmount": 1700000.0,
+    "checkoutAllowed": true,
+    "updatedAt": "2026-09-24T14:30:00"
+  }
 }
 ```
 
@@ -708,10 +737,13 @@ CUSTOMER
 
 ```json
 {
-  "productId": 1,
-  "quantity": 2,
-  "subtotal": 1700000.00,
-  "message": "Product added to cart successfully"
+  "success": true,
+  "message": "Product added to cart successfully",
+  "data": {
+    "productId": 1,
+    "quantity": 2,
+    "subtotal": 1700000.0
+  }
 }
 ```
 
@@ -755,10 +787,13 @@ CUSTOMER
 
 ```json
 {
-  "productId": 1,
-  "quantity": 3,
-  "subtotal": 2550000.00,
-  "message": "Cart item updated successfully"
+  "success": true,
+  "message": "Cart item updated successfully",
+  "data": {
+    "productId": 1,
+    "quantity": 3,
+    "subtotal": 2550000.0
+  }
 }
 ```
 
@@ -890,30 +925,34 @@ paidAt = NULL
 
 ```json
 {
-  "id": 1001,
-  "customerId": 1,
-  "totalAmount": 1700000.00,
-  "recipientName": "Nguyen Minh Quan",
-  "phone": "0912345678",
-  "address": "12 Example Street",
-  "provinceCity": "Ha Noi",
-  "district": "Hoan Kiem",
-  "ward": "Hang Trong",
-  "orderStatus": "PENDING",
-  "paymentStatus": "UNPAID",
-  "paidAt": null,
-  "items": [
-    {
-      "id": 5001,
-      "productId": 1,
-      "productNameSnapshot": "Mechanical Keyboard",
-      "skuSnapshot": "KB-001",
-      "unitPrice": 850000.00,
-      "quantity": 2,
-      "itemTotal": 1700000.00
-    }
-  ],
-  "createdAt": "2026-09-24T14:30:00"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 1001,
+    "customerId": 1,
+    "totalAmount": 1700000.0,
+    "recipientName": "Nguyen Minh Quan",
+    "phone": "0912345678",
+    "address": "12 Example Street",
+    "provinceCity": "Ha Noi",
+    "district": "Hoan Kiem",
+    "ward": "Hang Trong",
+    "orderStatus": "PENDING",
+    "paymentStatus": "UNPAID",
+    "paidAt": null,
+    "items": [
+      {
+        "id": 5001,
+        "productId": 1,
+        "productNameSnapshot": "Mechanical Keyboard",
+        "skuSnapshot": "KB-001",
+        "unitPriceSnapshot": 850000.0,
+        "quantity": 2,
+        "itemTotal": 1700000.0
+      }
+    ],
+    "createdAt": "2026-09-24T14:30:00"
+  }
 }
 ```
 
@@ -974,20 +1013,24 @@ CUSTOMER
 
 ```json
 {
-  "content": [
-    {
-      "id": 1001,
-      "totalAmount": 1700000.00,
-      "orderStatus": "PENDING",
-      "paymentStatus": "UNPAID",
-      "paidAt": null,
-      "createdAt": "2026-09-24T14:30:00"
-    }
-  ],
-  "page": 0,
-  "size": 10,
-  "totalElements": 1,
-  "totalPages": 1
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "content": [
+      {
+        "id": 1001,
+        "totalAmount": 1700000.0,
+        "orderStatus": "PENDING",
+        "paymentStatus": "UNPAID",
+        "paidAt": null,
+        "createdAt": "2026-09-24T14:30:00"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 1,
+    "totalPages": 1
+  }
 }
 ```
 
@@ -1023,31 +1066,35 @@ Lấy thông tin chi tiết Order của Customer hiện tại.
 
 ```json
 {
-  "id": 1001,
-  "customerId": 1,
-  "totalAmount": 1700000.00,
-  "recipientName": "Nguyen Minh Quan",
-  "phone": "0912345678",
-  "address": "12 Example Street",
-  "provinceCity": "Ha Noi",
-  "district": "Hoan Kiem",
-  "ward": "Hang Trong",
-  "orderStatus": "PENDING",
-  "paymentStatus": "UNPAID",
-  "paidAt": null,
-  "items": [
-    {
-      "id": 5001,
-      "productId": 1,
-      "productNameSnapshot": "Mechanical Keyboard",
-      "skuSnapshot": "KB-001",
-      "unitPrice": 850000.00,
-      "quantity": 2,
-      "itemTotal": 1700000.00
-    }
-  ],
-  "createdAt": "2026-09-24T14:30:00",
-  "updatedAt": "2026-09-24T14:30:00"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 1001,
+    "customerId": 1,
+    "totalAmount": 1700000.0,
+    "recipientName": "Nguyen Minh Quan",
+    "phone": "0912345678",
+    "address": "12 Example Street",
+    "provinceCity": "Ha Noi",
+    "district": "Hoan Kiem",
+    "ward": "Hang Trong",
+    "orderStatus": "PENDING",
+    "paymentStatus": "UNPAID",
+    "paidAt": null,
+    "items": [
+      {
+        "id": 5001,
+        "productId": 1,
+        "productNameSnapshot": "Mechanical Keyboard",
+        "skuSnapshot": "KB-001",
+        "unitPriceSnapshot": 850000.0,
+        "quantity": 2,
+        "itemTotal": 1700000.0
+      }
+    ],
+    "createdAt": "2026-09-24T14:30:00",
+    "updatedAt": "2026-09-24T14:30:00"
+  }
 }
 ```
 
@@ -1170,25 +1217,29 @@ GET /admin/products?keyword=keyboard&status=ACTIVE&page=0&size=10
 
 ```json
 {
-  "content": [
-    {
-      "id": 1,
-      "sku": "KB-001",
-      "name": "Mechanical Keyboard",
-      "description": "Mechanical keyboard for office use",
-      "price": 850000.00,
-      "stockQuantity": 20,
-      "imageUrl": "https://example.com/images/keyboard.jpg",
-      "categoryId": 2,
-      "status": "ACTIVE",
-      "createdAt": "2026-09-24T14:30:00",
-      "updatedAt": "2026-09-24T14:30:00"
-    }
-  ],
-  "page": 0,
-  "size": 10,
-  "totalElements": 1,
-  "totalPages": 1
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "sku": "KB-001",
+        "name": "Mechanical Keyboard",
+        "description": "Mechanical keyboard for office use",
+        "price": 850000.0,
+        "stockQuantity": 20,
+        "imageUrl": "https://example.com/images/keyboard.jpg",
+        "categoryId": 2,
+        "status": "ACTIVE",
+        "createdAt": "2026-09-24T14:30:00",
+        "updatedAt": "2026-09-24T14:30:00"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 1,
+    "totalPages": 1
+  }
 }
 ```
 
@@ -1226,20 +1277,24 @@ Lấy thông tin chi tiết Product dành cho Admin, bao gồm cả Product `ACT
 
 ```json
 {
-  "id": 1,
-  "sku": "KB-001",
-  "name": "Mechanical Keyboard",
-  "description": "Mechanical keyboard for office use",
-  "price": 850000.00,
-  "stockQuantity": 20,
-  "imageUrl": "https://example.com/images/keyboard.jpg",
-  "category": {
-    "id": 2,
-    "name": "Accessories"
-  },
-  "status": "ACTIVE",
-  "createdAt": "2026-09-24T14:30:00",
-  "updatedAt": "2026-09-24T14:30:00"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 1,
+    "sku": "KB-001",
+    "name": "Mechanical Keyboard",
+    "description": "Mechanical keyboard for office use",
+    "price": 850000.0,
+    "stockQuantity": 20,
+    "imageUrl": "https://example.com/images/keyboard.jpg",
+    "category": {
+      "id": 2,
+      "name": "Accessories"
+    },
+    "status": "ACTIVE",
+    "createdAt": "2026-09-24T14:30:00",
+    "updatedAt": "2026-09-24T14:30:00"
+  }
 }
 ```
 
@@ -1301,17 +1356,21 @@ ADMIN
 
 ```json
 {
-  "id": 1,
-  "sku": "KB-001",
-  "name": "Mechanical Keyboard",
-  "description": "Mechanical keyboard for office use",
-  "price": 850000.00,
-  "stockQuantity": 20,
-  "imageUrl": "https://example.com/images/keyboard.jpg",
-  "categoryId": 2,
-  "status": "ACTIVE",
-  "createdAt": "2026-09-24T14:30:00",
-  "updatedAt": "2026-09-24T14:30:00"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 1,
+    "sku": "KB-001",
+    "name": "Mechanical Keyboard",
+    "description": "Mechanical keyboard for office use",
+    "price": 850000.0,
+    "stockQuantity": 20,
+    "imageUrl": "https://example.com/images/keyboard.jpg",
+    "categoryId": 2,
+    "status": "ACTIVE",
+    "createdAt": "2026-09-24T14:30:00",
+    "updatedAt": "2026-09-24T14:30:00"
+  }
 }
 ```
 
@@ -1362,17 +1421,21 @@ ADMIN
 
 ```json
 {
-  "id": 1,
-  "sku": "KB-001",
-  "name": "Mechanical Keyboard Updated",
-  "description": "Updated description",
-  "price": 900000.00,
-  "stockQuantity": 25,
-  "imageUrl": "https://example.com/images/keyboard-new.jpg",
-  "categoryId": 2,
-  "status": "ACTIVE",
-  "createdAt": "2026-09-24T14:30:00",
-  "updatedAt": "2026-09-24T15:00:00"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 1,
+    "sku": "KB-001",
+    "name": "Mechanical Keyboard Updated",
+    "description": "Updated description",
+    "price": 900000.0,
+    "stockQuantity": 25,
+    "imageUrl": "https://example.com/images/keyboard-new.jpg",
+    "categoryId": 2,
+    "status": "ACTIVE",
+    "createdAt": "2026-09-24T14:30:00",
+    "updatedAt": "2026-09-24T15:00:00"
+  }
 }
 ```
 
@@ -1450,7 +1513,46 @@ Không trả về response body.
 
 # 13. Admin Category APIs
 
-## 13.1. Create Category
+## 13.1. Get Admin Category List
+
+### Endpoint
+
+```http
+GET /admin/categories
+```
+
+### Access
+
+```text
+ADMIN
+```
+
+### Description
+
+Lấy danh sách Category dành cho Admin, bao gồm cả Category `ACTIVE` và `INACTIVE`.
+
+### Success Response
+
+**HTTP 200 OK**
+
+```json
+{
+  "success": true,
+  "message": "Categories retrieved successfully",
+  "data": []
+}
+```
+
+### Error Cases
+
+| Status | Condition |
+|---|---|
+| `401` | Chưa đăng nhập |
+| `403` | Không phải Admin |
+
+---
+
+## 13.2. Create Category
 
 ### Endpoint
 
@@ -1480,10 +1582,14 @@ ADMIN
 
 ```json
 {
-  "id": 2,
-  "name": "Accessories",
-  "description": "Computer accessories",
-  "status": "ACTIVE"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 2,
+    "name": "Accessories",
+    "description": "Computer accessories",
+    "status": "ACTIVE"
+  }
 }
 ```
 
@@ -1498,7 +1604,7 @@ ADMIN
 
 ---
 
-## 13.2. Update Category
+## 13.3. Update Category
 
 ### Endpoint
 
@@ -1528,11 +1634,14 @@ ADMIN
 
 ```json
 {
-  "id": 2,
-  "name": "Computer Accessories",
-  "description": "Updated description",
-  "status": "ACTIVE",
-  "message": "Category updated successfully"
+  "success": true,
+  "message": "Category updated successfully",
+  "data": {
+    "id": 2,
+    "name": "Computer Accessories",
+    "description": "Updated description",
+    "status": "ACTIVE"
+  }
 }
 ```
 
@@ -1554,7 +1663,7 @@ ADMIN
 
 ---
 
-## 13.3. Delete Category
+## 13.4. Delete Category
 
 ### Endpoint
 
@@ -1649,24 +1758,28 @@ GET /admin/orders?keyword=quan&status=PENDING&page=0&size=10
 
 ```json
 {
-  "content": [
-    {
-      "id": 1001,
-      "customerId": 1,
-      "customerEmail": "customer@example.com",
-      "recipientName": "Nguyen Minh Quan",
-      "phone": "0912345678",
-      "totalAmount": 1700000.00,
-      "orderStatus": "PENDING",
-      "paymentStatus": "UNPAID",
-      "paidAt": null,
-      "createdAt": "2026-09-24T14:30:00"
-    }
-  ],
-  "page": 0,
-  "size": 10,
-  "totalElements": 1,
-  "totalPages": 1
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "content": [
+      {
+        "id": 1001,
+        "customerId": 1,
+        "customerEmail": "customer@example.com",
+        "recipientName": "Nguyen Minh Quan",
+        "phone": "0912345678",
+        "totalAmount": 1700000.0,
+        "orderStatus": "PENDING",
+        "paymentStatus": "UNPAID",
+        "paidAt": null,
+        "createdAt": "2026-09-24T14:30:00"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 1,
+    "totalPages": 1
+  }
 }
 ```
 
@@ -1715,32 +1828,36 @@ Lấy toàn bộ thông tin chi tiết của một Order.
 
 ```json
 {
-  "id": 1001,
-  "customerId": 1,
-  "customerEmail": "customer@example.com",
-  "totalAmount": 1700000.00,
-  "recipientName": "Nguyen Minh Quan",
-  "phone": "0912345678",
-  "address": "12 Example Street",
-  "provinceCity": "Ha Noi",
-  "district": "Hoan Kiem",
-  "ward": "Hang Trong",
-  "orderStatus": "PENDING",
-  "paymentStatus": "UNPAID",
-  "paidAt": null,
-  "items": [
-    {
-      "id": 5001,
-      "productId": 1,
-      "productNameSnapshot": "Mechanical Keyboard",
-      "skuSnapshot": "KB-001",
-      "unitPrice": 850000.00,
-      "quantity": 2,
-      "itemTotal": 1700000.00
-    }
-  ],
-  "createdAt": "2026-09-24T14:30:00",
-  "updatedAt": "2026-09-24T14:30:00"
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 1001,
+    "customerId": 1,
+    "customerEmail": "customer@example.com",
+    "totalAmount": 1700000.0,
+    "recipientName": "Nguyen Minh Quan",
+    "phone": "0912345678",
+    "address": "12 Example Street",
+    "provinceCity": "Ha Noi",
+    "district": "Hoan Kiem",
+    "ward": "Hang Trong",
+    "orderStatus": "PENDING",
+    "paymentStatus": "UNPAID",
+    "paidAt": null,
+    "items": [
+      {
+        "id": 5001,
+        "productId": 1,
+        "productNameSnapshot": "Mechanical Keyboard",
+        "skuSnapshot": "KB-001",
+        "unitPriceSnapshot": 850000.0,
+        "quantity": 2,
+        "itemTotal": 1700000.0
+      }
+    ],
+    "createdAt": "2026-09-24T14:30:00",
+    "updatedAt": "2026-09-24T14:30:00"
+  }
 }
 ```
 
@@ -1792,11 +1909,14 @@ CANCELLED
 
 ```json
 {
-  "id": 1001,
-  "orderStatus": "CONFIRMED",
-  "paymentStatus": "UNPAID",
-  "paidAt": null,
-  "message": "Order status updated successfully"
+  "success": true,
+  "message": "Order status updated successfully",
+  "data": {
+    "id": 1001,
+    "orderStatus": "CONFIRMED",
+    "paymentStatus": "UNPAID",
+    "paidAt": null
+  }
 }
 ```
 
@@ -2009,6 +2129,14 @@ totalAmount
 paymentStatus
 paidAt
 orderStatus
+```
+
+Đối với `orderStatus`, Backend phải kiểm tra:
+
+```text
+- Role của client.
+- Trạng thái hiện tại của Order.
+- Transition matrix được phép.
 ```
 
 Các giá trị quan trọng phải được xác định hoặc kiểm tra tại Backend.
