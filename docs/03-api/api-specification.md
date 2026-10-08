@@ -2390,3 +2390,9 @@ docs/01-requirements/
 docs/02-design/
 docs/03-api/
 ```
+
+## Change Log
+
+| Version | Date | Changes |
+|---|---|---|
+| Revised after Review Round 2 | 2026-10-07 | Chuẩn hóa Success Response theo `{ success, message, data }`; đổi `unitPrice` thành `unitPriceSnapshot`; cập nhật FR/UC mapping trong API Summary; bổ sung Admin Category List API; loại bỏ Clear Cart khỏi Testing Checklist; cập nhật Security Rule cho `orderStatus`; chuẩn hóa các response có `message` nằm trong `data`. |
