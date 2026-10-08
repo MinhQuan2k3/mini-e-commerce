@@ -104,25 +104,25 @@
 | 2 | Authentication cơ bản | Implement Register/Login, password hashing và kiểm tra thông tin đăng nhập | 8 | Bao gồm validation password tối thiểu 8 ký tự; là nền tảng cho JWT |
 | 2 | API Test Setup | Chuẩn bị Postman/Swagger collection cơ bản và test các API nền tảng | 1 | Tạo sớm để hỗ trợ kiểm thử Backend trong các tuần sau |
 |  | **Tổng Tuần 2** | | **39 giờ** | |
-| 3 | Spring Security | Cấu hình Spring Security và authentication flow | 3 | Phụ thuộc Authentication cơ bản Tuần 2 |
-| 3 | JWT | Implement tạo, validate và parse JWT | 4 | Phụ thuộc Spring Security |
-| 3 | Authorization | Phân quyền ADMIN/CUSTOMER và bảo vệ các endpoint | 3 | Phụ thuộc JWT |
-| 3 | Cart | Tạo API lấy/tạo Cart và thêm Product vào Cart | 4 | Phụ thuộc User/Product |
-| 3 | Cart | Cập nhật số lượng và xóa CartItem | 3 | Phụ thuộc Cart |
-| 3 | Cart Validation | Kiểm tra Product ACTIVE, quantity > 0 và quantity không vượt stock | 2 | Phụ thuộc Product/Cart |
-| 3 | Checkout | Tạo Order + OrderItem từ Cart và lưu snapshot thông tin sản phẩm | 4 | Phụ thuộc Cart |
-| 3 | Checkout | Tính tổng tiền và validate shipping information | 2 | Shipping gồm Recipient Name, Phone, Address, Province/City, District, Ward |
-| 3 | Inventory Transaction | Trừ stock bằng conditional update, kiểm tra affected rows và rollback toàn bộ Checkout nếu thất bại | 5 | Quan trọng; cần xử lý concurrency và transaction |
-| 3 | Customer Order | Implement API xem danh sách và chi tiết Order của Customer | 3 | Có ownership check; Customer chỉ xem Order của chính mình |
-| 3 | Cancel Order | Hủy Order PENDING và restore stock đúng một lần trong cùng transaction | 4 | Không được restore stock lần thứ hai nếu Order đã CANCELLED |
-| 3 | Product Search | Implement search theo Name/SKU/Description, filter, sort và pagination | 3 | Keyword không phân biệt hoa thường; page mặc định 10, tối đa 50 |
-| 3 | Admin Order | Implement API Admin Order list/search/filter theo Order ID, Customer Email, Recipient Name, Phone | 3 | Phụ thuộc Order/User và shipping snapshot |
-| 3 | Admin Order | Implement Admin Order Detail và cập nhật Order Status theo transition hợp lệ | 3 | PENDING → CONFIRMED → SHIPPING → DELIVERED; PENDING → CANCELLED |
-| 3 | Admin Order | Xử lý Admin Cancel: restore stock transactional và cập nhật payment rule khi DELIVERED | 3 | DELIVERED tự động chuyển paymentStatus=PAID và ghi paidAt |
-| 3 | Edge Cases | Xử lý Cart rỗng, hết hàng, Product INACTIVE, invalid input và các lỗi nghiệp vụ | 2 | Phụ thuộc các nghiệp vụ tương ứng |
-| 3 | Unit Test | Viết Unit Test cho validation, tính toán, stock, Cancel Order và Order Status Transition | 3 | Tập trung vào business logic quan trọng |
-| 3 | API Test | Cập nhật Postman/Swagger collection và kiểm thử các API Backend mới | 2 | Dùng để test Backend độc lập |
-|  | **Tổng Tuần 3** | | **53 giờ** | |
+| 3 | Spring Security | Cấu hình Spring Security và authentication flow | 2 | Phụ thuộc Authentication cơ bản Tuần 2 |
+| 3 | JWT | Implement tạo, validate và parse JWT | 3 | Phụ thuộc Spring Security |
+| 3 | Authorization | Phân quyền ADMIN/CUSTOMER và bảo vệ các endpoint | 2 | Phụ thuộc JWT |
+| 3 | Cart | Tạo API lấy/tạo Cart và thêm Product vào Cart | 3 | Phụ thuộc User/Product |
+| 3 | Cart | Cập nhật số lượng và xóa CartItem | 2 | Phụ thuộc Cart |
+| 3 | Cart Validation | Kiểm tra Product ACTIVE, quantity > 0 và quantity không vượt stock | 1 | Phụ thuộc Product/Cart |
+| 3 | Checkout | Tạo Order + OrderItem từ Cart và lưu snapshot thông tin sản phẩm | 3 | Phụ thuộc Cart |
+| 3 | Checkout | Tính tổng tiền và validate shipping information | 1 | Shipping gồm Recipient Name, Phone, Address, Province/City, District, Ward |
+| 3 | Inventory Transaction | Trừ stock bằng conditional update, kiểm tra affected rows và rollback toàn bộ Checkout nếu thất bại | 4 | Quan trọng; cần xử lý concurrency và transaction |
+| 3 | Customer Order | Implement API xem danh sách và chi tiết Order của Customer | 2 | Có ownership check; Customer chỉ xem Order của chính mình |
+| 3 | Cancel Order | Hủy Order PENDING và restore stock đúng một lần trong cùng transaction | 3 | Không được restore stock lần thứ hai nếu Order đã CANCELLED |
+| 3 | Product Search | Implement search theo Name/SKU/Description, filter, sort và pagination | 2 | Keyword không phân biệt hoa thường; page mặc định 10, tối đa 50 |
+| 3 | Admin Order | Implement API Admin Order list/search/filter theo Order ID, Customer Email, Recipient Name, Phone | 2 | Phụ thuộc Order/User và shipping snapshot |
+| 3 | Admin Order | Implement Admin Order Detail và cập nhật Order Status theo transition hợp lệ | 2 | PENDING → CONFIRMED → SHIPPING → DELIVERED; PENDING → CANCELLED |
+| 3 | Admin Order | Xử lý Admin Cancel: restore stock transactional và cập nhật payment rule khi DELIVERED | 2 | DELIVERED tự động chuyển paymentStatus=PAID và ghi paidAt |
+| 3 | Edge Cases | Xử lý Cart rỗng, hết hàng, Product INACTIVE, invalid input và các lỗi nghiệp vụ | 1 | Phụ thuộc các nghiệp vụ tương ứng |
+| 3 | Unit Test | Viết Unit Test cho validation, tính toán, stock, Cancel Order và Order Status Transition | 2 | Tập trung vào business logic quan trọng |
+| 3 | API Test | Cập nhật Postman/Swagger collection và kiểm thử các API Backend mới | 1 | Dùng để test Backend độc lập |
+|  | **Tổng Tuần 3** | | **36 giờ** | |
 | 4 | Frontend Setup | Khởi tạo React project, routing và cấu hình environment/API base URL | 3 | Phụ thuộc Backend API |
 | 4 | API Layer | Xây dựng API client/service layer để gọi Backend | 3 | Phụ thuộc API Specification |
 | 4 | Authentication UI | Xây dựng Login/Register và kết nối API | 4 | Phụ thuộc Auth API |
@@ -157,8 +157,8 @@
 | 6 | Demo & Feedback | Demo sản phẩm, ghi nhận feedback và thực hiện chỉnh sửa nhỏ nếu cần | 3 | Tăng từ estimate cũ 1h để có thời gian xử lý feedback |
 | 6 | Retrospective | So sánh Estimate với Actual Time và ghi nhận bài học kinh nghiệm | 1 | Thực hiện cuối dự án |
 | 6 | Buffer | Dự phòng cho bug phát sinh, integration issue, rework và các task vượt estimate | 5 | Không dùng để mở rộng scope; chỉ sử dụng khi có phát sinh |
-|  | **Tổng Tuần 6** | | **36 giờ** | |
-| **Tổng cộng** | | | **206 giờ** | **Baseline Estimate sau khi cập nhật theo review và scope đã chốt** |
+|  | **Tổng Tuần 6** | | **32 giờ** | |
+| **Tổng cộng** | | | **187 giờ** | **Baseline Estimate sau khi cập nhật theo review và scope đã chốt** |
 
 *(Em có thể thêm/bớt số dòng tùy theo số task thực tế của mình)*
 
