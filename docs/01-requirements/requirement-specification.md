@@ -867,7 +867,7 @@ Customer phải có thể xem danh sách các Order của chính mình.
 API:
 
 ```text
-GET /api/orders/my
+GET /api/orders/my-orders
 ```
 
 * * *
@@ -937,19 +937,7 @@ Search không phân biệt chữ hoa/chữ thường.
 
 * * *
 
-### FR-ADMIN-PROD-03 — View Product Detail
-
-Admin phải có thể xem chi tiết Product, bao gồm cả Product `ACTIVE` và `INACTIVE`.
-
-API:
-
-```text
-GET /api/admin/products/{id}
-```
-
-* * *
-
-### FR-ADMIN-PROD-04 — Create Product
+### FR-ADMIN-PROD-03 — Create Product
 
 Admin phải có thể tạo Product mới.
 
@@ -964,7 +952,7 @@ Hệ thống phải validate:
 
 * * *
 
-### FR-ADMIN-PROD-05 — Update Product
+### FR-ADMIN-PROD-04 — Update Product
 
 Admin phải có thể cập nhật Product.
 
@@ -981,7 +969,7 @@ Có thể cập nhật:
 
 * * *
 
-### FR-ADMIN-PROD-06 — Manage Inventory
+### FR-ADMIN-PROD-05 — Manage Inventory
 
 Admin phải có thể cập nhật `stock_quantity` thông qua Product Management.
 
@@ -989,7 +977,7 @@ Stock không được nhỏ hơn `0`.
 
 * * *
 
-### FR-ADMIN-PROD-07 — Activate / Deactivate Product
+### FR-ADMIN-PROD-06 — Activate / Deactivate Product
 
 Admin phải có thể:
 
@@ -1002,7 +990,7 @@ Product INACTIVE không được phép đặt hàng.
 
 * * *
 
-### FR-ADMIN-PROD-08 — Soft Delete Product
+### FR-ADMIN-PROD-07 — Soft Delete Product
 
 Admin có thể thực hiện Delete Product.
 
@@ -1013,6 +1001,18 @@ status = INACTIVE
 ```
 
 Không được hard delete Product.
+
+* * *
+
+### FR-ADMIN-PROD-08 — View Product Detail
+
+Admin phải có thể xem chi tiết Product, bao gồm cả Product `ACTIVE` và `INACTIVE`.
+
+API:
+
+```text
+GET /api/admin/products/{id}
+```
 
 * * *
 
@@ -1303,28 +1303,13 @@ Order Detail phải hiển thị:
 
 * * *
 
-## FR-UI-07 — Admin Dashboard
-
-Admin UI phải cung cấp khu vực điều hướng đến:
-
-```text
-Product Management
-Category Management
-Order Management
-Inventory Management
-```
-
-MVP không yêu cầu Dashboard Statistics, Advanced Analytics hoặc Sales Reporting.
-
-* * *
-
-## FR-UI-08 — Loading State
+## FR-UI-07 — Loading State
 
 Các màn hình có thao tác API phải có trạng thái Loading phù hợp.
 
 * * *
 
-## FR-UI-09 — Empty State
+## FR-UI-08 — Empty State
 
 Các danh sách rỗng phải có Empty State.
 
@@ -1338,13 +1323,13 @@ No orders found.
 
 * * *
 
-## FR-UI-10 — Error State
+## FR-UI-09 — Error State
 
 Frontend phải hiển thị Error State khi API hoặc thao tác nghiệp vụ thất bại.
 
 * * *
 
-## FR-UI-11 — Notification
+## FR-UI-10 — Notification
 
 Các thao tác thành công/thất bại phải cung cấp thông báo bằng Toast hoặc Alert.
 
@@ -1387,7 +1372,7 @@ PUT    /api/cart/items/{productId}
 DELETE /api/cart/items/{productId}
 
 POST   /api/orders/checkout
-GET    /api/orders/my
+GET    /api/orders/my-orders
 GET    /api/orders/{id}
 PATCH  /api/orders/{id}/cancel
 
@@ -1437,21 +1422,7 @@ Customer A không được truy cập Order thuộc Customer B.
 
 * * *
 
-## FR-API-05 — Standard Success Response
-
-API thành công phải sử dụng format thống nhất:
-
-```json
-{
-  "success": true,
-  "message": "Request successful",
-  "data": {}
-}
-```
-
-* * *
-
-## FR-API-06 — Standard Error Response
+## FR-API-05 — Standard Error Response
 
 API lỗi phải sử dụng format thống nhất:
 
@@ -1476,7 +1447,7 @@ Nếu lỗi liên quan đến field cụ thể, `errors` có thể chứa:
 
 * * *
 
-## FR-API-07 — HTTP Status Codes
+## FR-API-06 — HTTP Status Codes
 
 API phải sử dụng HTTP Status Code phù hợp.
 
@@ -1493,13 +1464,27 @@ Status | Usage
 
 * * *
 
-## FR-API-08 — Pagination
+## FR-API-07 — Pagination
 
 Các API List sử dụng pagination thống nhất:
 
 * Default `page = 0`.
 * Default `size = 10`.
 * Maximum `size = 50`.
+
+* * *
+
+## FR-API-08 — Standard Success Response
+
+API thành công phải sử dụng format thống nhất:
+
+```json
+{
+  "success": true,
+  "message": "Request successful",
+  "data": {}
+}
+```
 
 * * *
 
@@ -1676,23 +1661,22 @@ BR-09 | Product hết Stock không được mua.
 BR-10 | Cart quantity không được vượt Stock.
 BR-11 | Cart không được Checkout nếu chứa Product không khả dụng.
 BR-12 | Order mới có trạng thái PENDING.
-BR-13 | Order mới có payment_status = UNPAID và paid_at = NULL.
-BR-14 | Customer chỉ được Cancel Order ở PENDING.
-BR-15 | Admin chỉ được Cancel Order ở PENDING.
+BR-13 | Customer chỉ được Cancel Order ở PENDING.
+BR-14 | Admin chỉ được Cancel Order ở PENDING.
+BR-15 | Checkout thành công phải trừ Stock.
 BR-16 | OrderItem phải lưu Product Name, SKU và Price tại thời điểm mua.
-BR-17 | Checkout thành công phải trừ Stock.
-BR-18 | Cancel Order phải hoàn Stock.
-BR-19 | Cancel Order chỉ được hoàn Stock một lần.
-BR-20 | Customer chỉ được xem Order của chính mình.
-BR-21 | Admin có thể xem tất cả Order.
+BR-17 | Cancel Order phải hoàn Stock.
+BR-18 | Cancel Order chỉ được hoàn Stock một lần.
+BR-19 | Customer chỉ được xem Order của chính mình.
+BR-20 | Category không được xóa khi còn Product tham chiếu.
+BR-21 | Product Delete phải sử dụng Soft Delete.
 BR-22 | Admin không được sửa Product/Quantity/Shipping Information của Order đã tạo.
-BR-23 | Category không được xóa khi còn Product tham chiếu.
-BR-24 | Product Delete phải sử dụng Soft Delete.
-BR-25 | Admin API phải được bảo vệ bằng role authorization.
-BR-26 | Coupon/Promotion không nằm trong MVP.
-BR-27 | Admin auditing không nằm trong MVP.
-BR-28 | Khi Order chuyển sang DELIVERED, payment_status tự động chuyển thành PAID và paid_at được gán thời điểm hiện tại.
-BR-29 | Payment Status chỉ là thuộc tính của Order; MVP không có Payment Entity hoặc Payment Gateway.
+BR-23 | Admin API phải được bảo vệ bằng role authorization.
+BR-24 | Coupon/Promotion không nằm trong MVP.
+BR-25 | Admin auditing không nằm trong MVP.
+BR-26 | Order mới có payment_status = UNPAID và paid_at = NULL.
+BR-27 | Khi Order chuyển sang DELIVERED, payment_status tự động chuyển thành PAID và paid_at được gán thời điểm hiện tại.
+BR-28 | Payment Status chỉ là thuộc tính của Order; MVP không có Payment Entity hoặc Payment Gateway.
 
 * * *
 
@@ -1878,10 +1862,10 @@ FR-PROD-11 | Search Product | `GET /api/products?keyword=`
 FR-CART-03 | Add to Cart | Cart UI / Cart API
 FR-CHECKOUT-01 | Checkout | Checkout UI
 FR-ORDER-01 | Create Order | `POST /api/orders/checkout`
-FR-ORDER-11 | View Order History | `GET /api/orders/my`
+FR-ORDER-11 | View Order History | `GET /api/orders/my-orders`
 FR-ORDER-12 | View Order Detail | `GET /api/orders/{id}`
 FR-ADMIN-PROD-01 | View Admin Products | `GET /api/admin/products`
-FR-ADMIN-PROD-04 | Create Product | Admin Product UI/API
+FR-ADMIN-PROD-03 | Create Product | Admin Product UI/API
 FR-ADMIN-CAT-02 | Create Category | Admin Category UI/API
 FR-ADMIN-ORDER-01 | View All Orders | `GET /api/admin/orders`
 FR-ADMIN-ORDER-05 | Update Order Status | `PATCH /api/admin/orders/{id}/status`
@@ -1919,17 +1903,19 @@ Requirement Specification được xem là sẵn sàng để chuyển sang giai 
 
 * * *
 
-# 13. Open Technical Decisions
+# 13. Technical Decisions
 
-Một số chi tiết không còn là business requirement nhưng cần được quyết định trong Design/Implementation:
+Một số chi tiết kỹ thuật đã được xác định để làm cơ sở cho Design/Implementation:
 
-ID | Decision Needed | Target Phase
---- | --- | ---
-TD-01 | Chọn BCrypt hay Argon2 | Backend Setup
-TD-02 | Chọn Tailwind CSS hay Bootstrap | Frontend Setup
-TD-03 | Xác định format của SKU nếu auto-generated | Database/API Design
-TD-04 | Xác định chi tiết Order Status Transition Matrix và cách validate transition | Use Case/API Design
-TD-05 | Xác định cơ chế concurrency control cho Stock ở mức implementation | Backend/Database Design
+ID | Decision | Status | Target Phase
+--- | --- | --- | ---
+TD-01 | Chọn BCrypt hay Argon2 | Open | Backend Setup
+TD-02 | Chọn Tailwind CSS hay Bootstrap | Open | Frontend Setup
+TD-03 | Soft Delete Product bằng `status = INACTIVE`, không hard-delete | Đã chốt | Database/API Design
+TD-04 | Xác định format của SKU nếu auto-generated | Open | Database/API Design
+TD-05 | Xác định chi tiết Order Status Transition Matrix và cách validate transition | Open | Use Case/API Design
+TD-06 | Category không được Delete khi còn Product tham chiếu; trả `409 Conflict` | Đã chốt | Database/API Design
+TD-07 | Xác định cơ chế concurrency control cho Stock ở mức implementation | Open / cần chốt ở Design | Backend/Database Design
 
 Các Technical Decisions trên không làm thay đổi phạm vi nghiệp vụ chính đã được xác định trong Requirement Specification.
 
