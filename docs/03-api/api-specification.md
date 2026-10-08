@@ -946,7 +946,7 @@ paidAt = NULL
         "productId": 1,
         "product_name_snapshot": "Mechanical Keyboard",
         "sku_snapshot": "KB-001",
-        "unitPriceSnapshot": 850000.0,
+        "unit_price_snapshot": 850000.0,
         "quantity": 2,
         "itemTotal": 1700000.0
       }
@@ -1087,7 +1087,7 @@ Lấy thông tin chi tiết Order của Customer hiện tại.
         "productId": 1,
         "product_name_snapshot": "Mechanical Keyboard",
         "sku_snapshot": "KB-001",
-        "unitPriceSnapshot": 850000.0,
+        "unit_price_snapshot": 850000.0,
         "quantity": 2,
         "itemTotal": 1700000.0
       }
@@ -1455,7 +1455,7 @@ ADMIN
 - Giá phải lớn hơn `0`.
 - Stock không được âm.
 - Không thay đổi dữ liệu snapshot đã lưu trong OrderItem.
-- Thay đổi giá Product không làm thay đổi `unitPrice` của OrderItem cũ.
+- Thay đổi giá Product không làm thay đổi `unit_price_snapshot` của OrderItem cũ.
 
 ---
 
@@ -1850,7 +1850,7 @@ Lấy toàn bộ thông tin chi tiết của một Order.
         "productId": 1,
         "product_name_snapshot": "Mechanical Keyboard",
         "sku_snapshot": "KB-001",
-        "unitPriceSnapshot": 850000.0,
+        "unit_price_snapshot": 850000.0,
         "quantity": 2,
         "itemTotal": 1700000.0
       }
