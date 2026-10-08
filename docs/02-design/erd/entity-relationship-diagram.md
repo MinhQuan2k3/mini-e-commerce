@@ -6,7 +6,7 @@
 |---|---|
 | Project | Mini E-commerce / Inventory Management |
 | Document | Entity Relationship Diagram |
-| Status | Draft for Design |
+| Status | Revised after Review Round 2 |
 | Database | MySQL |
 
 * * *
@@ -1057,3 +1057,11 @@ Implementation
  ↓
 Testing
 ```
+
+---
+
+## Change Log
+
+| Version | Date | Changes |
+|---|---|---|
+| Revised after Review Round 2 | 2026-10-08 | Updated ERD after Review Round 2 to align database entities and attributes with the finalized requirements. Standardized Customer and OrderItem attribute names, including `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price_snapshot`. Confirmed Product Soft Delete using `status = INACTIVE`. Confirmed that payment information is stored directly in Order through `payment_status` and `paid_at`; no separate Payment Entity/Table is introduced in the MVP. Updated relationships and constraints to remain consistent with the finalized business rules for Product, Category, Cart, Order, and OrderItem. |
