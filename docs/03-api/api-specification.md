@@ -223,25 +223,25 @@ Các API phải sử dụng thống nhất response format này.
 |---|---|---|---|---|
 | Authentication | `POST` | `/auth/register` | Guest | FR-AUTH-01 / UC-AUTH-01 |
 | Authentication | `POST` | `/auth/login` | Guest | FR-AUTH-02 / UC-AUTH-02 |
-| Authentication | `GET` | `/auth/me` | Customer/Admin | FR-AUTH-03 |
 | Products | `GET` | `/products` | Public | FR-PROD-01 / UC-PROD-01 |
 | Products | `GET` | `/products/{id}` | Public | FR-PROD-02 / UC-PROD-02 |
 | Categories | `GET` | `/categories` | Public | FR-CAT-01 |
 | Categories | `GET` | `/categories/{id}` | Public | FR-CAT-02 |
-| Cart | `GET` | `/cart` | Customer | FR-CART-01 / UC-CART-01 |
-| Cart | `POST` | `/cart/items` | Customer | FR-CART-02 / UC-CART-02 |
-| Cart | `PUT` | `/cart/items/{productId}` | Customer | FR-CART-03 |
-| Cart | `DELETE` | `/cart/items/{productId}` | Customer | FR-CART-04 |
+| Cart | `GET` | `/cart` | Customer | FR-CART-01, FR-CART-08 / UC-CART-02 |
+| Cart | `POST` | `/cart/items` | Customer | FR-CART-01, FR-CART-02, FR-CART-03, FR-CART-05 / UC-CART-01 |
+| Cart | `PUT` | `/cart/items/{productId}` | Customer | FR-CART-05, FR-CART-06 / UC-CART-03 |
+| Cart | `DELETE` | `/cart/items/{productId}` | Customer | FR-CART-07 / UC-CART-04 |
 | Cart | `DELETE` | `/cart` | Customer | FR-CART-05 |
-| Checkout | `POST` | `/orders/checkout` | Customer | FR-ORDER-01 / UC-ORDER-01 |
-| Customer Orders | `GET` | `/orders/my` | Customer | FR-ORDER-02 |
-| Customer Orders | `GET` | `/orders/{id}` | Customer | FR-ORDER-03 |
-| Customer Orders | `PATCH` | `/orders/{id}/cancel` | Customer | FR-ORDER-04 |
-| Admin Products | `GET` | `/admin/products` | Admin | FR-ADMIN-PROD-01 |
-| Admin Products | `GET` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-02 |
+| Checkout | `POST` | `/orders/checkout` | Customer | FR-CHECKOUT-01…09, FR-ORDER-01…04 / UC-CHECKOUT-01, UC-ORDER-01 |
+| Customer Orders | `GET` | `/orders/my-orders` | Customer | FR-ORDER-11, FR-ORDER-13 / UC-ORDER-02 |
+| Customer Orders | `GET` | `/orders/{id}` | Customer | FR-ORDER-12, FR-API-04 / UC-ORDER-03 |
+| Customer Orders | `PATCH` | `/orders/{id}/cancel` | Customer | FR-ORDER-07, FR-ORDER-10 / UC-ORDER-04 |
+| Admin Products | `GET` | `/admin/products` | Admin | FR-ADMIN-PROD-01, FR-ADMIN-PROD-02, FR-ADMIN-PROD-06 / UC-ADMIN-PROD-01 |
+| Admin Products | `GET` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-08 / UC-ADMIN-PROD-01 |
 | Admin Products | `POST` | `/admin/products` | Admin | FR-ADMIN-PROD-03 |
 | Admin Products | `PUT` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-04 |
 | Admin Products | `DELETE` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-05 |
+| Admin Categories | `GET` | `/admin/categories` | Admin | FR-ADMIN-CAT-01 / UC-ADMIN-CAT-01 |
 | Admin Categories | `POST` | `/admin/categories` | Admin | FR-ADMIN-CAT-01 |
 | Admin Categories | `PUT` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-02 |
 | Admin Categories | `DELETE` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-03 |
@@ -372,49 +372,6 @@ Xác thực người dùng bằng email và password.
 | `401` | Email hoặc password không đúng |
 
 MVP không có Account Status, do đó không sử dụng lỗi `403 Account Disabled`.
-
----
-
-## 6.3. Get Current User
-
-### Endpoint
-
-```http
-GET /auth/me
-```
-
-### Access
-
-```text
-Authenticated User
-```
-
-### Description
-
-Lấy thông tin tài khoản hiện tại từ JWT.
-
-### Request
-
-Không có request body.
-
-### Success Response
-
-**HTTP 200 OK**
-
-```json
-{
-  "id": 1,
-  "email": "customer@example.com",
-  "role": "CUSTOMER",
-  "createdAt": "2026-09-24T14:30:00"
-}
-```
-
-### Error Cases
-
-| Status | Condition |
-|---|---|
-| `401` | Thiếu hoặc JWT không hợp lệ |
 
 ---
 
@@ -1023,7 +980,7 @@ Toàn bộ transaction phải được rollback.
 ### Endpoint
 
 ```http
-GET /orders/my
+GET /orders/my-orders
 ```
 
 ### Access
