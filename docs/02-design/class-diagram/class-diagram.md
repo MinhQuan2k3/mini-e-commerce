@@ -54,7 +54,7 @@ classDiagram
     class User {
         +Long id
         +String email
-        +String password
+        +String password_hash
         +Role role
         +LocalDateTime createdAt
         +LocalDateTime updatedAt
@@ -71,7 +71,7 @@ classDiagram
 
     class Product {
         +Long id
-        +String sku
+        +String sku_snapshot
         +String name
         +String description
         +BigDecimal price
@@ -138,8 +138,8 @@ classDiagram
         +Long id
         +Order order
         +Product product
-        +String productName
-        +String sku
+        +String product_name_snapshot
+        +String sku_snapshot
         +BigDecimal unitPrice
         +Integer quantity
         +BigDecimal itemTotal
@@ -211,7 +211,7 @@ classDiagram
 |---|---|---|
 | `id` | Long | User ID |
 | `email` | String | Email đăng nhập |
-| `password` | String | Password đã hash |
+| `password_hash` | String | Password đã hash |
 | `role` | Role | `CUSTOMER` hoặc `ADMIN` |
 | `createdAt` | LocalDateTime | Thời điểm tạo |
 | `updatedAt` | LocalDateTime | Thời điểm cập nhật |
@@ -278,7 +278,7 @@ Category 1 ───── 0..N Product
 | Attribute | Type | Description |
 |---|---|---|
 | `id` | Long | Product ID |
-| `sku` | String | SKU duy nhất |
+| `sku_snapshot` | String | SKU duy nhất |
 | `name` | String | Product Name |
 | `description` | String | Mô tả |
 | `price` | BigDecimal | Giá sản phẩm |
@@ -291,7 +291,7 @@ Category 1 ───── 0..N Product
 
 ### Business Rules
 
-* `sku` phải unique.
+* `sku_snapshot` phải unique.
 * `price > 0`.
 * `stockQuantity >= 0`.
 * Product phải thuộc một Category.
@@ -614,8 +614,8 @@ Order Total = Σ OrderItem.itemTotal
 | `id` | Long | OrderItem ID |
 | `order` | Order | Order |
 | `product` | Product | Product reference |
-| `productName` | String | Product Name snapshot |
-| `sku` | String | SKU snapshot |
+| `product_name_snapshot` | String | Product Name snapshot |
+| `sku_snapshot` | String | SKU snapshot |
 | `unitPrice` | BigDecimal | Giá tại thời điểm mua |
 | `quantity` | Integer | Số lượng |
 | `itemTotal` | BigDecimal | Thành tiền |
@@ -732,8 +732,8 @@ Responsibilities:
 Ví dụ:
 
 ```text
-+ register(email, password)
-+ login(email, password)
++ register(email, password_hash)
++ login(email, password_hash)
 + generateToken(user)
 ```
 
@@ -1165,7 +1165,7 @@ UserRepository
     + findByEmail(email)
 
 ProductRepository
-    + findBySku(sku)
+    + findBySku(sku_snapshot)
     + search(...)
     + findActiveProducts(...)
     + decreaseStockIfAvailable(...)
