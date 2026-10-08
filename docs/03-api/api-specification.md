@@ -231,7 +231,6 @@ Các API phải sử dụng thống nhất response format này.
 | Cart | `POST` | `/cart/items` | Customer | FR-CART-01, FR-CART-02, FR-CART-03, FR-CART-05 / UC-CART-01 |
 | Cart | `PUT` | `/cart/items/{productId}` | Customer | FR-CART-05, FR-CART-06 / UC-CART-03 |
 | Cart | `DELETE` | `/cart/items/{productId}` | Customer | FR-CART-07 / UC-CART-04 |
-| Cart | `DELETE` | `/cart` | Customer | FR-CART-05 |
 | Checkout | `POST` | `/orders/checkout` | Customer | FR-CHECKOUT-01…09, FR-ORDER-01…04 / UC-CHECKOUT-01, UC-ORDER-01 |
 | Customer Orders | `GET` | `/orders/my-orders` | Customer | FR-ORDER-11, FR-ORDER-13 / UC-ORDER-02 |
 | Customer Orders | `GET` | `/orders/{id}` | Customer | FR-ORDER-12, FR-API-04 / UC-ORDER-03 |
@@ -805,36 +804,6 @@ Không trả về response body.
 |---|---|
 | `401` | Chưa đăng nhập |
 | `404` | CartItem không tồn tại |
-
----
-
-## 9.5. Clear Cart
-
-### Endpoint
-
-```http
-DELETE /cart
-```
-
-### Access
-
-```text
-CUSTOMER
-```
-
-### Description
-
-Xóa toàn bộ CartItem trong Cart hiện tại.
-
-### Success Response
-
-**HTTP 204 No Content**
-
-### Business Rules
-
-- Chỉ xóa CartItem.
-- Không xóa Cart record nếu không cần thiết.
-- Không ảnh hưởng đến Order đã tạo trước đó.
 
 ---
 
