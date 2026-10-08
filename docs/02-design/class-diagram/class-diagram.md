@@ -6,7 +6,7 @@
 |---|---|
 | Project | Mini E-commerce / Inventory Management |
 | Document | Class Diagram |
-| Status | Draft for Design |
+| Status | Revised after Review Round 2 |
 | Backend | Java Spring Boot |
 | Database | MySQL |
 
@@ -1520,3 +1520,11 @@ Controller
       ↓
 REST API
 ```
+
+---
+
+## Change Log
+
+| Version | Date | Changes |
+|---|---|---|
+| Revised after Review Round 2 | 2026-10-08 | Updated Class Diagram after Review Round 2 to align domain classes and attributes with the finalized requirements and ERD. Standardized attribute naming including `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price_snapshot`. Updated Product Soft Delete behavior to use `status = INACTIVE`. Confirmed Order payment attributes `payment_status` and `paid_at` without introducing a separate Payment class/entity. Aligned Order, OrderItem, Product, Category, Cart, and Customer relationships and business constraints with the finalized Use Cases and Requirement Specification. |
