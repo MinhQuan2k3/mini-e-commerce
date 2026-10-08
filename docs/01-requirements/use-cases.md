@@ -189,7 +189,7 @@ Kiểm tra quyền truy cập của người dùng dựa trên Role (Role-based 
 | Trigger | Người dùng gửi request đến protected API |
 | Preconditions | Request được gửi đến Backend |
 | Postconditions | Request được chấp nhận hoặc từ chối theo quyền |
-| Related Requirements | FR-AUTH-05, FR-API-02, FR-API-03, BR-22 |
+| Related Requirements | FR-AUTH-05, FR-API-02, FR-API-03, BR-23 |
 
 ### Main Success Flow
 
@@ -617,9 +617,11 @@ WHERE id = :productId
    - `payment_status = UNPAID`
    - `paid_at = NULL`
 7. Với mỗi Product trong Cart, Backend tạo `OrderItem` tương ứng và lưu snapshot:
-   - `product_name`
-   - `sku`
-   - `unit_price`
+   - `order_id`
+   - `product_id`
+   - `product_name_snapshot`
+   - `sku_snapshot`
+   - `unit_price_snapshot`
    - `quantity`
    - `item_total`
 8. Backend tính tổng giá trị Order (`total_amount`).
@@ -662,12 +664,12 @@ Cho phép Customer xem danh sách các Order do chính mình đã đặt.
 | Trigger | Customer mở mục "Đơn hàng của tôi" |
 | Preconditions | Customer đã đăng nhập |
 | Postconditions | Danh sách Order của Customer được hiển thị |
-| Related Requirements | FR-ORDER-11, FR-ORDER-13, BR-17 |
+| Related Requirements | FR-ORDER-11, FR-ORDER-13, BR-19 |
 
 ### Main Success Flow
 
 1. Customer truy cập trang "Đơn hàng của tôi".
-2. Frontend gọi API `GET /api/orders/my`.
+2. Frontend gọi API `GET /api/orders/my-orders`.
 3. Backend xác thực JWT.
 4. Backend truy vấn các Order thuộc Customer hiện tại.
 5. Customer có thể lọc đơn hàng theo Order Status:
@@ -709,7 +711,7 @@ Cho phép Customer xem thông tin chi tiết một Order cụ thể của chính
 | Trigger | Customer chọn xem một Order |
 | Preconditions | Customer đã đăng nhập |
 | Postconditions | Chi tiết Order được hiển thị |
-| Related Requirements | FR-ORDER-12, FR-API-04, BR-17 |
+| Related Requirements | FR-ORDER-12, FR-API-04, BR-19 |
 
 ### Main Success Flow
 
@@ -762,7 +764,7 @@ Cho phép Customer hủy Order khi Order đang ở trạng thái `PENDING`.
 | Trigger | Customer nhấn "Hủy đơn hàng" |
 | Preconditions | Customer đã đăng nhập; Order thuộc Customer; Order ở trạng thái `PENDING` |
 | Postconditions | Order chuyển sang `CANCELLED`; Stock được hoàn lại đúng một lần |
-| Related Requirements | FR-ORDER-07, FR-ORDER-10, BR-13, BR-16 |
+| Related Requirements | FR-ORDER-07, FR-ORDER-10, BR-13, BR-17, BR-18 |
 
 ### Main Success Flow — Trong 1 Database Transaction
 
@@ -804,7 +806,7 @@ Cho phép Admin cập nhật trạng thái xử lý Order theo luồng chuyển 
 | Trigger | Admin thay đổi trạng thái Order |
 | Preconditions | Admin đã đăng nhập; Order tồn tại |
 | Postconditions | Order Status được cập nhật nếu transition hợp lệ |
-| Related Requirements | FR-ORDER-08, FR-ORDER-09, FR-ADMIN-ORDER-05, BR-19 |
+| Related Requirements | FR-ORDER-08, FR-ORDER-09, FR-ADMIN-ORDER-05, BR-22, BR-26, BR-27 |
 
 ### Main Success Flow
 
@@ -865,7 +867,7 @@ Cho phép Admin xem, tìm kiếm, lọc, tạo mới, cập nhật, thay đổi 
 | Trigger | Admin mở giao diện Quản lý Product |
 | Preconditions | Admin đã đăng nhập |
 | Postconditions | Dữ liệu Product được xem hoặc cập nhật tương ứng |
-| Related Requirements | FR-ADMIN-PROD-01 đến FR-ADMIN-PROD-07, FR-PROD-03 đến FR-PROD-07 |
+| Related Requirements | FR-ADMIN-PROD-01 đến FR-ADMIN-PROD-08, FR-PROD-03 đến FR-PROD-07 |
 
 ### Main Success Flow — View and Search Products
 
@@ -1187,9 +1189,11 @@ PENDING ──► CONFIRMED ──► SHIPPING ──► DELIVERED
 2. Order mới được tạo với `payment_status = UNPAID`.
 3. Order mới được tạo với `paid_at = NULL`.
 4. OrderItem phải lưu snapshot của Product tại thời điểm mua:
-   - `product_name`
-   - `sku`
-   - `unit_price`
+   - `order_id`
+   - `product_id`
+   - `product_name_snapshot`
+   - `sku_snapshot`
+   - `unit_price_snapshot`
    - `quantity`
    - `item_total`
 5. Giá trong OrderItem không thay đổi khi Admin cập nhật Product Price sau đó.
@@ -1370,16 +1374,16 @@ Các tính năng/Use Case sau không thuộc phạm vi MVP:
 
 ---
 
-# 18. Final Design Decisions
+# 18. Use Case-Level Design Decisions
 
-Các quyết định kỹ thuật liên quan đến Use Case đã được thống nhất và không còn là Open Design Decisions.
+Các quyết định dưới đây là các quyết định thiết kế ở mức Use Case được sử dụng làm cơ sở cho Design. Các Technical Decision còn Open trong Requirement Specification sẽ được chốt trong giai đoạn Design/Implementation.
 
 | ID | Decision | Related Use Cases |
 |---|---|---|
 | DD-01 | Stock concurrency sử dụng conditional SQL update và kiểm tra số dòng bị ảnh hưởng | UC-ORDER-01 |
 | DD-02 | Product Soft Delete được thực hiện bằng `status = INACTIVE`; không sử dụng `deleted_at` | UC-ADMIN-PROD-01 |
 | DD-03 | API sử dụng Common Success/Error Response Format thống nhất | UC-AUTH-03 và toàn bộ API Use Cases |
-| DD-04 | Customer Order History sử dụng `GET /api/orders/my` | UC-ORDER-02 |
+| DD-04 | Customer Order History sử dụng `GET /api/orders/my-orders` | UC-ORDER-02 |
 | DD-05 | Customer Order Detail sử dụng `GET /api/orders/{id}` và kiểm tra ownership | UC-ORDER-03 |
 | DD-06 | Admin Order Search sử dụng Order ID, Customer Email, Recipient Name và Phone | UC-ADMIN-ORDER-01 |
 | DD-07 | Khi Order chuyển sang `DELIVERED`, Backend tự động đặt `payment_status = PAID` và `paid_at = current timestamp` | UC-ORDER-05 |
