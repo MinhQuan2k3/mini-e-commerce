@@ -6,7 +6,7 @@ Item | Description
 --- | ---
 Project | Mini E-commerce / Inventory Management
 Company | A-Software
-Status | Draft for Design
+Status | Revised after Review Round 2
 
 * * *
 
@@ -1954,4 +1954,4 @@ Hệ thống không triển khai Payment Gateway, Online Payment hoặc Payment 
 
 | Version | Date | Changes |
 |---|---|---|
-| 1.1 | 2026-10-08 | Updated requirements after Review Round 2. Restored and preserved existing BR/FR/TD identifiers without renumbering previously issued IDs; new requirements are appended at the end. Clarified Order History endpoint and related requirements. Added/updated business rules for OrderItem snapshots, Product Soft Delete, Order cancellation and stock restoration, Payment Status, `paid_at`, Admin authorization, and Category deletion. Standardized naming for `customer_id`, `password_hash`, `product_name`, `sku`, and `unit_price`. Clarified Payment as an Order attribute only, with no separate Payment Entity/Table or Payment Gateway in MVP. Updated technical decisions and requirement references to remain consistent with Use Cases, ERD, Class Diagram, and API Specification. |
+| Revised after Review Round 2 | 2026-10-08 | Updated requirements after Review Round 2. Restored and preserved existing BR/FR/TD identifiers without renumbering previously issued IDs; new requirements are appended at the end. Clarified Order History endpoint and related requirements. Added/updated business rules for OrderItem snapshots, Product Soft Delete, Order cancellation and stock restoration, Payment Status, `paid_at`, Admin authorization, and Category deletion. Standardized naming for `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price_snapshot`. Clarified Payment as an Order attribute only, with no separate Payment Entity/Table or Payment Gateway in MVP. Updated technical decisions and requirement references to remain consistent with Use Cases, ERD, Class Diagram, and API Specification. |
