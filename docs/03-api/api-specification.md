@@ -6,7 +6,7 @@
 |---|---|
 | Project | Mini E-commerce |
 | Document | API Specification |
-| Status | Revised after Review Round 1 |
+| Status | Revised after Review Round 2 |
 
 ---
 
