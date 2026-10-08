@@ -1095,11 +1095,14 @@ Không yêu cầu request body.
 
 ```json
 {
-  "id": 1001,
-  "orderStatus": "CANCELLED",
-  "paymentStatus": "UNPAID",
-  "paidAt": null,
-  "message": "Order cancelled successfully"
+  "success": true,
+  "message": "Order cancelled successfully",
+  "data": {
+    "id": 1001,
+    "orderStatus": "CANCELLED",
+    "paymentStatus": "UNPAID",
+    "paidAt": null
+  }
 }
 ```
 
