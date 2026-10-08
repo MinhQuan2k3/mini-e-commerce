@@ -268,3 +268,11 @@
 - Admin auditing
 - Các chức năng E-commerce nâng cao chưa được xác định trong scope
 - CI/CD bắt buộc
+
+---
+
+## Change Log
+
+| Version | Date | Changes |
+|---|---|---|
+| 1.1 | 2026-10-08 | Updated requirement clarifications after Review Round 2. Standardized Product Soft Delete to use `status = INACTIVE`; clarified OrderItem snapshot fields as `product_name_snapshot`, `sku_snapshot`, and `unit_price_snapshot`; clarified Payment Status and `paid_at` behavior when an Order is created and when it reaches `DELIVERED`; clarified one-time stock restoration when an Order is cancelled; updated Admin Order filtering to support both `order_status` and `payment_status`; clarified API success/error response conventions and CI/CD scope. |
