@@ -234,7 +234,7 @@ Lưu thông tin sản phẩm và tồn kho.
 | Field | Data Type | Constraint | Description |
 |---|---|---|---|
 | `id` | BIGINT | PK | Product ID |
-| `sku_snapshot` | VARCHAR | UNIQUE, NOT NULL | Stock Keeping Unit |
+| `sku` | VARCHAR | UNIQUE, NOT NULL | Stock Keeping Unit |
 | `name` | VARCHAR | NOT NULL | Product Name |
 | `description` | TEXT | NULL | Product Description |
 | `price` | DECIMAL | NOT NULL, > 0 | Giá sản phẩm |
@@ -526,7 +526,7 @@ PRODUCTS 1 ─────── N ORDER_ITEMS
 ```text
 users.email
 categories.name
-products.sku_snapshot
+products.sku
 carts.customer_id
 (cart_items.cart_id, cart_items.product_id)
 ```
@@ -895,7 +895,7 @@ Ngoài Primary Key và Unique Index, các trường thường xuyên được s�
 | Table | Column(s) | Reason |
 |---|---|---|
 | `users` | `email` | Login / lookup |
-| `products` | `sku_snapshot` | SKU lookup |
+| `products` | `sku` | SKU lookup |
 | `products` | `category_id` | Category filter |
 | `products` | `status` | Active/Inactive filter |
 | `products` | `created_at` | Newest sorting |
