@@ -121,7 +121,7 @@ erDiagram
         bigint product_id FK
         varchar product_name_snapshot
         varchar sku_snapshot
-        decimal unit_price_snapshot
+        decimal unit_price
         int quantity
         decimal item_total
     }
@@ -450,13 +450,13 @@ Lưu các Product thuộc Order và snapshot dữ liệu tại thời điểm mu
 | `product_id` | BIGINT | FK, NOT NULL | Product reference |
 | `product_name_snapshot` | VARCHAR | NOT NULL | Product Name snapshot |
 | `sku_snapshot` | VARCHAR | NOT NULL | SKU snapshot |
-| `unit_price_snapshot` | DECIMAL | NOT NULL, > 0 | Giá tại thời điểm mua |
+| `unit_price` | DECIMAL | NOT NULL, > 0 | Giá tại thời điểm mua |
 | `quantity` | INT | NOT NULL, > 0 | Số lượng |
 | `item_total` | DECIMAL | NOT NULL, >= 0 | Thành tiền |
 
 ### Snapshot Principle
 
-`product_name_snapshot`, `sku_snapshot` và `unit_price_snapshot` được snapshot tại thời điểm Checkout.
+`product_name_snapshot`, `sku_snapshot` và `unit_price` được snapshot tại thời điểm Checkout.
 
 Ví dụ:
 
@@ -469,7 +469,7 @@ Product:
 OrderItem:
     product_name_snapshot = "Keyboard"
     sku_snapshot          = "KB-001"
-    unit_price_snapshot   = 500000
+    unit_price   = 500000
 ```
 
 Nếu Admin sau đó thay đổi Product:
@@ -551,7 +551,7 @@ products.stock_quantity >= 0
 
 cart_items.quantity > 0
 
-order_items.unit_price_snapshot > 0
+order_items.unit_price > 0
 order_items.quantity > 0
 order_items.item_total >= 0
 ```
@@ -729,7 +729,7 @@ OrderItem lưu:
 ```text
 product_name_snapshot
 sku_snapshot
-unit_price_snapshot
+unit_price
 ```
 
 Không sử dụng Product hiện tại để thay thế dữ liệu lịch sử.
@@ -966,7 +966,7 @@ ERD phải đáp ứng các requirement chính sau:
 | Checkout | `orders`, `order_items`, `products.stock_quantity` |
 | Order History | `orders`, `order_items` |
 | Inventory | `products.stock_quantity` |
-| Product Snapshot | `order_items.product_name_snapshot`, `sku_snapshot`, `unit_price_snapshot` |
+| Product Snapshot | `order_items.product_name_snapshot`, `sku_snapshot`, `unit_price` |
 | Shipping Snapshot | Order shipping fields |
 | Payment Status | `orders.payment_status` |
 | Payment Timestamp | `orders.paid_at` |
@@ -1064,4 +1064,4 @@ Testing
 
 | Version | Date | Changes |
 |---|---|---|
-| Revised after Review Round 2 | 2026-10-08 | Updated ERD after Review Round 2 to align database entities and attributes with the finalized requirements. Standardized Customer and OrderItem attribute names, including `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price_snapshot`. Confirmed Product Soft Delete using `status = INACTIVE`. Confirmed that payment information is stored directly in Order through `payment_status` and `paid_at`; no separate Payment Entity/Table is introduced in the MVP. Updated relationships and constraints to remain consistent with the finalized business rules for Product, Category, Cart, Order, and OrderItem. |
+| Revised after Review Round 2 | 2026-10-08 | Updated ERD after Review Round 2 to align database entities and attributes with the finalized requirements. Standardized Customer and OrderItem attribute names, including `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price`. Confirmed Product Soft Delete using `status = INACTIVE`. Confirmed that payment information is stored directly in Order through `payment_status` and `paid_at`; no separate Payment Entity/Table is introduced in the MVP. Updated relationships and constraints to remain consistent with the finalized business rules for Product, Category, Cart, Order, and OrderItem. |
