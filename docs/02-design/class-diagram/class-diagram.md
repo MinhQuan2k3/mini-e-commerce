@@ -140,7 +140,7 @@ classDiagram
         +Product product
         +String product_name_snapshot
         +String sku_snapshot
-        +BigDecimal unit_price_snapshot
+        +BigDecimal unit_price
         +Integer quantity
         +BigDecimal itemTotal
         +BigDecimal calculateItemTotal()
@@ -616,14 +616,14 @@ Order Total = Σ OrderItem.itemTotal
 | `product` | Product | Product reference |
 | `product_name_snapshot` | String | Product Name snapshot |
 | `sku_snapshot` | String | SKU snapshot |
-| `unit_price_snapshot` | BigDecimal | Giá tại thời điểm mua |
+| `unit_price` | BigDecimal | Giá tại thời điểm mua |
 | `quantity` | Integer | Số lượng |
 | `itemTotal` | BigDecimal | Thành tiền |
 
 ### Business Rules
 
 * `quantity > 0`.
-* `unit_price_snapshot > 0`.
+* `unit_price > 0`.
 * `itemTotal >= 0`.
 * Product Name, SKU và Unit Price phải được snapshot tại thời điểm Checkout.
 * Thay đổi Product sau này không được làm thay đổi OrderItem cũ.
@@ -633,7 +633,7 @@ Order Total = Σ OrderItem.itemTotal
 #### `calculateItemTotal()`
 
 ```text
-itemTotal = unit_price_snapshot × quantity
+itemTotal = unit_price × quantity
 ```
 
 * * *
@@ -1117,7 +1117,7 @@ totalAmount
 orderStatus
 paymentStatus
 paidAt
-unit_price_snapshot
+unit_price
 ```
 
 Backend phải lấy Customer từ authenticated JWT và tính các giá trị còn lại.
@@ -1527,4 +1527,4 @@ REST API
 
 | Version | Date | Changes |
 |---|---|---|
-| Revised after Review Round 2 | 2026-10-08 | Updated Class Diagram after Review Round 2 to align domain classes and attributes with the finalized requirements and ERD. Standardized attribute naming including `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price_snapshot`. Updated Product Soft Delete behavior to use `status = INACTIVE`. Confirmed Order payment attributes `payment_status` and `paid_at` without introducing a separate Payment class/entity. Aligned Order, OrderItem, Product, Category, Cart, and Customer relationships and business constraints with the finalized Use Cases and Requirement Specification. |
+| Revised after Review Round 2 | 2026-10-08 | Updated Class Diagram after Review Round 2 to align domain classes and attributes with the finalized requirements and ERD. Standardized attribute naming including `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price`. Updated Product Soft Delete behavior to use `status = INACTIVE`. Confirmed Order payment attributes `payment_status` and `paid_at` without introducing a separate Payment class/entity. Aligned Order, OrderItem, Product, Category, Cart, and Customer relationships and business constraints with the finalized Use Cases and Requirement Specification. |
