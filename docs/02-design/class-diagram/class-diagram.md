@@ -71,7 +71,7 @@ classDiagram
 
     class Product {
         +Long id
-        +String sku_snapshot
+        +String sku
         +String name
         +String description
         +BigDecimal price
@@ -278,7 +278,7 @@ Category 1 ───── 0..N Product
 | Attribute | Type | Description |
 |---|---|---|
 | `id` | Long | Product ID |
-| `sku_snapshot` | String | SKU duy nhất |
+| `sku` | String | SKU duy nhất |
 | `name` | String | Product Name |
 | `description` | String | Mô tả |
 | `price` | BigDecimal | Giá sản phẩm |
@@ -291,7 +291,7 @@ Category 1 ───── 0..N Product
 
 ### Business Rules
 
-* `sku_snapshot` phải unique.
+* `sku` phải unique.
 * `price > 0`.
 * `stockQuantity >= 0`.
 * Product phải thuộc một Category.
@@ -1165,7 +1165,7 @@ UserRepository
     + findByEmail(email)
 
 ProductRepository
-    + findBySku(sku_snapshot)
+    + findBySku(sku)
     + search(...)
     + findActiveProducts(...)
     + decreaseStockIfAvailable(...)
