@@ -173,7 +173,7 @@
 
 | # | Question | Answer | Decision |
 |---|---|---|---|
-| Q62 | Có yêu cầu cụ thể về performance không? | Không có yêu cầu benchmark cụ thể. | Hệ thống hướng tới hiệu năng ở mức phù hợp với MVP/Demo project; không đặt SLA hoặc benchmark performance bắt buộc trong phạm vi dự án. |
+| Q62 | Có yêu cầu cụ thể về performance không? | Mức tiêu chuẩn. | Mục tiêu thời gian phản hồi API < 500ms cho các tác vụ thông thường. |
 | Q63 | Có yêu cầu cụ thể về số lượng người dùng hoặc quy mô dữ liệu không? | Quy mô nhỏ/Demo project. | Hướng tới quy mô < 1.000 sản phẩm và < 100 người dùng truy cập đồng thời. |
 | Q64 | Những trình duyệt nào cần được hỗ trợ? | Chrome, Firefox, Edge, Safari. | Hỗ trợ các trình duyệt hiện đại theo chuẩn web hiện hành. |
 | Q65 | Có yêu cầu logging/auditing cho các thao tác của Admin không? | Out-of-scope. | Chỉ thực hiện application logging cho lỗi ở phía Server bằng Console/File Logs. |
