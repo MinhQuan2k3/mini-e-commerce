@@ -1303,13 +1303,28 @@ Order Detail phải hiển thị:
 
 * * *
 
-## FR-UI-07 — Loading State
+## FR-UI-07 — Admin Dashboard
+
+Admin UI phải cung cấp khu vực điều hướng đến:
+
+```text
+Product Management
+Category Management
+Order Management
+Inventory Management
+```
+
+MVP không yêu cầu Dashboard Statistics, Advanced Analytics hoặc Sales Reporting.
+
+* * *
+
+## FR-UI-08 — Loading State
 
 Các màn hình có thao tác API phải có trạng thái Loading phù hợp.
 
 * * *
 
-## FR-UI-08 — Empty State
+## FR-UI-09 — Empty State
 
 Các danh sách rỗng phải có Empty State.
 
@@ -1323,13 +1338,13 @@ No orders found.
 
 * * *
 
-## FR-UI-09 — Error State
+## FR-UI-10 — Error State
 
 Frontend phải hiển thị Error State khi API hoặc thao tác nghiệp vụ thất bại.
 
 * * *
 
-## FR-UI-10 — Notification
+## FR-UI-11 — Notification
 
 Các thao tác thành công/thất bại phải cung cấp thông báo bằng Toast hoặc Alert.
 
