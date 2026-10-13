@@ -104,7 +104,7 @@
 | Q39 | Customer có được hủy Order không? | Có. | Chỉ cho phép hủy khi Order ở trạng thái `PENDING`. |
 | Q40 | Admin có được thay đổi trạng thái Order không? | Có. | Admin có quyền cập nhật Order theo luồng trạng thái được phép. |
 | Q41 | Admin có được chỉnh sửa Order sau khi Customer đã đặt hàng không? | Không. | Admin chỉ được thay đổi trạng thái, không được chỉnh sửa Product/Quantity hoặc địa chỉ của Order. |
-| Q42 | Order có cần lưu lại giá sản phẩm tại thời điểm mua không? | Bắt buộc. | Lưu các trường `unit_price`, `product_name`, `sku` trực tiếp trong bảng `OrderItem` để bảo toàn lịch sử đơn hàng. |
+| Q42 | Order có cần lưu lại giá sản phẩm tại thời điểm mua không? | Bắt buộc. | Lưu các trường `unit_price`, `product_name_snapshot`, `sku_snapshot` trực tiếp trong bảng `OrderItem` để bảo toàn lịch sử đơn hàng. |
 | Q43 | Khi Order được tạo, tồn kho có được trừ ngay không? | Có. | Giảm `stock_quantity` ngay khi Checkout thành công. |
 | Q44 | Nếu Order bị hủy, số lượng tồn kho có được hoàn lại không? | Có. | Cộng ngược số lượng vào `stock_quantity` khi Order chuyển từ `PENDING` sang `CANCELLED`. Việc hoàn tồn kho chỉ được thực hiện một lần cho mỗi Order để tránh cộng kho nhiều lần. |
 
