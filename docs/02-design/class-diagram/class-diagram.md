@@ -54,7 +54,7 @@ classDiagram
     class User {
         +Long id
         +String email
-        +String password_hash
+        +String passwordHash
         +Role role
         +LocalDateTime createdAt
         +LocalDateTime updatedAt
@@ -138,9 +138,9 @@ classDiagram
         +Long id
         +Order order
         +Product product
-        +String product_name_snapshot
-        +String sku_snapshot
-        +BigDecimal unit_price
+        +String productNameSnapshot
+        +String skuSnapshot
+        +BigDecimal unitPrice
         +Integer quantity
         +BigDecimal itemTotal
         +BigDecimal calculateItemTotal()
@@ -211,7 +211,7 @@ classDiagram
 |---|---|---|
 | `id` | Long | User ID |
 | `email` | String | Email đăng nhập |
-| `password_hash` | String | Password đã hash |
+| `passwordHash` | String | Password đã hash |
 | `role` | Role | `CUSTOMER` hoặc `ADMIN` |
 | `createdAt` | LocalDateTime | Thời điểm tạo |
 | `updatedAt` | LocalDateTime | Thời điểm cập nhật |
@@ -614,16 +614,16 @@ Order Total = Σ OrderItem.itemTotal
 | `id` | Long | OrderItem ID |
 | `order` | Order | Order |
 | `product` | Product | Product reference |
-| `product_name_snapshot` | String | Product Name snapshot |
-| `sku_snapshot` | String | SKU snapshot |
-| `unit_price` | BigDecimal | Giá tại thời điểm mua |
+| `productNameSnapshot` | String | Product Name snapshot |
+| `skuSnapshot` | String | SKU snapshot |
+| `unitPrice` | BigDecimal | Giá tại thời điểm mua |
 | `quantity` | Integer | Số lượng |
 | `itemTotal` | BigDecimal | Thành tiền |
 
 ### Business Rules
 
 * `quantity > 0`.
-* `unit_price > 0`.
+* `unitPrice > 0`.
 * `itemTotal >= 0`.
 * Product Name, SKU và Unit Price phải được snapshot tại thời điểm Checkout.
 * Thay đổi Product sau này không được làm thay đổi OrderItem cũ.
@@ -633,7 +633,7 @@ Order Total = Σ OrderItem.itemTotal
 #### `calculateItemTotal()`
 
 ```text
-itemTotal = unit_price × quantity
+itemTotal = unitPrice × quantity
 ```
 
 * * *
@@ -732,8 +732,8 @@ Responsibilities:
 Ví dụ:
 
 ```text
-+ register(email, password_hash)
-+ login(email, password_hash)
++ register(email, password)
++ login(email, password)
 + generateToken(user)
 ```
 
@@ -1117,7 +1117,7 @@ totalAmount
 orderStatus
 paymentStatus
 paidAt
-unit_price
+unitPrice
 ```
 
 Backend phải lấy Customer từ authenticated JWT và tính các giá trị còn lại.
