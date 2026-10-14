@@ -223,6 +223,7 @@ Các API phải sử dụng thống nhất response format này.
 |---|---|---|---|---|
 | Authentication | `POST` | `/auth/register` | Guest | FR-AUTH-01 / UC-AUTH-01 |
 | Authentication | `POST` | `/auth/login` | Guest | FR-AUTH-02 / UC-AUTH-02 |
+| Authentication | `GET` | `/auth/me` | Customer/Admin | FR-AUTH-03 |
 | Products | `GET` | `/products` | Public | FR-PROD-01 / UC-PROD-01 |
 | Products | `GET` | `/products/{id}` | Public | FR-PROD-02 / UC-PROD-02 |
 | Categories | `GET` | `/categories` | Public | FR-CAT-01 |
