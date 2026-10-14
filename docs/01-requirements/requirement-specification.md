@@ -1927,10 +1927,11 @@ ID | Decision | Status | Target Phase
 TD-01 | Chọn BCrypt hay Argon2 | Open | Backend Setup
 TD-02 | Chọn Tailwind CSS hay Bootstrap | Open | Frontend Setup
 TD-03 | Soft Delete Product bằng `status = INACTIVE`, không hard-delete | Đã chốt | Database/API Design
-TD-04 | Xác định format của SKU nếu auto-generated | Open | Database/API Design
-TD-05 | Xác định chi tiết Order Status Transition Matrix và cách validate transition | Open | Use Case/API Design
-TD-06 | Category không được Delete khi còn Product tham chiếu; trả `409 Conflict` | Đã chốt | Database/API Design
-TD-07 | Xác định cơ chế concurrency control cho Stock ở mức implementation | Open / cần chốt ở Design | Backend/Database Design
+TD-04 | Product List sử dụng offset-based pagination; page index mặc định là 0, page size mặc định là 10, page size tối đa là 50 | Đã chốt | API Design
+TD-05 | Xác định format của SKU nếu auto-generated | Open | Database/API Design
+TD-06 | Xác định Order Status Transition Matrix và validate transition theo quy tắc đã thống nhất trong Use Cases/API | Đã chốt | Use Case/API Design
+TD-07 | Stock concurrency sử dụng conditional update; kiểm tra số dòng bị ảnh hưởng và rollback toàn bộ Checkout transaction nếu trừ stock thất bại | Đã chốt | Backend/Database Design
+TD-08 | Không cho phép Delete Category khi còn Product tham chiếu; trả về 409 Conflict | Đã chốt | Database/API Design
 
 Các Technical Decisions trên không làm thay đổi phạm vi nghiệp vụ chính đã được xác định trong Requirement Specification.
 
