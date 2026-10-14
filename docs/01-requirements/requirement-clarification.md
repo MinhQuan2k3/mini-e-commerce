@@ -273,6 +273,8 @@
 
 ## Change Log
 
-| Version | Date | Changes |
-|---|---|---|
-| Revised after Review Round 2 | 2026-10-08 | Updated requirement clarifications after Review Round 2. Standardized Product Soft Delete to use `status = INACTIVE`; clarified OrderItem snapshot fields as `product_name_snapshot`, `sku_snapshot`, and `unit_price_snapshot`; clarified Payment Status and `paid_at` behavior when an Order is created and when it reaches `DELIVERED`; clarified one-time stock restoration when an Order is cancelled; updated Admin Order filtering to support both `order_status` and `payment_status`; clarified API success/error response conventions and CI/CD scope. |
+| Ngày | Mã feedback | Vị trí | Thay đổi |
+|---|---|---|---|
+| 2026-10-11 | N-02 | Q45 | Thống nhất endpoint xem lịch sử đơn hàng thành `/api/orders/my-orders`. |
+| 2026-10-11 | N-04, R-02 | Q42 | Sửa tên cột OrderItem thành `unit_price`, `product_name_snapshot` và `sku_snapshot`. |
+| 2026-10-11 | R-05 | Q62, Q71 | Khôi phục nội dung cột Answer theo bản chính thức. |
