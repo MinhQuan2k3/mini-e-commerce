@@ -165,3 +165,11 @@
 ---
 
 *File này dùng để em tự lập kế hoạch — không cần làm đúng thứ tự tuyệt đối như liệt kê, miễn đảm bảo logic phụ thuộc (VD: phải có API trước khi Frontend gọi được).*
+
+
+## Change Log
+
+| Ngày | Mã feedback | Vị trí | Thay đổi |
+|---|---|---|---|
+| 2026-10-14 | N-09 | Toàn bộ file | Đổi tên file từ `danh-muc-dau-viec-tuan-2-6.md` thành `uoc-luong-dau-viec-tuan-2-6.md` để phản ánh đúng nội dung ước lượng đầu việc. |
+| 2026-10-14 | R-07 | Bảng tổng hợp ước lượng, Tuần 3 | Khôi phục baseline ước lượng Tuần 3 về 56 giờ thay vì giảm đồng loạt thời lượng task để ép vừa lịch. |
