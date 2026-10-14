@@ -1677,21 +1677,22 @@ BR-10 | Cart quantity không được vượt Stock.
 BR-11 | Cart không được Checkout nếu chứa Product không khả dụng.
 BR-12 | Order mới có trạng thái PENDING.
 BR-13 | Customer chỉ được Cancel Order ở PENDING.
-BR-14 | Admin chỉ được Cancel Order ở PENDING.
+BR-14 | OrderItem phải lưu thông tin tại thời điểm mua, gồm Product Name, SKU và Price.
 BR-15 | Checkout thành công phải trừ Stock.
-BR-16 | OrderItem phải lưu Product Name, SKU và Price tại thời điểm mua.
-BR-17 | Cancel Order phải hoàn Stock.
-BR-18 | Cancel Order chỉ được hoàn Stock một lần.
-BR-19 | Customer chỉ được xem Order của chính mình.
+BR-16 | Cancel Order phải hoàn Stock.
+BR-17 | Customer chỉ được xem Order của chính mình.
+BR-18 | Admin có thể xem tất cả Order.
+BR-19 | Admin không được sửa Product/Quantity/Shipping Information của Order đã tạo.
 BR-20 | Category không được xóa khi còn Product tham chiếu.
 BR-21 | Product Delete phải sử dụng Soft Delete.
-BR-22 | Admin không được sửa Product/Quantity/Shipping Information của Order đã tạo.
-BR-23 | Admin API phải được bảo vệ bằng role authorization.
-BR-24 | Coupon/Promotion không nằm trong MVP.
-BR-25 | Admin auditing không nằm trong MVP.
+BR-22 | Admin API phải được bảo vệ bằng role authorization.
+BR-23 | Coupon/Promotion không nằm trong MVP.
+BR-24 | Admin auditing không nằm trong MVP.
+BR-25 | Khi Order chuyển sang DELIVERED, payment_status = PAID và paid_at được gán thời điểm hiện tại.
 BR-26 | Order mới có payment_status = UNPAID và paid_at = NULL.
-BR-27 | Khi Order chuyển sang DELIVERED, payment_status tự động chuyển thành PAID và paid_at được gán thời điểm hiện tại.
-BR-28 | Payment Status chỉ là thuộc tính của Order; MVP không có Payment Entity hoặc Payment Gateway.
+BR-27 | Admin chỉ được Cancel Order ở PENDING.
+BR-28 | Cancel Order chỉ được hoàn Stock một lần.
+BR-29 | Payment Status chỉ là thuộc tính của Order; MVP không có Payment Entity hoặc Payment Gateway.
 
 * * *
 
