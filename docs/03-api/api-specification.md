@@ -2398,6 +2398,11 @@ docs/03-api/api-specification.md
 
 ## Change Log
 
-| Version | Date | Changes |
-|---|---|---|
-| Revised after Review Round 2 | 2026-10-08 | Chuẩn hóa Success Response theo `{ success, message, data }`; cập nhật FR/UC mapping trong API Summary; bổ sung Admin Category List API; loại bỏ Clear Cart khỏi Testing Checklist; cập nhật Security Rule cho `orderStatus`; chuẩn hóa các response có `message` nằm trong `data`. |
+| Ngày | Mã feedback | Vị trí | Thay đổi |
+|---|---|---|---|
+| 2026-10-13 | N-02 | §5, §6, §11 | Thống nhất endpoint xem lịch sử đơn hàng thành `/orders/my-orders`. |
+| 2026-10-13 | N-03, R-10 | §5 | Cập nhật Related FR/UC theo chức năng thực tế của từng endpoint; sửa các tham chiếu Use Case không tồn tại. |
+| 2026-10-13 | N-07, R-11 | §5, §13.1 | Bổ sung `GET /admin/categories` và cập nhật ví dụ response cùng mô tả phân trang/lọc theo nội dung đã chốt. |
+| 2026-10-13 | R-08 | §5, §6 | Khôi phục `GET /auth/me` để Frontend có thể khôi phục trạng thái đăng nhập sau khi tải lại trang. |
+| 2026-10-13 | R-08 | §5, Testing Checklist và phần mô tả Cart API | Ghi nhận việc loại bỏ `DELETE /cart` khỏi API nếu endpoint này không được sử dụng trong MVP; giữ các thao tác Cart theo từng item. |
+| 2026-10-13 | N-15 | §18.2 | Thống nhất quy trình Cancel Order: cập nhật trạng thái có điều kiện trước, chỉ hoàn Stock khi chuyển trạng thái thành công để tránh hoàn kho nhiều lần. |
