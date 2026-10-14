@@ -1969,6 +1969,10 @@ Hệ thống không triển khai Payment Gateway, Online Payment hoặc Payment 
 
 ## Change Log
 
-| Version | Date | Changes |
-|---|---|---|
-| Revised after Review Round 2 | 2026-10-08 | Updated requirements after Review Round 2. Restored and preserved existing BR/FR/TD identifiers without renumbering previously issued IDs; new requirements are appended at the end. Clarified Order History endpoint and related requirements. Added/updated business rules for OrderItem snapshots, Product Soft Delete, Order cancellation and stock restoration, Payment Status, `paid_at`, Admin authorization, and Category deletion. Standardized naming for `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price_snapshot`. Clarified Payment as an Order attribute only, with no separate Payment Entity/Table or Payment Gateway in MVP. Updated technical decisions and requirement references to remain consistent with Use Cases, ERD, Class Diagram, and API Specification. |
+| Ngày | Mã feedback | Vị trí | Thay đổi |
+|---|---|---|---|
+| 2026-10-11 | N-01 | Business Rules | Khôi phục mã và ý nghĩa BR-13–BR-25 theo bảng đối chiếu; chuyển các Business Rules mới thành BR-26–BR-29. |
+| 2026-10-11 | N-02 | FR-ORDER-11, §6, §11 | Thống nhất endpoint xem lịch sử đơn hàng thành `GET /api/orders/my-orders`. |
+| 2026-10-11 | N-01, R-09 | §13 | Giữ mã TD gốc; cập nhật quyết định phân trang, Order Status Transition Matrix và cơ chế concurrency control theo các quyết định đã chốt. |
+| 2026-10-11 | R-04 | §5 | Khôi phục FR-UI-07 về khu vực điều hướng Admin và giữ nguyên mã các FR-UI tiếp theo. |
+| 2026-10-11 | N-07 | §6 | Bổ sung yêu cầu API quản lý Category dành cho Admin nếu đã được thêm vào danh sách requirement. |
