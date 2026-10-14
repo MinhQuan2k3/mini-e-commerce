@@ -1525,6 +1525,8 @@ REST API
 
 ## Change Log
 
-| Version | Date | Changes |
-|---|---|---|
-| Revised after Review Round 2 | 2026-10-08 | Updated Class Diagram after Review Round 2 to align domain classes and attributes with the finalized requirements and ERD. Standardized attribute naming including `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price`. Updated Product Soft Delete behavior to use `status = INACTIVE`. Confirmed Order payment attributes `payment_status` and `paid_at` without introducing a separate Payment class/entity. Aligned Order, OrderItem, Product, Category, Cart, and Customer relationships and business constraints with the finalized Use Cases and Requirement Specification. |
+| Ngày | Mã feedback | Vị trí | Thay đổi |
+|---|---|---|---|
+| 2026-10-12 | N-02 | §9.5 | Đổi endpoint xem lịch sử đơn hàng từ `/api/orders/my` thành `/api/orders/my-orders`. |
+| 2026-10-12 | N-04, R-01, R-03 | Product, OrderItem và các phương thức liên quan | Thống nhất thuộc tính Java dùng `camelCase`; giữ `Product.sku` và dùng `OrderItem.productNameSnapshot`, `skuSnapshot`, `unitPrice`. |
+| 2026-10-12 | N-04, R-03 | User và phương thức Authentication | Dùng `passwordHash` cho thuộc tính Java lưu mật khẩu đã hash; dùng `register(email, password)` và `login(email, password)` cho đầu vào. |
