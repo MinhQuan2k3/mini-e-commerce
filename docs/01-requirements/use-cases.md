@@ -1414,6 +1414,8 @@ Các quy tắc quan trọng về Authentication, Ownership, Inventory, Stock Con
 
 ## Change Log
 
-| Version | Date | Changes |
-|---|---|---|
-| Revised after Review Round 2 | 2026-10-08 | Updated Use Cases after Review Round 2 to align with the finalized Requirement Specification and API Specification. Corrected Related Requirements mappings, restored the official Order History endpoint as `GET /api/orders/my-orders`, standardized OrderItem snapshot fields to `product_name_snapshot`, `sku_snapshot`, and `unit_price`, and aligned Order cancellation, stock restoration, Payment Status, `paid_at`, Category deletion, Product Soft Delete, and Admin Order management rules. Updated use-case-level design decisions and endpoint references to remain consistent with the final system design. |
+| Ngày | Mã feedback | Vị trí | Thay đổi |
+|---|---|---|---|
+| 2026-10-12 | N-01 | Related Requirements | Cập nhật mã Business Rule được tham chiếu theo danh sách BR đã khôi phục; bổ sung tham chiếu BR-18 cho use case Admin xem tất cả Order. |
+| 2026-10-12 | N-02 | UC-ORDER-02, DD-04 | Thống nhất endpoint xem lịch sử đơn hàng thành `/api/orders/my-orders`. |
+| 2026-10-12 | N-16 | UC-PROD-04 | Thống nhất cách xử lý tham số không hợp lệ với API: trả lỗi `400 Bad Request`. |
