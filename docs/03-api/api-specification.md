@@ -2388,9 +2388,12 @@ Các quyết định kỹ thuật quan trọng đã được xác định trong 
 Mọi thay đổi API làm ảnh hưởng đến requirement hoặc data model phải được cập nhật đồng bộ trong:
 
 ```text
-docs/01-requirements/
-docs/02-design/
-docs/03-api/
+docs/01-requirements/requirement-clarification.md
+docs/01-requirements/requirement-specification.md
+docs/01-requirements/use-cases.md
+docs/02-design/class-diagram/class-diagram.md
+docs/02-design/erd/entity-relationship-diagram.md
+docs/03-api/api-specification.md
 ```
 
 ## Change Log
