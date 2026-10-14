@@ -122,7 +122,7 @@
 | 3 | Edge Cases | Xử lý Cart rỗng, hết hàng, Product INACTIVE, invalid input và các lỗi nghiệp vụ | 2 | Phụ thuộc các nghiệp vụ tương ứng |
 | 3 | Unit Test | Viết Unit Test cho validation, tính toán, stock, Cancel Order và Order Status Transition | 3 | Tập trung vào business logic quan trọng |
 | 3 | API Test | Cập nhật Postman/Swagger collection và kiểm thử các API Backend mới | 2 | Dùng để test Backend độc lập |
-|  | **Tổng Tuần 3** | | **53 giờ** | |
+|  | **Tổng Tuần 3** | | **56 giờ** | |
 | 4 | Frontend Setup | Khởi tạo React project, routing và cấu hình environment/API base URL | 3 | Phụ thuộc Backend API |
 | 4 | API Layer | Xây dựng API client/service layer để gọi Backend | 3 | Phụ thuộc API Specification |
 | 4 | Authentication UI | Xây dựng Login/Register và kết nối API | 4 | Phụ thuộc Auth API |
@@ -158,7 +158,7 @@
 | 6 | Retrospective | So sánh Estimate với Actual Time và ghi nhận bài học kinh nghiệm | 1 | Thực hiện cuối dự án |
 | 6 | Buffer | Dự phòng cho bug phát sinh, integration issue, rework và các task vượt estimate | 5 | Không dùng để mở rộng scope; chỉ sử dụng khi có phát sinh |
 |  | **Tổng Tuần 6** | | **32 giờ** | |
-| **Tổng cộng** | | | **187 giờ** | **Baseline Estimate sau khi cập nhật theo review và scope đã chốt** |
+| **Tổng cộng** | | | **206 giờ** | **Baseline Estimate sau khi cập nhật theo review và scope đã chốt** |
 
 *(Em có thể thêm/bớt số dòng tùy theo số task thực tế của mình)*
 
