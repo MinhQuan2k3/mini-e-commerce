@@ -6,6 +6,7 @@
 |---|---|
 | Project | Mini E-commerce |
 | Document | API Specification |
+| Company | A-Software |
 | Status | Revised after Review Round 2 |
 
 ---
@@ -228,16 +229,16 @@ Các API phải sử dụng thống nhất response format này.
 | Products | `GET` | `/products/{id}` | Public | FR-PROD-02 / UC-PROD-02 |
 | Categories | `GET` | `/categories` | Public | FR-CAT-01 |
 | Categories | `GET` | `/categories/{id}` | Public | FR-CAT-02 |
-| Cart | `GET` | `/cart` | Customer | FR-CART-01 / UC-CART-01 |
-| Cart | `POST` | `/cart/items` | Customer | FR-CART-02 / UC-CART-02 |
-| Cart | `PUT` | `/cart/items/{productId}` | Customer | FR-CART-03 |
-| Cart | `DELETE` | `/cart/items/{productId}` | Customer | FR-CART-04 |
+| Cart | `GET` | `/cart` | Customer | FR-CART-01 / UC-CART-02 |
+| Cart | `POST` | `/cart/items` | Customer | FR-CART-02 / UC-CART-01 |
+| Cart | `PUT` | `/cart/items/{productId}` | Customer | FR-CART-06 / UC-CART-03 |
+| Cart | `DELETE` | `/cart/items/{productId}` | Customer | FR-CART-07 / UC-CART-04 |
 | Checkout | `POST` | `/orders/checkout` | Customer | FR-ORDER-01 / UC-ORDER-01 |
 | Customer Orders | `GET` | `/orders/my-orders` | Customer | FR-ORDER-11, FR-ORDER-13 / UC-ORDER-02 |
-| Customer Orders | `GET` | `/orders/{id}` | Customer | FR-ORDER-03 |
-| Customer Orders | `PATCH` | `/orders/{id}/cancel` | Customer | FR-ORDER-04 |
+| Customer Orders | `GET` | `/orders/{id}` | Customer | FR-ORDER-12 / UC-ORDER-03 |
+| Customer Orders | `PATCH` | `/orders/{id}/cancel` | Customer | FR-ORDER-07 / UC-ORDER-04 |
 | Admin Products | `GET` | `/admin/products` | Admin | FR-ADMIN-PROD-01 |
-| Admin Products | `GET` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-02 |
+| Admin Products | `GET` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-08 |
 | Admin Products | `POST` | `/admin/products` | Admin | FR-ADMIN-PROD-03 |
 | Admin Products | `PUT` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-04 |
 | Admin Products | `DELETE` | `/admin/products/{id}` | Admin | FR-ADMIN-PROD-07 / UC-ADMIN-PROD-01 |
@@ -246,8 +247,8 @@ Các API phải sử dụng thống nhất response format này.
 | Admin Categories | `PUT` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-03 / UC-ADMIN-CAT-01 |
 | Admin Categories | `DELETE` | `/admin/categories/{id}` | Admin | FR-ADMIN-CAT-04 / UC-ADMIN-CAT-01 |
 | Admin Orders | `GET` | `/admin/orders` | Admin | FR-ADMIN-ORDER-01, FR-ADMIN-ORDER-02, FR-ADMIN-ORDER-03 / UC-ADMIN-ORDER-01 |
-| Admin Orders | `GET` | `/admin/orders/{id}` | Admin | FR-ADMIN-ORDER-04 / UC-ADMIN-ORDER-02 |
-| Admin Orders | `PATCH` | `/admin/orders/{id}/status` | Admin | FR-ADMIN-ORDER-05 / UC-ADMIN-ORDER-03 |
+| Admin Orders | `GET` | `/admin/orders/{id}` | Admin | FR-ADMIN-ORDER-04 / UC-ADMIN-ORDER-01 |
+| Admin Orders | `PATCH` | `/admin/orders/{id}/status` | Admin | FR-ADMIN-ORDER-05 / UC-ORDER-05 |
 
 
 ---
