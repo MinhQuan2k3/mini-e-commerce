@@ -1062,6 +1062,7 @@ Testing
 
 ## Change Log
 
-| Version | Date | Changes |
-|---|---|---|
-| Revised after Review Round 2 | 2026-10-08 | Updated ERD after Review Round 2 to align database entities and attributes with the finalized requirements. Standardized Customer and OrderItem attribute names, including `customer_id`, `password_hash`, `product_name_snapshot`, `sku_snapshot`, and `unit_price`. Confirmed Product Soft Delete using `status = INACTIVE`. Confirmed that payment information is stored directly in Order through `payment_status` and `paid_at`; no separate Payment Entity/Table is introduced in the MVP. Updated relationships and constraints to remain consistent with the finalized business rules for Product, Category, Cart, Order, and OrderItem. |
+| Ngày | Mã feedback | Vị trí | Thay đổi |
+|---|---|---|---|
+| 2026-10-12 | N-04, R-01 | PRODUCTS, §5.3, §8.1, §14 | Khôi phục tên cột `products.sku`; chỉ sử dụng `sku_snapshot` cho `order_items`. |
+| 2026-10-12 | N-04, R-02 | ORDER_ITEMS, các mục mô tả thuộc tính | Thống nhất các cột snapshot thành `product_name_snapshot`, `sku_snapshot` và `unit_price`. |
