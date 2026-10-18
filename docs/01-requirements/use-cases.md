@@ -223,7 +223,7 @@ Cho phép Guest và Customer xem danh sách các Product đang ở trạng thái
 |---|---|
 | Use Case ID | UC-PROD-01 |
 | Use Case Name | View Product List |
-| Primary Actor | Guest, Customer |
+| Primary Actor | Guest, Customer, Admin |
 | Goal | Xem danh sách sản phẩm đang được cung cấp |
 | Trigger | Người dùng mở Product List |
 | Preconditions | Hệ thống có thể truy cập Product data |
@@ -259,7 +259,7 @@ Cho phép Guest và Customer xem thông tin chi tiết của một Product.
 |---|---|
 | Use Case ID | UC-PROD-02 |
 | Use Case Name | View Product Detail |
-| Primary Actor | Guest, Customer |
+| Primary Actor | Guest, Customer, Admin |
 | Goal | Xem thông tin chi tiết của Product |
 | Trigger | Người dùng chọn một Product |
 | Preconditions | Product ID được cung cấp |
@@ -298,7 +298,7 @@ Cho phép Guest và Customer tìm kiếm Product theo Name, SKU hoặc Descripti
 |---|---|
 | Use Case ID | UC-PROD-03 |
 | Use Case Name | Search Product |
-| Primary Actor | Guest, Customer |
+| Primary Actor | Guest, Customer, Admin |
 | Goal | Tìm Product theo từ khóa |
 | Trigger | Người dùng nhập Search Keyword |
 | Preconditions | Product Search UI khả dụng |
@@ -335,7 +335,7 @@ Cho phép Guest và Customer lọc, sắp xếp và phân trang danh sách Produ
 |---|---|
 | Use Case ID | UC-PROD-04 |
 | Use Case Name | Filter, Sort and Paginate Products |
-| Primary Actor | Guest, Customer |
+| Primary Actor | Guest, Customer, Admin |
 | Goal | Thu hẹp và tổ chức kết quả Product |
 | Trigger | Người dùng thay đổi Filter, Sort hoặc Page |
 | Preconditions | Product List đang được hiển thị |
@@ -1316,10 +1316,10 @@ Success Response sử dụng format:
 | UC-AUTH-01 | Register Customer | Guest |
 | UC-AUTH-02 | Login | Guest, Customer, Admin |
 | UC-AUTH-03 | Authorize User | Customer, Admin |
-| UC-PROD-01 | View Product List | Guest, Customer |
-| UC-PROD-02 | View Product Detail | Guest, Customer |
-| UC-PROD-03 | Search Product | Guest, Customer |
-| UC-PROD-04 | Filter, Sort and Paginate Products | Guest, Customer |
+| UC-PROD-01 | View Product List | Guest, Customer, Admin |
+| UC-PROD-02 | View Product Detail | Guest, Customer, Admin |
+| UC-PROD-03 | Search Product | Guest, Customer, Admin |
+| UC-PROD-04 | Filter, Sort and Paginate Products | Guest, Customer, Admin |
 | UC-CART-01 | Add Product to Cart | Customer |
 | UC-CART-02 | View Cart | Customer |
 | UC-CART-03 | Update Cart Quantity | Customer |
