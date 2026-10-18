@@ -224,7 +224,7 @@ Các API phải sử dụng thống nhất response format này.
 |---|---|---|---|---|
 | Authentication | `POST` | `/auth/register` | Guest | FR-AUTH-01 / UC-AUTH-01 |
 | Authentication | `POST` | `/auth/login` | Guest | FR-AUTH-02 / UC-AUTH-02 |
-| Authentication | `GET` | `/auth/me` | Customer/Admin | FR-AUTH-03 |
+| Authentication | `GET` | `/auth/me` | Customer/Admin | FR-AUTH-02 / FR-AUTH-06 |
 | Products | `GET` | `/products` | Public | FR-PROD-01 / UC-PROD-01 |
 | Products | `GET` | `/products/{id}` | Public | FR-PROD-02 / UC-PROD-02 |
 | Categories | `GET` | `/categories` | Public | FR-CAT-01 |
@@ -233,7 +233,7 @@ Các API phải sử dụng thống nhất response format này.
 | Cart | `POST` | `/cart/items` | Customer | FR-CART-02 / UC-CART-01 |
 | Cart | `PUT` | `/cart/items/{productId}` | Customer | FR-CART-06 / UC-CART-03 |
 | Cart | `DELETE` | `/cart/items/{productId}` | Customer | FR-CART-07 / UC-CART-04 |
-| Checkout | `POST` | `/orders/checkout` | Customer | FR-ORDER-01 / UC-ORDER-01 |
+| Checkout | `POST` | `/orders/checkout` | Customer | FR-CHECKOUT-01 → 09 / UC-CHECKOUT-01 |
 | Customer Orders | `GET` | `/orders/my-orders` | Customer | FR-ORDER-11, FR-ORDER-13 / UC-ORDER-02 |
 | Customer Orders | `GET` | `/orders/{id}` | Customer | FR-ORDER-12 / UC-ORDER-03 |
 | Customer Orders | `PATCH` | `/orders/{id}/cancel` | Customer | FR-ORDER-07 / UC-ORDER-04 |
