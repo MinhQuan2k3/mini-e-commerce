@@ -658,23 +658,23 @@ Guest không được sử dụng Cart.
     "items": [
       {
         "id": 10,
-        "product": {
-          "id": 1,
-          "sku": "KB-001",
-          "name": "Mechanical Keyboard",
-          "price": 850000.0,
-          "stockQuantity": 20,
-          "imageUrl": "https://example.com/images/keyboard.jpg",
-          "status": "ACTIVE"
-        },
-        "quantity": 2,
-        "subtotal": 1700000.0,
+        "product": { "id": 1, "sku": "LAP-001", "name": "Laptop A", "price": 12000000.0, "stockQuantity": 5, "status": "ACTIVE" },
+        "quantity": 1,
+        "subtotal": 12000000.0,
         "available": true,
         "unavailableReason": null
+      },
+      {
+        "id": 11,
+        "product": { "id": 2, "sku": "PH-002", "name": "Phone B", "price": 8000000.0, "stockQuantity": 0, "status": "ACTIVE" },
+        "quantity": 2,
+        "subtotal": 16000000.0,
+        "available": false,
+        "unavailableReason": "OUT_OF_STOCK"
       }
     ],
-    "totalAmount": 1700000.0,
-    "checkoutAllowed": true,
+    "totalAmount": 12000000.0,
+    "checkoutAllowed": false,
     "updatedAt": "2026-09-24T14:30:00"
   }
 }
@@ -700,6 +700,10 @@ EXCEEDS_STOCK
 - `available = false` khi Product INACTIVE, hết stock hoặc quantity vượt stock.
 - `checkoutAllowed = true` chỉ khi Cart không rỗng và tất cả CartItem đều available.
 - Frontend phải disable Checkout khi `checkoutAllowed = false`.
+- `subtotal` = price hiện tại × quantity, được tính cho mọi CartItem (kể cả item không khả dụng) để hiển thị.
+- `totalAmount` = tổng subtotal của các CartItem có `available = true`.
+- CartItem có `available = false` vẫn được trả về trong items kèm `unavailableReason`,
+  nhưng không được cộng vào `totalAmount`.
 
 ---
 
@@ -2388,12 +2392,12 @@ Các quyết định kỹ thuật quan trọng đã được xác định trong 
 Mọi thay đổi API làm ảnh hưởng đến requirement hoặc data model phải được cập nhật đồng bộ trong:
 
 ```text
-docs/01-requirements/requirement-clarification.md
-docs/01-requirements/requirement-specification.md
-docs/01-requirements/use-cases.md
-docs/02-design/class-diagram/class-diagram.md
-docs/02-design/erd/entity-relationship-diagram.md
-docs/03-api/api-specification.md
+requirement-clarification.md
+requirement-specification.md
+use-cases.md
+class-diagram.md
+entity-relationship-diagram.md
+api-specification.md
 ```
 
 ## Change Log
