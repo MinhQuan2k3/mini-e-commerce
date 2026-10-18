@@ -463,7 +463,7 @@ Ví dụ:
 ```text
 Product:
     name  = "Keyboard"
-    sku_snapshot   = "KB-001"
+    sku = "KB-001"
     price = 500000
 
 OrderItem:
