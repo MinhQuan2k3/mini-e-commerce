@@ -190,7 +190,7 @@ Kiểm tra quyền truy cập của người dùng dựa trên Role (Role-based 
 | Trigger | Người dùng gửi request đến protected API |
 | Preconditions | Request được gửi đến Backend |
 | Postconditions | Request được chấp nhận hoặc từ chối theo quyền |
-| Related Requirements | FR-AUTH-05, FR-API-02, FR-API-03, BR-23 |
+| Related Requirements | FR-AUTH-05, FR-API-02, FR-API-03, BR-22 |
 
 ### Main Success Flow
 
@@ -596,7 +596,7 @@ Thực hiện tạo Order và OrderItems trong Database, trừ tồn kho và là
 | Trigger | Customer xác nhận Đặt hàng từ UC-CHECKOUT-01 |
 | Preconditions | Thông tin Checkout hợp lệ |
 | Postconditions | Order được lưu, Stock giảm, CartItem được xóa |
-| Related Requirements | FR-CHECKOUT-05 đến FR-CHECKOUT-09, FR-ORDER-01 đến FR-ORDER-04, NFR-05, BR-12, BR-15 |
+| Related Requirements | FR-CHECKOUT-05 đến FR-CHECKOUT-09, FR-ORDER-01 đến FR-ORDER-04, NFR-05, BR-12, BR-14, BR-15, BR-26 |
 
 ### Main Success Flow — Trong 1 Database Transaction
 
@@ -665,7 +665,7 @@ Cho phép Customer xem danh sách các Order do chính mình đã đặt.
 | Trigger | Customer mở mục "Đơn hàng của tôi" |
 | Preconditions | Customer đã đăng nhập |
 | Postconditions | Danh sách Order của Customer được hiển thị |
-| Related Requirements | FR-ORDER-11, FR-ORDER-13, BR-19 |
+| Related Requirements | FR-ORDER-11, FR-ORDER-13, BR-17 |
 
 ### Main Success Flow
 
@@ -712,7 +712,7 @@ Cho phép Customer xem thông tin chi tiết một Order cụ thể của chính
 | Trigger | Customer chọn xem một Order |
 | Preconditions | Customer đã đăng nhập |
 | Postconditions | Chi tiết Order được hiển thị |
-| Related Requirements | FR-ORDER-12, FR-API-04, BR-19 |
+| Related Requirements | FR-ORDER-12, FR-API-04, BR-17 |
 
 ### Main Success Flow
 
@@ -765,7 +765,7 @@ Cho phép Customer hủy Order khi Order đang ở trạng thái `PENDING`.
 | Trigger | Customer nhấn "Hủy đơn hàng" |
 | Preconditions | Customer đã đăng nhập; Order thuộc Customer; Order ở trạng thái `PENDING` |
 | Postconditions | Order chuyển sang `CANCELLED`; Stock được hoàn lại đúng một lần |
-| Related Requirements | FR-ORDER-07, FR-ORDER-10, BR-13, BR-17, BR-18 |
+| Related Requirements | FR-ORDER-07, FR-ORDER-10, BR-13, BR-16, BR-28 |
 
 ### Main Success Flow — Trong 1 Database Transaction
 
@@ -807,7 +807,7 @@ Cho phép Admin cập nhật trạng thái xử lý Order theo luồng chuyển 
 | Trigger | Admin thay đổi trạng thái Order |
 | Preconditions | Admin đã đăng nhập; Order tồn tại |
 | Postconditions | Order Status được cập nhật nếu transition hợp lệ |
-| Related Requirements | FR-ORDER-08, FR-ORDER-09, FR-ADMIN-ORDER-05, BR-22, BR-26, BR-27 |
+| Related Requirements | FR-ORDER-08, FR-ORDER-09, FR-ADMIN-ORDER-05, BR-19, BR-25, BR-27, BR-28 |
 
 ### Main Success Flow
 
@@ -1065,7 +1065,7 @@ Cho phép Admin xem toàn bộ danh sách Order, tìm kiếm, lọc, xem chi ti�
 | Trigger | Admin mở trang Quản lý Order |
 | Preconditions | Admin đã đăng nhập |
 | Postconditions | Danh sách / Chi tiết / Trạng thái Order được hiển thị hoặc cập nhật nếu hợp lệ |
-| Related Requirements | FR-ADMIN-ORDER-01 đến FR-ADMIN-ORDER-05 |
+| Related Requirements | FR-ADMIN-ORDER-01 đến FR-ADMIN-ORDER-05, BR-18 |
 
 ### Main Success Flow — View and Search Orders
 
