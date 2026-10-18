@@ -357,7 +357,7 @@ Cho phép Guest và Customer lọc, sắp xếp và phân trang danh sách Produ
 
 | Condition | System Response |
 |---|---|
-| Filter không hợp lệ | Bỏ qua hoặc từ chối tham số không hợp lệ theo API validation |
+| Filter không hợp lệ | Trả về `400 Bad Request` theo API validation |
 | Page vượt quá số trang | Trả về danh sách rỗng hoặc trang cuối theo API specification |
 | Không có kết quả | Hiển thị Empty State |
 
