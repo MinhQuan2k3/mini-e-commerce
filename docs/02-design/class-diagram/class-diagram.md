@@ -996,7 +996,7 @@ Các API này yêu cầu Customer authentication.
 
 ```text
 POST /api/orders/checkout
-GET /api/orders/my
+GET /api/orders/my-orders
 GET /api/orders/{id}
 PATCH /api/orders/{id}/cancel
 ```
