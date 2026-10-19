@@ -248,7 +248,7 @@
 ### Order
 
 - Order có `OrderItem`.
-- `OrderItem` lưu `product_name`, `sku` và `unit_price` tại thời điểm mua.
+- `OrderItem` lưu `product_name_snapshot`, `sku_snapshot` và `unit_price` tại thời điểm mua.
 - Order mới có `payment_status = UNPAID` và `paid_at = NULL`.
 - Khi Order chuyển sang `DELIVERED`, hệ thống tự động cập nhật `payment_status = PAID` và `paid_at` bằng thời điểm hiện tại.
 - Không có Payment Entity/Table hoặc Payment Gateway trong MVP.
