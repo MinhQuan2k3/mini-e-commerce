@@ -52,46 +52,46 @@ Inventory Management
 classDiagram
 
     class User {
-        +Long id
-        +String email
-        +String passwordHash
-        +Role role
-        +LocalDateTime createdAt
-        +LocalDateTime updatedAt
+        -Long id
+        -String email
+        -String passwordHash
+        -Role role
+        -LocalDateTime createdAt
+        -LocalDateTime updatedAt
     }
 
     class Category {
-        +Long id
-        +String name
-        +String description
-        +CategoryStatus status
-        +LocalDateTime createdAt
-        +LocalDateTime updatedAt
+        -Long id
+        -String name
+        -String description
+        -CategoryStatus status
+        -LocalDateTime createdAt
+        -LocalDateTime updatedAt
     }
 
     class Product {
-        +Long id
-        +String sku
-        +String name
-        +String description
-        +BigDecimal price
-        +Integer stockQuantity
-        +String imageUrl
-        +Category category
-        +ProductStatus status
-        +LocalDateTime createdAt
-        +LocalDateTime updatedAt
+        -Long id
+        -String sku
+        -String name
+        -String description
+        -BigDecimal price
+        -Integer stockQuantity
+        -String imageUrl
+        -Category category
+        -ProductStatus status
+        -LocalDateTime createdAt
+        -LocalDateTime updatedAt
         +boolean isAvailable()
         +void decreaseStock(Integer quantity)
         +void increaseStock(Integer quantity)
     }
 
     class Cart {
-        +Long id
-        +User user
-        +List~CartItem~ items
-        +LocalDateTime createdAt
-        +LocalDateTime updatedAt
+        -Long id
+        -User user
+        -List~CartItem~ items
+        -LocalDateTime createdAt
+        -LocalDateTime updatedAt
         +void addItem(Product product, Integer quantity)
         +void updateItemQuantity(Long productId, Integer quantity)
         +void removeItem(Long productId)
@@ -99,32 +99,32 @@ classDiagram
     }
 
     class CartItem {
-        +Long id
-        +Cart cart
-        +Product product
-        +Integer quantity
-        +LocalDateTime createdAt
-        +LocalDateTime updatedAt
+        -Long id
+        -Cart cart
+        -Product product
+        -Integer quantity
+        -LocalDateTime createdAt
+        -LocalDateTime updatedAt
         +void increaseQuantity(Integer quantity)
         +void updateQuantity(Integer quantity)
     }
 
     class Order {
-        +Long id
-        +User customer
-        +List~OrderItem~ items
-        +BigDecimal totalAmount
-        +String recipientName
-        +String phone
-        +String address
-        +String provinceCity
-        +String district
-        +String ward
-        +OrderStatus orderStatus
-        +PaymentStatus paymentStatus
-        +LocalDateTime paidAt
-        +LocalDateTime createdAt
-        +LocalDateTime updatedAt
+        -Long id
+        -User customer
+        -List~OrderItem~ items
+        -BigDecimal totalAmount
+        -String recipientName
+        -String phone
+        -String address
+        -String provinceCity
+        -String district
+        -String ward
+        -OrderStatus orderStatus
+        -PaymentStatus paymentStatus
+        -LocalDateTime paidAt
+        -LocalDateTime createdAt
+        -LocalDateTime updatedAt
         +void confirm()
         +void ship()
         +void deliver()
@@ -135,14 +135,14 @@ classDiagram
     }
 
     class OrderItem {
-        +Long id
-        +Order order
-        +Product product
-        +String productNameSnapshot
-        +String skuSnapshot
-        +BigDecimal unitPrice
-        +Integer quantity
-        +BigDecimal itemTotal
+        -Long id
+        -Order order
+        -Product product
+        -String productNameSnapshot
+        -String skuSnapshot
+        -BigDecimal unitPrice
+        -Integer quantity
+        -BigDecimal itemTotal
         +BigDecimal calculateItemTotal()
     }
 
