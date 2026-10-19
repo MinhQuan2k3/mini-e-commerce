@@ -300,7 +300,7 @@ InvalidOrderStatusException
 
 API nên trả response thống nhất.
 
-Ví dụ:
+Ví dụ response lỗi thông thường:
 
 ```json
 {
@@ -308,7 +308,11 @@ Ví dụ:
   "message": "Insufficient stock",
   "errors": []
 }
+```
 
+Ví dụ response lỗi validation:
+
+```json
 {
   "success": false,
   "message": "Validation failed",
@@ -661,7 +665,7 @@ Dùng `snake_case`.
 Ví dụ:
 
 ```text
-user_id
+customer_id
 stock_quantity
 total_amount
 created_at
@@ -703,7 +707,7 @@ Tên Foreign Key:
 Ví dụ:
 
 ```text
-user_id
+customer_id
 category_id
 cart_id
 product_id
