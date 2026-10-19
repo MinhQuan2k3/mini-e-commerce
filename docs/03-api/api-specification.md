@@ -1628,6 +1628,10 @@ ADMIN
 
 Lấy danh sách Category dành cho Admin, bao gồm cả Category `ACTIVE` và `INACTIVE`.
 
+- **Pagination:** Không hỗ trợ trong MVP; API trả về toàn bộ danh sách Category phù hợp.
+- **Filtering:** Không hỗ trợ lọc theo `status` trong MVP; kết quả bao gồm cả Category `ACTIVE` và `INACTIVE`.
+- **Sorting:** Không quy định thứ tự sắp xếp trong MVP.
+
 ### Success Response
 
 **HTTP 200 OK**
@@ -1636,9 +1640,28 @@ Lấy danh sách Category dành cho Admin, bao gồm cả Category `ACTIVE` và 
 {
   "success": true,
   "message": "Categories retrieved successfully",
-  "data": []
+  "data": [
+    {
+      "id": 1,
+      "name": "Electronics",
+      "description": "Electronic devices and accessories",
+      "status": "ACTIVE",
+      "createdAt": "2026-09-20T10:00:00",
+      "updatedAt": "2026-09-20T10:00:00"
+    },
+    {
+      "id": 2,
+      "name": "Accessories",
+      "description": "Accessories and related products",
+      "status": "INACTIVE",
+      "createdAt": "2026-09-21T10:00:00",
+      "updatedAt": "2026-09-21T10:00:00"
+    }
+  ]
 }
 ```
+
+`data` chứa toàn bộ danh sách Category được trả về. Nếu không có Category nào, `data` là mảng rỗng ([]).
 
 ### Error Cases
 
