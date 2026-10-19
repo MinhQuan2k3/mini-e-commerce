@@ -2309,10 +2309,18 @@ Customer hoặc Admin khi hủy Order:
 
 ```text
 Validate Order Status
+Update Order Status (conditional)
 Restore Stock
-Update Order Status
 Commit
 ```
+
+Việc hủy Order phải tuân thủ các quy tắc sau:
+
+1. Kiểm tra Order có tồn tại và người thực hiện có quyền hủy Order.
+2. Kiểm tra trạng thái hiện tại của Order có cho phép hủy hay không.
+3. Cập nhật trạng thái Order từ PENDING sang CANCELLED bằng thao tác cập nhật có điều kiện. Chỉ tiếp tục nếu cập nhật thành công.
+4. Chỉ hoàn stock sau khi cập nhật trạng thái thành công.
+5. Thực hiện cập nhật trạng thái và hoàn stock trong cùng một transaction. Nếu một bước thất bại, toàn bộ transaction phải rollback.
 
 Chỉ được hoàn stock khi Order chuyển thành công:
 
@@ -2320,7 +2328,7 @@ Chỉ được hoàn stock khi Order chuyển thành công:
 PENDING → CANCELLED
 ```
 
-Không được hoàn stock nhiều lần nếu cùng một Order bị xử lý lại.
+Không được hoàn stock nhiều lần nếu cùng một Order bị xử lý lại. Nếu Order đã được hủy hoặc thao tác cập nhật trạng thái có điều kiện thất bại, hệ thống không được hoàn stock.
 
 ---
 
