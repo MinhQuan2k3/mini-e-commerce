@@ -84,7 +84,7 @@ erDiagram
 
     CARTS {
         bigint id PK
-        bigint customer_id FK, UK
+        bigint customer_id FK
         datetime created_at
         datetime updated_at
     }
