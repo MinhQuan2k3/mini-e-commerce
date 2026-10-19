@@ -197,6 +197,19 @@ classDiagram
     Order --> PaymentStatus
 ```
 
+---
+
+### Giải thích thiết kế Role
+
+Hệ thống không sử dụng inheritance để phân biệt `Customer` và `Admin`. Thay vào đó, cả hai đều được biểu diễn bằng lớp `User`, với thuộc tính `role` sử dụng enum `Role` để xác định vai trò của người dùng.
+
+Enum `Role` gồm các giá trị:
+
+- `CUSTOMER`
+- `ADMIN`
+
+Cách thiết kế này giúp tránh tạo các lớp con riêng chỉ để biểu diễn vai trò, đồng thời cho phép hệ thống kiểm soát quyền truy cập dựa trên `role` của người dùng.
+
 * * *
 
 # 4. Domain Classes
