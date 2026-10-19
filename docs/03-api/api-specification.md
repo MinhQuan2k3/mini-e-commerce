@@ -385,6 +385,95 @@ MVP không có Account Status, do đó không sử dụng lỗi `403 Account Dis
 
 ---
 
+## 6.3 Get Current User
+
+### Endpoint 
+
+```http
+GET /api/auth/me
+```
+
+### Description
+
+Lấy thông tin của người dùng hiện đang được xác thực. Endpoint này cho phép Frontend khôi phục trạng thái đăng nhập sau khi tải lại trang mà không yêu cầu người dùng đăng nhập lại.
+
+**Authentication:** Required
+
+### Request
+
+**Headers:**
+
+| Header | Required | Description |
+|---|---|---|
+| `Authorization` | Yes | `Bearer <access_token>` — Access token của người dùng |
+| `Accept` | No | `application/json` |
+
+**Request Body:** None.
+
+**Query Parameters:** None.
+
+### Success Response
+
+**HTTP Status:** `200 OK`
+
+**Response Format:** `{ success, message, data }`
+
+**Example:**
+
+```json
+{
+  "success": true,
+  "message": "Request successful",
+  "data": {
+    "id": 1,
+    "email": "customer@example.com",
+    "role": "CUSTOMER"
+  }
+}
+```
+
+`data` chứa thông tin người dùng đã được xác thực. Các trường trả về phải thống nhất với User entity và response của API đăng nhập trong tài liệu đặc tả.
+
+### Error Cases
+
+**1. HTTP Status: `401 Unauthorized`**
+
+Trả về khi access token bị thiếu, không hợp lệ hoặc đã hết hạn.
+
+**Example:**
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": []
+}
+```
+
+**2. HTTP Status: `500 Internal Server Error`**
+
+Trả về khi xảy ra lỗi máy chủ ngoài dự kiến trong quá trình lấy thông tin người dùng hiện tại.
+
+**Example:**
+
+```json
+{
+  "success": false,
+  "message": "Internal server error",
+  "errors": []
+}
+```
+
+### Business Rules
+
+- Endpoint yêu cầu access token hợp lệ
+- Thông tin người dùng phải được lấy từ danh tính đã xác thực gắn với token, không lấy từ user ID do client cung cấp
+- Không trả về dữ liệu nhạy cảm như `passwordHash`.
+- Cả CUSTOMER và ADMIN đều được phép truy cập khi đã xác thực
+- Response phải tuân theo định dạng chung tại §4.5.
+
+---
+
 # 7. Product APIs
 
 ## 7.1. Get Product List
