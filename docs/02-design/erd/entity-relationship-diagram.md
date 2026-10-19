@@ -39,7 +39,7 @@ Thiết kế ưu tiên:
 ```mermaid
 erDiagram
 
-    USERS ||--o{ CARTS : owns
+    USERS ||--o| CARTS : owns
     USERS ||--o{ ORDERS : places
 
     CATEGORIES ||--o{ PRODUCTS : contains
@@ -189,7 +189,7 @@ Lưu thông tin tài khoản của Customer và Admin.
 ### Relationships
 
 ```text
-USERS 1 ─────── N CARTS
+USERS 1 ─────── 0..1 CARTS
 USERS 1 ─────── N ORDERS
 ```
 
@@ -289,7 +289,7 @@ UNIQUE(customer_id)
 ### Relationships
 
 ```text
-USERS 1 ─────── 1 CARTS
+USERS 1 ─────── 0..1 CARTS
 ```
 
 * * *
@@ -495,7 +495,7 @@ PRODUCTS 1 ─────── N ORDER_ITEMS
 
 | Relationship | Cardinality | Description |
 |---|---|---|
-| User → Cart | 1 : 1 | Mỗi Customer có tối đa một Cart |
+| User → Cart | 1 : 0..1 | Mỗi Customer có thể có 0 hoặc 1 Cart |
 | User → Order | 1 : N | Một Customer có nhiều Order |
 | Category → Product | 1 : N | Một Category có nhiều Product |
 | Cart → CartItem | 1 : N | Một Cart có nhiều CartItem |
@@ -916,7 +916,7 @@ Keyword search trên Product và Admin Order có thể cần database-specific o
 
 ```text
 USERS
- ├── 1 : 1 ── CARTS
+ ├── 1 : 0..1 ── CARTS
  │              │
  │              └── 1 : N ── CART_ITEMS ── N : 1 ── PRODUCTS
  │
