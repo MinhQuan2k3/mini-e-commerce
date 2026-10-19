@@ -214,7 +214,9 @@ Khi lỗi liên quan đến một hoặc nhiều field cụ thể:
 }
 ```
 
-Các API phải sử dụng thống nhất response format này.
+Các API trả về response dạng JSON phải sử dụng thống nhất response format được quy định trong mục này, ngoại trừ các API trả về HTTP status `204 No Content`.
+
+Các API trả về `204 No Content` không được trả về response body và không áp dụng cấu trúc `{ success, message, data }` hoặc `{ success, message, errors }`.
 
 ---
 
@@ -2088,11 +2090,14 @@ Ví dụ response:
 
 ```json
 {
-  "id": 1001,
-  "orderStatus": "DELIVERED",
-  "paymentStatus": "PAID",
-  "paidAt": "2026-09-24T16:45:00",
-  "message": "Order delivered and payment status updated"
+  "success": true,
+  "message": "Order delivered and payment status updated",
+  "data": {
+    "id": 1001,
+    "orderStatus": "DELIVERED",
+    "paymentStatus": "PAID",
+    "paidAt": "2026-09-24T16:45:00"
+  }
 }
 ```
 
