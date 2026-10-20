@@ -930,3 +930,10 @@ Reviewer cần kiểm tra:
 [ ] Không còn debug code
 [ ] Code dễ đọc
 ```
+
+## Change Log
+
+| Ngày | Mã feedback | Vị trí | Thay đổi |
+|---|---|---|---|
+| 2026-10-19 | N-04 | §5.2, §5.4 | Thống nhất cách đặt tên trường tham chiếu khách hàng thành `customer_id` theo quy ước `snake_case` cho tên cột cơ sở dữ liệu. |
+| 2026-10-19 | N-04 | §3.9 | Tách ví dụ JSON thành hai code block riêng để phân biệt rõ các ví dụ và giúp tài liệu dễ đọc hơn. |
