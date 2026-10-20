@@ -1971,8 +1971,6 @@ Hệ thống không triển khai Payment Gateway, Online Payment hoặc Payment 
 
 | Ngày | Mã feedback | Vị trí | Thay đổi |
 |---|---|---|---|
-| 2026-10-11 | N-01 | Business Rules | Khôi phục mã và ý nghĩa BR-13–BR-25 theo bảng đối chiếu; chuyển các Business Rules mới thành BR-26–BR-29. |
-| 2026-10-11 | N-02 | FR-ORDER-11, §6, §11 | Thống nhất endpoint xem lịch sử đơn hàng thành `GET /api/orders/my-orders`. |
-| 2026-10-11 | N-01, R-09 | §13 | Giữ mã TD gốc; cập nhật quyết định phân trang, Order Status Transition Matrix và cơ chế concurrency control theo các quyết định đã chốt. |
-| 2026-10-11 | R-04 | §5 | Khôi phục FR-UI-07 về khu vực điều hướng Admin và giữ nguyên mã các FR-UI tiếp theo. |
-| 2026-10-11 | N-07 | §6 | Bổ sung yêu cầu API quản lý Category dành cho Admin nếu đã được thêm vào danh sách requirement. |
+| 2026-10-18 | N-01 | Business Rules | Khôi phục mã và ý nghĩa BR-13–BR-25 theo bảng đối chiếu; chuyển các Business Rules mới thành BR-26–BR-29. |
+| 2026-10-18 | N-01, R-09 | §13 | Giữ mã TD gốc; cập nhật quyết định phân trang, Order Status Transition Matrix và cơ chế concurrency control theo các quyết định đã chốt. |
+| 2026-10-18 | R-04 | §5 | Khôi phục FR-UI-07 về khu vực điều hướng Admin và giữ nguyên mã các FR-UI tiếp theo. |
