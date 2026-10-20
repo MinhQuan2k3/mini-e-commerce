@@ -9,6 +9,8 @@
 3. Điền toàn bộ vào **Bảng tổng hợp ước lượng** ở cuối file.
 4. Gửi lại bảng này cho anh để trao đổi và thống nhất kế hoạch trước khi bắt đầu Tuần 2.
 
+**Giả định quy đổi thời gian:** Trong file này, quy ước **1 ngày làm việc = 8 giờ làm việc**. Đây là đơn vị quy đổi phục vụ lập kế hoạch và ước lượng, không nhất thiết đồng nghĩa với 8 giờ làm việc thực tế mỗi ngày. Các task được ước lượng theo giờ; thông thường, một task nên nằm trong khoảng 0.5–1 ngày làm việc, tương đương **4–8 giờ**.
+
 > Việc ước lượng không cần chính xác tuyệt đối — mục đích là để em tập thói quen lập kế hoạch, và để anh cùng em theo dõi tiến độ thực tế so với dự kiến trong các tuần tiếp theo.
 
 ---
@@ -36,11 +38,11 @@
 Đầu việc lớn:
 - Phân quyền Admin/Customer (Spring Security + JWT)
 - Chức năng giỏ hàng (thêm/sửa/xóa sản phẩm trong giỏ)
-- Chức năng đặt hàng: tạo đơn, tính tổng tiền (áp dụng giảm giá nếu có), trừ tồn kho khi đặt hàng thành công
+- Chức năng đặt hàng: tạo đơn, tính tổng tiền, trừ tồn kho khi đặt hàng thành công
 - API xem danh sách đơn hàng của bản thân + hủy đơn khi đang ở trạng thái "Chờ xử lý" (hoàn lại tồn kho khi hủy)
 - Tìm kiếm + lọc + sắp xếp sản phẩm (theo tên, giá, danh mục)
-- Xử lý các trường hợp đặc biệt: đặt hàng khi hết hàng, giỏ hàng rỗng, mã giảm giá hết hạn
-- Viết Unit Test cho các hàm tính toán nghiệp vụ quan trọng (tổng giỏ hàng, áp dụng giảm giá)
+- Xử lý các trường hợp đặc biệt: đặt hàng khi hết hàng, giỏ hàng rỗng, sản phẩm không còn hoạt động
+- Viết Unit Test cho các hàm xử lý nghiệp vụ quan trọng (tính tổng giỏ hàng, kiểm tra tồn kho và validation đặt hàng)
 - Cập nhật bộ test API (Postman/Swagger) cho các endpoint mới, để dùng test độc lập trước khi ghép Frontend
 
 ---
@@ -103,7 +105,8 @@
 | 2 | Seed Data | Tạo dữ liệu mẫu: Category, Product và tài khoản Admin mặc định | 2 | Phụ thuộc Entity và Repository |
 | 2 | Authentication cơ bản | Implement Register/Login, password hashing và kiểm tra thông tin đăng nhập | 8 | Bao gồm validation password tối thiểu 8 ký tự; là nền tảng cho JWT |
 | 2 | API Test Setup | Chuẩn bị Postman/Swagger collection cơ bản và test các API nền tảng | 1 | Tạo sớm để hỗ trợ kiểm thử Backend trong các tuần sau |
-|  | **Tổng Tuần 2** | | **39 giờ** | |
+| 2 | Application Logging | Thiết lập logging cho Backend, ghi nhận các sự kiện quan trọng và lỗi phục vụ debug | 3 | Đáp ứng NFR-09; sử dụng log level phù hợp, không ghi password, JWT hoặc thông tin nhạy cảm vào log |
+|  | **Tổng Tuần 2** | | **42 giờ** | |
 | 3 | Spring Security | Cấu hình Spring Security và authentication flow | 3 | Phụ thuộc Authentication cơ bản Tuần 2 |
 | 3 | JWT | Implement tạo, validate và parse JWT | 4 | Phụ thuộc Spring Security |
 | 3 | Authorization | Phân quyền ADMIN/CUSTOMER và bảo vệ các endpoint | 3 | Phụ thuộc JWT |
@@ -158,7 +161,7 @@
 | 6 | Retrospective | So sánh Estimate với Actual Time và ghi nhận bài học kinh nghiệm | 1 | Thực hiện cuối dự án |
 | 6 | Buffer | Dự phòng cho bug phát sinh, integration issue, rework và các task vượt estimate | 5 | Không dùng để mở rộng scope; chỉ sử dụng khi có phát sinh |
 |  | **Tổng Tuần 6** | | **32 giờ** | |
-| **Tổng cộng** | | | **206 giờ** | **Baseline Estimate sau khi cập nhật theo review và scope đã chốt** |
+| **Tổng cộng** | | | **208 giờ** | **Baseline Estimate sau khi cập nhật theo review và scope đã chốt** |
 
 *(Em có thể thêm/bớt số dòng tùy theo số task thực tế của mình)*
 
