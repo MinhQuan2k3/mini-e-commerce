@@ -6,7 +6,7 @@
 |---|---|
 | Project | Mini E-commerce / Inventory Management |
 | Company | A-Software |
-| Status | Revised after Review Round 2 |
+| Status | Revised after Review Round 4 |
 
 ---
 
