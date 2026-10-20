@@ -2529,4 +2529,11 @@ api-specification.md
 
 | Ngày | Mã feedback | Vị trí | Thay đổi |
 |---|---|---|---|
-| 2026-10-13 | R-08 | §5, §6.3 | Bổ sung endpoint `GET /auth/me` vào API Summary và mô tả chi tiết API lấy thông tin người dùng hiện tại từ JWT, phục vụ việc khôi phục trạng thái đăng nhập sau khi tải lại trang. |
+| 2026-10-18 | N-03, R-10 | §5 | Cập nhật các tham chiếu FR/UC theo chức năng của từng endpoint và rà soát các tham chiếu Use Case không tồn tại. |
+| 2026-10-18 | R-08 | §5, §6.3 | Bổ sung đầy đủ mô tả `GET /auth/me`, gồm endpoint, request, success response theo cấu trúc `{ success, message, data }` và các trường hợp lỗi; cập nhật mapping FR-AUTH-02 / FR-AUTH-06 trong API Summary. |
+| 2026-10-18 | API-11 | §5 | Cập nhật mapping FR-CHECKOUT / UC-CHECKOUT-01 cho endpoint `POST /orders/checkout`. |
+| 2026-10-18 | API-01 | §4.5, §14.4 | Thống nhất cấu trúc response thành công theo quy ước `{ success, message, data }`; bổ sung ngoại lệ cho `204 No Content`, vốn không trả response body. |
+| 2026-10-18 | API-09, D-05 | §9.1 | Làm rõ quy tắc tính `totalAmount` của Cart và cập nhật ví dụ response tương ứng. |
+| 2026-10-18 | API-18 | §21 | Thay các đường dẫn tài liệu dạng `docs/...` bằng tên file thực tế để thống nhất với cấu trúc tài liệu của repository. |
+| 2026-10-18 | N-15 | §18.2 | Cập nhật quy trình Cancel Order theo hướng cập nhật có điều kiện từ `PENDING` sang `CANCELLED` trước; Chỉ hoàn stock sau khi cập nhật trạng thái thành công, nhằm tránh hoàn kho nhiều lần. |
+| 2026-10-18 | R-11 | §13.1 | Cập nhật ví dụ response có dữ liệu và làm rõ quy ước phân trang hoặc không phân trang cho API liên quan. |
