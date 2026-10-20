@@ -197,3 +197,8 @@ Tuần 3 hiện có baseline estimate là **56 giờ**, vượt giới hạn k�
 |---|---|---|---|
 | 2026-10-14 | N-09 | Toàn bộ file | Đổi tên file từ `danh-muc-dau-viec-tuan-2-6.md` thành `uoc-luong-dau-viec-tuan-2-6.md` để phản ánh đúng nội dung ước lượng đầu việc. |
 | 2026-10-14 | R-07 | Bảng tổng hợp ước lượng, Tuần 3 | Khôi phục baseline ước lượng Tuần 3 về 56 giờ thay vì giảm đồng loạt thời lượng task để ép vừa lịch. |
+| 2026-10-20 | EST-04 | Quy ước ước lượng thời gian | Thống nhất quy ước 1 ngày làm việc tương đương 8 giờ để tính toán và đối chiếu thời lượng công việc. |
+| 2026-10-20 | EST-05 | Danh sách đầu việc, Tuần 2–6 | Bổ sung task Application Logging nhằm đáp ứng yêu cầu NFR-09. |
+| 2026-10-20 | EST-06 | Mô tả đầu việc Tuần 3 | Loại bỏ các nội dung liên quan đến giảm giá/coupon khỏi mô tả công việc để phù hợp với phạm vi MVP đã chốt. |
+| 2026-10-20 | N-10 | Bảng tổng hợp ước lượng | Cập nhật tổng thời lượng ước lượng theo các đầu việc đã thống nhất. |
+| 2026-10-20 | N-11 | Kế hoạch Tuần 3 | Ghi nhận việc tổng thời lượng công việc Tuần 3 vượt mức 40 giờ/tuần và xác định kế hoạch xử lý phần vượt tải thay vì giảm thời lượng ước lượng một cách thiếu căn cứ. |
