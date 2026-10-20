@@ -1066,3 +1066,5 @@ Testing
 |---|---|---|---|
 | 2026-10-12 | N-04, R-01 | PRODUCTS, §5.3, §8.1, §14 | Khôi phục tên cột `products.sku`; chỉ sử dụng `sku_snapshot` cho `order_items`. |
 | 2026-10-12 | N-04, R-02 | ORDER_ITEMS, các mục mô tả thuộc tính | Thống nhất các cột snapshot thành `product_name_snapshot`, `sku_snapshot` và `unit_price`. |
+| 2026-10-19 | R-01 | §5.7 | Sửa ví dụ `Product.sku` để thống nhất với cách biểu diễn thuộc tính SKU của Product trong tài liệu ERD. |
+| 2026-10-19 | N-05 | §3, §5.4, §6, §15 | Thống nhất quan hệ giữa `USERS` và `CARTS` thành `USERS ||--o| CARTS`, thể hiện quan hệ 1 – 0..1; bổ sung ký hiệu `UK` để làm rõ ràng buộc duy nhất tương ứng. |
