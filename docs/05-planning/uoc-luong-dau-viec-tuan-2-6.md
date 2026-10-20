@@ -163,6 +163,27 @@
 |  | **Tổng Tuần 6** | | **32 giờ** | |
 | **Tổng cộng** | | | **208 giờ** | **Baseline Estimate sau khi cập nhật theo review và scope đã chốt** |
 
+### Lưu ý: Kế hoạch xử lý chênh lệch thời gian Tuần 3
+
+**Giới hạn kế hoạch:** 40 giờ/tuần, tương đương 5 ngày làm việc theo giả định 8 giờ/ngày.
+
+Tuần 3 hiện có baseline estimate là **56 giờ**, vượt giới hạn kế hoạch 16 giờ, tương đương 2 ngày làm việc. Vì vậy, không mặc định toàn bộ đầu việc Tuần 3 đều hoàn thành trong tuần này.
+
+| Hạng mục | Ước lượng hiện tại | Kế hoạch xử lý |
+|---|---:|---|
+| Công việc Tuần 3 | 56 giờ | Ưu tiên tối đa 40 giờ cho các nghiệp vụ Backend cốt lõi và các API cần thiết để Frontend bắt đầu tích hợp ở Tuần 4. |
+| Phần công việc vượt kế hoạch | 16 giờ | Rà soát các task còn lại, xác định task có thể chuyển sang Tuần 4 hoặc Tuần 5 dựa trên mức độ ưu tiên và quan hệ phụ thuộc. |
+| Admin Order API | 9 giờ | Có thể chuyển sang đầu Tuần 5, trước khi triển khai giao diện quản lý đơn hàng Admin, nếu việc trì hoãn không ảnh hưởng đến các chức năng cần tích hợp sớm. |
+| Kiểm thử Backend | 5 giờ | Gồm Unit Test (3 giờ) và API Test (2 giờ). Có thể phân bổ theo tiến độ hoàn thành nghiệp vụ, nhưng phải bảo đảm các chức năng cốt lõi được kiểm thử trước khi tích hợp và nghiệm thu. |
+
+**Nguyên tắc điều chỉnh kế hoạch:**
+
+1. Ưu tiên hoàn thành Authentication/Authorization, Cart, Checkout, xử lý tồn kho và API đơn hàng Customer để hạn chế ảnh hưởng đến Frontend Tuần 4.
+2. Chỉ chuyển task sang tuần sau khi xác định rõ dependency và người thực hiện; cập nhật lại estimate theo tuần nhận task.
+3. Tuần 4 hiện có 41 giờ, Tuần 5 có 37 giờ và Tuần 6 có 32 giờ. Tổng phần thời gian còn trống so với giới hạn 40 giờ/tuần của ba tuần này là 10 giờ. Do đó, không thể chuyển toàn bộ 16 giờ sang các tuần sau mà vẫn giữ tất cả các tuần trong giới hạn 40 giờ.
+4. Sau khi phân bổ lại task, cần xử lý phần chênh lệch còn lại bằng cách điều chỉnh phạm vi/estimate phù hợp, bố trí thêm thời gian làm việc có kiểm soát hoặc gia hạn tiến độ. Không tự động giảm estimate chỉ để bảng vừa giới hạn 40 giờ.
+5. Cập nhật tổng giờ của từng tuần và tổng dự án sau khi thống nhất kế hoạch mới. Giữ nguyên baseline ban đầu để so sánh với thời gian thực tế khi retrospective.
+
 *(Em có thể thêm/bớt số dòng tùy theo số task thực tế của mình)*
 
 ---
