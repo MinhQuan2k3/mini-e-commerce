@@ -1416,5 +1416,6 @@ Các quy tắc quan trọng về Authentication, Ownership, Inventory, Stock Con
 
 | Ngày | Mã feedback | Vị trí | Thay đổi |
 |---|---|---|---|
-| 2026-10-12 | N-01 | Related Requirements | Cập nhật mã Business Rule được tham chiếu theo danh sách BR đã khôi phục; bổ sung tham chiếu BR-18 cho use case Admin xem tất cả Order. |
-| 2026-10-12 | N-02 | UC-ORDER-02, DD-04 | Thống nhất endpoint xem lịch sử đơn hàng thành `/api/orders/my-orders`. |
+| 2026-10-18 | N-01 | Related Requirements | Cập nhật các mã Business Rule được tham chiếu theo bảng đối chiếu tại mục 7; bảo đảm các tham chiếu khớp với danh sách Business Rule hiện hành. |
+| 2026-10-18 | N-08 | UC-PROD-01 đến UC-PROD-04, §15 | Bổ sung Admin vào Primary Actor theo checklist vòng 4. |
+| 2026-10-18 | N-16 | UC-PROD-04 | Thống nhất mô tả phản hồi lỗi là `400 Bad Request` theo API Specification. |
