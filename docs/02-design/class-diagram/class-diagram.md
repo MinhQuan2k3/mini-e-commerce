@@ -6,7 +6,7 @@
 |---|---|
 | Project | Mini E-commerce / Inventory Management |
 | Document | Class Diagram |
-| Status | Revised after Review Round 2 |
+| Status | Revised after Review Round 4 |
 | Backend | Java Spring Boot |
 | Database | MySQL |
 
@@ -1540,6 +1540,6 @@ REST API
 
 | Ngày | Mã feedback | Vị trí | Thay đổi |
 |---|---|---|---|
-| 2026-10-12 | N-02 | §9.5 | Đổi endpoint xem lịch sử đơn hàng từ `/api/orders/my` thành `/api/orders/my-orders`. |
-| 2026-10-12 | N-04, R-01, R-03 | Product, OrderItem và các phương thức liên quan | Thống nhất thuộc tính Java dùng `camelCase`; giữ `Product.sku` và dùng `OrderItem.productNameSnapshot`, `skuSnapshot`, `unitPrice`. |
-| 2026-10-12 | N-04, R-03 | User và phương thức Authentication | Dùng `passwordHash` cho thuộc tính Java lưu mật khẩu đã hash; dùng `register(email, password)` và `login(email, password)` cho đầu vào. |
+| 2026-10-18 | N-02 | §9.5 | Đổi endpoint xem lịch sử đơn hàng từ `/api/orders/my` thành `/api/orders/my-orders`. |
+| 2026-10-18 | N-04, R-01, R-03 | Product, OrderItem và các phương thức liên quan | Thống nhất thuộc tính Java dùng `camelCase`; giữ `Product.sku` và dùng `OrderItem.productNameSnapshot`, `skuSnapshot`, `unitPrice`. |
+| 2026-10-18 | N-04, R-03 | User và phương thức Authentication | Dùng `passwordHash` cho thuộc tính Java lưu mật khẩu đã hash; dùng `register(email, password)` và `login(email, password)` cho đầu vào. |
