@@ -275,6 +275,5 @@
 
 | Ngày | Mã feedback | Vị trí | Thay đổi |
 |---|---|---|---|
-| 2026-10-11 | N-02 | Q45 | Thống nhất endpoint xem lịch sử đơn hàng thành `/api/orders/my-orders`. |
-| 2026-10-11 | N-04, R-02 | Q42 | Sửa tên cột OrderItem thành `unit_price`, `product_name_snapshot` và `sku_snapshot`. |
-| 2026-10-11 | R-05 | Q62, Q71 | Khôi phục nội dung cột Answer theo bản chính thức. |
+| 2026-10-18 | N-04, R-02 | Q42 | Sửa tên các cột `OrderItem` thành `unit_price`, `product_name_snapshot` và `sku_snapshot` để thống nhất với thiết kế dữ liệu. |
+| 2026-10-18 | R-05 | Q62, Q71 | Khôi phục nội dung cột Answer theo bản chính thức. |
