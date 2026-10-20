@@ -7,7 +7,7 @@
 | Project | Mini E-commerce |
 | Document | API Specification |
 | Company | A-Software |
-| Status | Revised after Review Round 2 |
+| Status | Revised after Review Round 4 |
 
 ---
 
