@@ -5,6 +5,7 @@
 | Item | Description |
 |---|---|
 | Project | Mini E-commerce / Inventory Management |
+| Company | A-Software |
 | Document | Class Diagram |
 | Status | Revised after Review Round 4 |
 | Backend | Java Spring Boot |
