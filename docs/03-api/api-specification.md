@@ -387,12 +387,12 @@ MVP không có Account Status, do đó không sử dụng lỗi `403 Account Dis
 
 ---
 
-## 6.3 Get Current User
+## 6.3. Get Current User
 
 ### Endpoint 
 
 ```http
-GET /api/auth/me
+GET /auth/me
 ```
 
 ### Description
