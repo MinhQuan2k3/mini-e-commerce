@@ -1,4 +1,4 @@
-# Ước lượng Đầu việc Tuần 2 - Tuần 6 — Dự án Mini E-commerce
+# Danh mục Đầu việc Tuần 1 - Tuần 6 — Dự án Mini E-commerce
 
 ## Hướng dẫn sử dụng file này
 
