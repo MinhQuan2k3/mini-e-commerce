@@ -206,7 +206,7 @@
 | # | Question | Answer | Decision |
 |---|---|---|---|
 | Q70 | Trong phạm vi 6 tuần, mức độ hoàn thiện mong muốn của hệ thống là MVP hay production-ready? | MVP (Minimum Viable Product) hoạt động hoàn chỉnh end-to-end. | Tập trung hoàn thiện 100% các luồng nghiệp vụ chính. |
-| Q71 | Có yêu cầu CI/CD không? | Out-of-scope hoặc có thể triển khai đơn giản bằng GitHub Actions. | CI/CD không bắt buộc đối với đánh giá chính của dự án.
+| Q71 | Có yêu cầu CI/CD không? | Out-of-scope hoặc có thể triển khai đơn giản bằng GitHub Actions. | CI/CD không bắt buộc đối với đánh giá chính của dự án. |
 
 ---
 
