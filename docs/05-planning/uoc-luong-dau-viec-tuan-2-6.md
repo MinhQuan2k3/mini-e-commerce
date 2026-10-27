@@ -229,3 +229,4 @@ Trước khi bắt đầu thời gian gia hạn, cần xác nhận danh sách ta
 | 2026-10-20 | EST-06 | Mô tả đầu việc Tuần 3 | Loại bỏ các nội dung liên quan đến giảm giá/coupon khỏi mô tả công việc để phù hợp với phạm vi MVP đã chốt. |
 | 2026-10-20 | N-10 | Bảng tổng hợp ước lượng | Cập nhật tổng thời lượng ước lượng theo các đầu việc đã thống nhất. |
 | 2026-10-20 | N-11 | Kế hoạch Tuần 3 | Ghi nhận việc tổng thời lượng công việc Tuần 3 vượt mức 40 giờ/tuần và xác định kế hoạch xử lý phần vượt tải thay vì giảm thời lượng ước lượng một cách thiếu căn cứ. |
+| 2026-10-26 | D-06, T-02 | Kế hoạch phân bổ thời gian | Cập nhật kế hoạch theo quyết định gia hạn tiến độ; giữ baseline 208h, phân bổ tối đa 40h/tuần trong Tuần 2–6 và bố trí 8h gia hạn sau Tuần 6.
