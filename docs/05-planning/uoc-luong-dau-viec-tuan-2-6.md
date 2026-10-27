@@ -163,26 +163,53 @@
 |  | **Tổng Tuần 6** | | **32 giờ** | |
 | **Tổng cộng** | | | **208 giờ** | **Baseline Estimate sau khi cập nhật theo review và scope đã chốt** |
 
-### Lưu ý: Kế hoạch xử lý chênh lệch thời gian Tuần 3
+## Lưu ý: Kế hoạch phân bổ thời gian (D-06 — gia hạn tiến độ)
 
-**Giới hạn kế hoạch:** 40 giờ/tuần, tương đương 5 ngày làm việc theo giả định 8 giờ/ngày.
+### 1. Quyết định và nguyên tắc phân bổ
 
-Tuần 3 hiện có baseline estimate là **56 giờ**, vượt giới hạn kế hoạch 16 giờ, tương đương 2 ngày làm việc. Vì vậy, không mặc định toàn bộ đầu việc Tuần 3 đều hoàn thành trong tuần này.
+Theo quyết định D-06, dự án lựa chọn **gia hạn tiến độ**, giữ nguyên baseline estimate **208 giờ** và phạm vi chức năng đã chốt. Không giảm estimate hoặc cắt phạm vi chỉ để phù hợp với năng lực 200 giờ trong Tuần 2–6.
 
-| Hạng mục | Ước lượng hiện tại | Kế hoạch xử lý |
+Kế hoạch phân bổ được điều chỉnh theo các nguyên tắc sau:
+
+1. Tổng baseline estimate giữ nguyên 208 giờ để so sánh với actual time trong giai đoạn Retrospective.
+2. Thời gian thực hiện theo kế hoạch không vượt quá 40 giờ mỗi tuần. Phần công việc chưa thể bố trí trong Tuần 2–6 được chuyển sang thời gian gia hạn sau Tuần 6.
+3. Giữ thứ tự phụ thuộc giữa các task. Các task Backend cung cấp API phải được hoàn thành đủ sớm để không chặn Frontend; các task kiểm thử phụ thuộc chức năng chỉ được thực hiện sau khi chức năng tương ứng sẵn sàng.
+4. Admin Order API có tổng estimate 9 giờ, bao gồm Admin Order List/Search/Filter (3 giờ), Admin Order Detail/Status Update (3 giờ) và Admin Cancel/Payment Rule (3 giờ). Nhóm task này được chuyển sang đầu Tuần 5 theo quyết định D-06. Cần bảo đảm các chức năng Order, User, shipping snapshot và Order Status Rules cần thiết đã sẵn sàng trước khi thực hiện.
+5. Phần thời gian gia hạn chỉ dùng để hoàn thành các task đã nằm trong baseline 208 giờ nhưng chưa được bố trí vào Tuần 2–6; không dùng để mở rộng phạm vi dự án.
+
+### 2. Bảng phân bổ thời gian sau điều chỉnh
+
+| Tuần | Giờ ban đầu | Giờ sau phân bổ | Task được dời vào/ra |
+|---|---:|---:|---|
+| Tuần 2 | 42h | 40h | Chuyển 2h công việc sang Tuần 3. Ưu tiên tách phần việc phù hợp trong Application Logging hoặc một task độc lập không chặn các task phụ thuộc; không trì hoãn các cấu hình nền tảng cần cho Backend. |
+| Tuần 3 | 56h | 40h | Nhận 2h từ Tuần 2; chuyển tổng cộng 18h khỏi tuần này. Trong đó, 9h Admin Order API chuyển sang đầu Tuần 5; 9h còn lại chuyển sang Tuần 4 theo kế hoạch chi tiết task-level, ưu tiên các công việc có thể thực hiện mà không chặn Frontend. |
+| Tuần 4 | 41h | 40h | Nhận 9h từ Tuần 3; chuyển 10h công việc sang Tuần 5. Chỉ chuyển các task có thể thực hiện sau khi dependency tương ứng đã sẵn sàng; không trì hoãn API hoặc chức năng Backend thiết yếu mà Frontend cần sử dụng. |
+| Tuần 5 | 37h | 40h | Nhận 9h Admin Order API từ Tuần 3 và 10h công việc từ Tuần 4; chuyển 16h công việc sang Tuần 6. Ưu tiên hoàn thành Admin Order API ở đầu tuần, sau đó mới triển khai Admin Order UI và kiểm thử phụ thuộc. |
+| Tuần 6 | 32h | 40h | Nhận 16h công việc từ Tuần 5; chuyển 8h công việc sang thời gian gia hạn sau Tuần 6. Ưu tiên hoàn thành regression testing, final bug fix, cấu hình, README và chuẩn bị demo theo dependency thực tế. |
+| Gia hạn sau Tuần 6 | — | 8h | Hoàn thành phần công việc còn lại trong baseline 208h chưa được bố trí vào Tuần 2–6. Task cụ thể phải được xác định từ danh sách task sau khi kiểm tra dependency và actual progress. |
+| **Tổng cộng** | **208h** | **208h** | **200h trong Tuần 2–6 và 8h trong thời gian gia hạn.** |
+
+Đây là khung phân bổ theo giới hạn giờ và quyết định D-06. Các task chi tiết cần được đánh dấu lại theo tuần thực hiện thực tế, bảo đảm không có task bị tính giờ hai lần hoặc bị tách khỏi dependency. Không được mặc định rằng mọi task có thể chuyển tuần đều độc lập; cần kiểm tra lại thứ tự Backend API → Frontend integration → Testing trước khi chốt kế hoạch task-level.
+
+### 3. Kế hoạch sử dụng thời gian gia hạn
+
+Thời gian gia hạn sau Tuần 6 có giới hạn 8 giờ theo kế hoạch hiện tại. Đây là phần tiếp nối baseline, không phải estimate bổ sung.
+
+| Nội dung | Estimate | Nguyên tắc thực hiện |
 |---|---:|---|
-| Công việc Tuần 3 | 56 giờ | Ưu tiên tối đa 40 giờ cho các nghiệp vụ Backend cốt lõi và các API cần thiết để Frontend bắt đầu tích hợp ở Tuần 4. |
-| Phần công việc vượt kế hoạch | 16 giờ | Rà soát các task còn lại, xác định task có thể chuyển sang Tuần 4 hoặc Tuần 5 dựa trên mức độ ưu tiên và quan hệ phụ thuộc. |
-| Admin Order API | 9 giờ | Có thể chuyển sang đầu Tuần 5, trước khi triển khai giao diện quản lý đơn hàng Admin, nếu việc trì hoãn không ảnh hưởng đến các chức năng cần tích hợp sớm. |
-| Kiểm thử Backend | 5 giờ | Gồm Unit Test (3 giờ) và API Test (2 giờ). Có thể phân bổ theo tiến độ hoàn thành nghiệp vụ, nhưng phải bảo đảm các chức năng cốt lõi được kiểm thử trước khi tích hợp và nghiệm thu. |
+| Phần task còn lại chưa thể bố trí trong Tuần 2–6 | 8h | Chọn từ các task đã được chuyển khỏi Tuần 6 sau khi cập nhật kế hoạch chi tiết; ghi rõ tên task và estimate tương ứng. |
+| **Tổng thời gian gia hạn** | **8h** | Không vượt quá baseline 208h; mọi phát sinh vượt estimate phải được ghi nhận riêng trong Actual Time và Retrospective. |
 
-**Nguyên tắc điều chỉnh kế hoạch:**
+Trước khi bắt đầu thời gian gia hạn, cần xác nhận danh sách task còn lại, trạng thái hoàn thành, dependency và estimate. Không mặc định toàn bộ 8 giờ là Buffer; các task thuộc thời gian gia hạn phải được xác định rõ trong bảng task chi tiết.
 
-1. Ưu tiên hoàn thành Authentication/Authorization, Cart, Checkout, xử lý tồn kho và API đơn hàng Customer để hạn chế ảnh hưởng đến Frontend Tuần 4.
-2. Chỉ chuyển task sang tuần sau khi xác định rõ dependency và người thực hiện; cập nhật lại estimate theo tuần nhận task.
-3. Tuần 4 hiện có 41 giờ, Tuần 5 có 37 giờ và Tuần 6 có 32 giờ. Tổng phần thời gian còn trống so với giới hạn 40 giờ/tuần của ba tuần này là 10 giờ. Do đó, không thể chuyển toàn bộ 16 giờ sang các tuần sau mà vẫn giữ tất cả các tuần trong giới hạn 40 giờ.
-4. Sau khi phân bổ lại task, cần xử lý phần chênh lệch còn lại bằng cách điều chỉnh phạm vi/estimate phù hợp, bố trí thêm thời gian làm việc có kiểm soát hoặc gia hạn tiến độ. Không tự động giảm estimate chỉ để bảng vừa giới hạn 40 giờ.
-5. Cập nhật tổng giờ của từng tuần và tổng dự án sau khi thống nhất kế hoạch mới. Giữ nguyên baseline ban đầu để so sánh với thời gian thực tế khi retrospective.
+### 4. Theo dõi Estimate và Actual Time
+
+- **Baseline Estimate:** 208 giờ, giữ nguyên để phục vụ retrospective.
+- **Kế hoạch Tuần 2–6:** 200 giờ, tối đa 40 giờ mỗi tuần.
+- **Kế hoạch gia hạn:** 8 giờ sau Tuần 6.
+- **Actual Time:** ghi theo thời gian thực tế đã sử dụng, không tự động thay thế baseline estimate.
+- **Chênh lệch Estimate–Actual:** được phân tích trong Retrospective, bao gồm nguyên nhân vượt estimate, dependency, integration issue, bug và rework.
+- **Thay đổi phạm vi:** không nằm trong quyết định D-06. Nếu phát sinh yêu cầu thay đổi phạm vi sau này, cần ghi nhận và đánh giá riêng thay vì tự ý điều chỉnh baseline hiện tại.
 
 *(Em có thể thêm/bớt số dòng tùy theo số task thực tế của mình)*
 
