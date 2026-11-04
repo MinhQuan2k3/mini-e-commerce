@@ -202,35 +202,99 @@ H2 được bật chế độ tương thích MySQL thông qua `MODE=MySQL`.
 
 Khi chạy test, không cần khởi động MySQL Server nếu các test chỉ sử dụng profile H2.
 
+> **Lưu ý:** 
+> - File `database/schema.sql` được thiết kế để khởi tạo
+> schema trên một database trống. Script không được thiết kế để
+> chạy lại trên database đã có các bảng tương ứng.
+>
+> - Nếu cần khởi tạo lại database từ đầu, hãy xóa database
+> `mini_ecommerce` hiện tại trước, tạo lại database trống,
+> sau đó thực thi lại `database/schema.sql`.
+>
+> - Việc xóa database sẽ xóa toàn bộ dữ liệu hiện có.
+> Chỉ thực hiện khi chắc chắn không cần giữ lại dữ liệu.
+
 ## 8. Cấu trúc package
 
-Theo quyết định D-09, backend tổ chức package theo module và áp dụng nhất quán.
+Backend sử dụng package-by-feature (package theo module nghiệp vụ).
+Các class liên quan đến cùng một module được đặt trong package
+tương ứng. Những thành phần dùng chung được tổ chức trong `common/`,
+cấu hình ứng dụng trong `config/` và khởi tạo dữ liệu trong `bootstrap/`.
 
+Các package con như `dto/` chỉ được tạo khi cần thiết.
+Không chia tất cả module thành các package kỹ thuật chung như
+`controller/`, `service/`, `repository/`.
 Ví dụ cấu trúc định hướng:
 
 ```text
-<base-package>/
+com.miniecommerce.backend/
+├── BackendApplication.java
+│
+├── config/
+│   └── PasswordEncoderConfig.java
+│
+├── common/
+│   ├── response/
+│   │   ├── ApiResponse.java
+│   │   ├── ErrorDetail.java
+│   │   └── PageResponse.java
+│   │
+│   └── exception/
+│       ├── GlobalExceptionHandler.java
+│       ├── BadRequestException.java
+│       ├── UnauthorizedException.java
+│       ├── ResourceNotFoundException.java
+│       └── ConflictException.java
+│
+├── user/
+│   ├── User.java
+│   ├── Role.java
+│   └── UserRepository.java
+│
 ├── auth/
-│   ├── controller/
-│   ├── service/
-│   ├── repository/
-│   ├── entity/
+│   ├── AuthController.java
+│   ├── AuthService.java
 │   └── dto/
+│       ├── RegisterRequest.java
+│       └── RegisterResponse.java
+│
 ├── category/
-│   ├── controller/
-│   ├── service/
-│   ├── repository/
-│   ├── entity/
+│   ├── Category.java
+│   ├── CategoryStatus.java
+│   ├── CategoryRepository.java
+│   ├── CategoryService.java
+│   ├── CategoryController.java
+│   ├── AdminCategoryController.java
 │   └── dto/
+│       ├── CategoryRequest.java
+│       └── CategoryResponse.java
+│
 ├── product/
-│   ├── controller/
-│   ├── service/
-│   ├── repository/
-│   ├── entity/
+│   ├── Product.java
+│   ├── ProductStatus.java
+│   ├── ProductRepository.java
+│   ├── ProductService.java
+│   ├── AdminProductController.java
 │   └── dto/
+│       ├── ProductRequest.java
+│       └── AdminProductResponse.java
+│
 ├── cart/
+│   ├── Cart.java
+│   ├── CartItem.java
+│   ├── CartRepository.java
+│   └── CartItemRepository.java
+│
 ├── order/
-└── common/
+│   ├── Order.java
+│   ├── OrderItem.java
+│   ├── OrderStatus.java
+│   ├── PaymentStatus.java
+│   ├── OrderRepository.java
+│   └── OrderItemRepository.java
+│
+└── bootstrap/
+    └── DataInitializer.java
 ```
 
 Trong đó:
