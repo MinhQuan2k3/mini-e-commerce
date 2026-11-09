@@ -1,0 +1,145 @@
+### 1. Get Active Categories
+GET http://localhost:8080/api/categories
+Accept: application/json
+
+### 2. Get Category by ID - Not Found
+GET http://localhost:8080/api/categories/999999
+Accept: application/json
+
+### 3. Get All Categories - Admin
+GET http://localhost:8080/api/admin/categories
+Accept: application/json
+
+### 4. Create Category - Success
+POST http://localhost:8080/api/admin/categories
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Electronics",
+  "description": "Electronic products",
+  "status": "ACTIVE"
+}
+
+### 5. Create Category - Duplicate Name
+POST http://localhost:8080/api/admin/categories
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Electronics",
+  "description": "Another electronics category",
+  "status": "ACTIVE"
+}
+
+### 6. Update Category - Success
+PUT http://localhost:8080/api/admin/categories/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Electronics",
+  "description": "Electronic devices and accessories",
+  "status": "ACTIVE"
+}
+
+### 7. Create Second Category
+POST http://localhost:8080/api/admin/categories
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Clothing",
+  "description": "Clothing products",
+  "status": "ACTIVE"
+}
+
+### 8. Update Category - Duplicate Name
+PUT http://localhost:8080/api/admin/categories/2
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Electronics",
+  "description": "Updated clothing description",
+  "status": "ACTIVE"
+}
+
+### 9. Verify Category 2 After Failed Update
+GET http://localhost:8080/api/categories/2
+Accept: application/json
+
+### 10. Deactivate Category
+PUT http://localhost:8080/api/admin/categories/2
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Clothing",
+  "description": "Clothing products",
+  "status": "INACTIVE"
+}
+
+### 11. Verify Public Categories
+GET http://localhost:8080/api/categories
+Accept: application/json
+
+### 12. Verify Admin Categories
+GET http://localhost:8080/api/admin/categories
+Accept: application/json
+
+### 13. Delete Category - Success
+DELETE http://localhost:8080/api/admin/categories/2
+
+### 14. Verify Deleted Category
+GET http://localhost:8080/api/categories/2
+Accept: application/json
+
+### 15. Delete Category - Conflict When Product Exists
+DELETE http://localhost:8080/api/admin/categories/1
+
+### 16. Verify Category Still Exists After Conflict
+GET http://localhost:8080/api/categories/1
+Accept: application/json
+
+### 17. Delete Non-existing Category
+DELETE http://localhost:8080/api/admin/categories/999999
+
+### 18. Create Category - Empty Name
+POST http://localhost:8080/api/admin/categories
+Content-Type: application/json
+
+{
+  "name": "   ",
+  "description": "Invalid category",
+  "status": "ACTIVE"
+}
+
+### 19. Create Category - Missing Status
+POST http://localhost:8080/api/admin/categories
+Content-Type: application/json
+
+{
+  "name": "Test Missing Status",
+  "description": "Invalid category"
+}
+
+### 20. Create Category - Name Exceeds Maximum Length
+POST http://localhost:8080/api/admin/categories
+Content-Type: application/json
+
+{
+  "name": "This category name is intentionally made longer than one hundred characters to test the maximum allowed length validation rule",
+  "description": "Invalid category",
+  "status": "ACTIVE"
+}
+
+### 21. Create Category - Invalid Status
+POST http://localhost:8080/api/admin/categories
+Content-Type: application/json
+
+{
+  "name": "Invalid Status Category",
+  "description": "Invalid category status",
+  "status": "UNKNOWN"
+}
