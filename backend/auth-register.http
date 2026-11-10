@@ -1,0 +1,64 @@
+@baseUrl = http://localhost:8080/api
+@registerEmail = phase9.customer@example.com
+@registerPassword = password123
+
+### 1. Register successfully - 201 Created
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{registerEmail}}",
+  "password": "{{registerPassword}}"
+}
+
+### 2. Register with duplicate email - 409 Conflict
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{registerEmail}}",
+  "password": "{{registerPassword}}"
+}
+
+### 3. Register with missing email - 400 Bad Request
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "password": "{{registerPassword}}"
+}
+
+### 4. Register with invalid email format - 400 Bad Request
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "{{registerPassword}}"
+}
+
+### 5. Register with missing password - 400 Bad Request
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "missing.password@example.com"
+}
+
+### 6. Register with password shorter than 8 characters - 400 Bad Request
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "short.password@example.com",
+  "password": "1234567"
+}
+
+### 7. Register with blank email - 400 Bad Request
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "",
+  "password": "{{registerPassword}}"
+}
