@@ -13,6 +13,8 @@ import com.miniecommerce.backend.product.dto.AdminProductResponse;
 import com.miniecommerce.backend.product.entity.Product;
 import com.miniecommerce.backend.product.entity.ProductStatus;
 import com.miniecommerce.backend.product.repository.ProductRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,8 @@ import java.util.Set;
 @Transactional
 public class AdminProductService {
 
+    private static final Logger log =
+            LoggerFactory.getLogger(AdminProductService.class);
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 10;
     private static final int MAX_SIZE = 50;
@@ -150,6 +154,7 @@ public class AdminProductService {
         );
 
         Product savedProduct = productRepository.save(product);
+        log.info("Product created: id={}", savedProduct.getId());
 
         return AdminProductResponse.fromEntity(savedProduct);
     }
@@ -186,6 +191,7 @@ public class AdminProductService {
         product.setStatus(request.status());
 
         Product updatedProduct = productRepository.saveAndFlush(product);
+        log.info("Product updated: id={}", updatedProduct.getId());
 
         return AdminProductResponse.fromEntity(updatedProduct);
     }
@@ -199,6 +205,7 @@ public class AdminProductService {
 
         product.setStatus(ProductStatus.INACTIVE);
         productRepository.save(product);
+        log.info("Product deactivated: id={}", id);
     }
 
     private Specification<Product> buildSpecification(

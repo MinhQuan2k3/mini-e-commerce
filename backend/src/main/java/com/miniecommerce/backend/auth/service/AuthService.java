@@ -7,6 +7,8 @@ import com.miniecommerce.backend.common.exception.UnauthorizedException;
 import com.miniecommerce.backend.user.entity.User;
 import com.miniecommerce.backend.user.entity.UserRole;
 import com.miniecommerce.backend.user.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class AuthService {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(AuthService.class);
 
     private static final String INVALID_CREDENTIALS_MESSAGE =
             "Invalid email or password";
@@ -42,6 +47,7 @@ public class AuthService {
         );
 
         User savedUser = userRepository.save(user);
+        log.info("Customer registered: userId={}", savedUser.getId());
 
         return RegisterResponse.fromEntity(savedUser);
     }

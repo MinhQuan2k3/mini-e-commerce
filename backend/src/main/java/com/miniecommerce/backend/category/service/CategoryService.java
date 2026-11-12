@@ -8,6 +8,8 @@ import com.miniecommerce.backend.category.repository.CategoryRepository;
 import com.miniecommerce.backend.common.exception.ConflictException;
 import com.miniecommerce.backend.common.exception.ResourceNotFoundException;
 import com.miniecommerce.backend.product.repository.ProductRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,8 @@ import java.util.List;
 @Transactional
 public class CategoryService {
 
+    private static final Logger log =
+            LoggerFactory.getLogger(CategoryService.class);
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
 
@@ -65,6 +69,7 @@ public class CategoryService {
         );
 
         Category savedCategory = categoryRepository.save(category);
+        log.info("Category created: id={}", savedCategory.getId());
 
         return CategoryResponse.fromEntity(savedCategory);
     }
@@ -82,6 +87,7 @@ public class CategoryService {
         category.setStatus(request.status());
 
         Category updatedCategory = categoryRepository.save(category);
+        log.info("Category updated: id={}", updatedCategory.getId());
 
         return CategoryResponse.fromEntity(updatedCategory);
     }
@@ -96,6 +102,7 @@ public class CategoryService {
         }
 
         categoryRepository.delete(category);
+        log.info("Category deleted: id={}", id);
     }
 
     private Category findCategoryById(Long id) {
