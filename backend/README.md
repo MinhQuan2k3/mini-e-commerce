@@ -77,6 +77,14 @@ Sau khi thực thi thành công, database `mini_ecommerce` sẽ được tạo v
 - `orders`
 - `order_items`
 
+> **Lưu ý khi khởi tạo database:**
+>
+> - File `database/schema.sql` chỉ dùng để khởi tạo schema trên database mới, chưa có các bảng tương ứng. Đây không phải migration script và không được thiết kế để chạy lại trên database đã tồn tại đầy đủ các bảng.
+>
+> - Nếu cần khởi tạo lại từ đầu, phải xóa database `mini_ecommerce` hiện tại, tạo lại database trống rồi thực thi lại `database/schema.sql`.
+>
+> - Thao tác xóa database sẽ xóa toàn bộ bảng và dữ liệu hiện có. Chỉ thực hiện khi đã sao lưu dữ liệu cần giữ và chắc chắn có thể khởi tạo lại database.
+
 Kiểm tra database:
 
 ```sql
@@ -116,6 +124,7 @@ Backend sử dụng các biến sau:
 | `DB_PASSWORD` | Mật khẩu tài khoản MySQL |
 | `ADMIN_EMAIL` | Email dự kiến của tài khoản Admin |
 | `ADMIN_PASSWORD` | Mật khẩu dự kiến của tài khoản Admin |
+| `SPRING_PROFILES_ACTIVE` | Profile Spring Boot cần kích hoạt, ví dụ `dev` |
 
 File `.env.example` tại thư mục gốc repository cung cấp giá trị mẫu cho các biến này.
 
@@ -139,7 +148,16 @@ DB_USERNAME=mini_ecommerce_app
 DB_PASSWORD=your_database_password
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=your_admin_password
+SPRING_PROFILES_ACTIVE=dev
 ```
+
+**Kích hoạt profile dev:**
+
+Biến môi trường `SPRING_PROFILES_ACTIVE=dev` cho phép kích hoạt cấu hình dành cho môi trường phát triển tại `src/main/resources/application-dev.yml`.
+
+Profile `dev` bật SQL logging (`show-sql`, `format_sql`) và DEBUG logging cho package `com.miniecommerce`.
+
+Nếu không khai báo `SPRING_PROFILES_ACTIVE`, ứng dụng sử dụng cấu hình mặc định trong `application.yml`. Không nên bật SQL logging trong môi trường triển khai.
 
 6. Nhấn **Apply → OK** để lưu cấu hình.
 
@@ -172,6 +190,7 @@ $env:DB_PASSWORD = "your_database_password"
 
 $env:ADMIN_EMAIL = "admin@example.com"
 $env:ADMIN_PASSWORD = "your_admin_password"
+$env:SPRING_PROFILES_ACTIVE = "dev"
 ```
 
 Khởi động ứng dụng:
@@ -201,18 +220,6 @@ src/test/resources/application-test.properties
 H2 được bật chế độ tương thích MySQL thông qua `MODE=MySQL`.
 
 Khi chạy test, không cần khởi động MySQL Server nếu các test chỉ sử dụng profile H2.
-
-> **Lưu ý:** 
-> - File `database/schema.sql` được thiết kế để khởi tạo
-> schema trên một database trống. Script không được thiết kế để
-> chạy lại trên database đã có các bảng tương ứng.
->
-> - Nếu cần khởi tạo lại database từ đầu, hãy xóa database
-> `mini_ecommerce` hiện tại trước, tạo lại database trống,
-> sau đó thực thi lại `database/schema.sql`.
->
-> - Việc xóa database sẽ xóa toàn bộ dữ liệu hiện có.
-> Chỉ thực hiện khi chắc chắn không cần giữ lại dữ liệu.
 
 ## 8. Cấu trúc package
 
@@ -248,6 +255,7 @@ com.miniecommerce.backend/
 │   │   ├── AdminCategoryController.java
 │   │   └── CategoryController.java
 │   ├── dto/
+│   │   ├── AdminCategoryResponse.java
 │   │   ├── CategoryRequest.java
 │   │   └── CategoryResponse.java
 │   ├── entity/
