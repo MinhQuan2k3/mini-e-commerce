@@ -48,6 +48,17 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
+    public CategoryResponse getActiveCategoryById(Long id) {
+        Category category = categoryRepository
+                .findByIdAndStatus(id, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Category not found with id: " + id
+                ));
+
+        return CategoryResponse.fromEntity(category);
+    }
+
+    @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll()
                 .stream()

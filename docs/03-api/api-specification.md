@@ -712,6 +712,7 @@ Public
 | Status | Condition |
 |---|---|
 | `404` | Không tìm thấy Category |
+| `404` | Category đang INACTIVE |
 
 ---
 
@@ -2540,3 +2541,4 @@ api-specification.md
 | 2026-10-18 | R-11 | §13.1 | Cập nhật ví dụ response có dữ liệu và làm rõ quy ước phân trang hoặc không phân trang cho API liên quan. |
 | 2026-11-09 | D-08 | §12.3, §12.4 | Bổ sung Error Case HTTP 400 khi tạo hoặc cập nhật Product với Category đang INACTIVE. |
 | 2026-11-11 | G-04 | §6.1 | Bổ sung giới hạn mật khẩu tối đa 72 byte UTF-8 để tương thích với BCrypt. |
+| 2026-11-12 | G-11 | §8.2 | Bổ sung Error Case HTTP 404 khi Public API truy vấn Category đang INACTIVE; thống nhất hành vi với trường hợp không tìm thấy Category. |

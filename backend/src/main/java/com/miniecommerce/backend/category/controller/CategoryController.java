@@ -35,7 +35,7 @@ public class CategoryController {
     public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(
             @PathVariable Long id
     ) {
-        CategoryResponse category = categoryService.getCategoryById(id);
+        CategoryResponse category = categoryService.getActiveCategoryById(id);
 
         return ResponseEntity.ok(
                 ApiResponse.success("Category retrieved successfully", category)

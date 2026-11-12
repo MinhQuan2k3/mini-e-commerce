@@ -6,11 +6,14 @@ import com.miniecommerce.backend.category.entity.CategoryStatus;
 import com.miniecommerce.backend.category.repository.CategoryRepository;
 import com.miniecommerce.backend.common.exception.ConflictException;
 import com.miniecommerce.backend.product.repository.ProductRepository;
+import com.miniecommerce.backend.category.dto.CategoryResponse;
+import com.miniecommerce.backend.common.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -96,5 +99,46 @@ class CategoryServiceTest {
         verify(categoryRepository).findById(1L);
         verify(productRepository).existsByCategoryId(1L);
         verify(categoryRepository).delete(category);
+    }
+
+    @Test
+    void shouldReturnActiveCategoryWhenGettingCategoryById() {
+        Category category = new Category(
+                "Electronics",
+                "Electronic products",
+                CategoryStatus.ACTIVE
+        );
+
+        when(categoryRepository.findByIdAndStatus(
+                1L,
+                CategoryStatus.ACTIVE
+        )).thenReturn(Optional.of(category));
+
+        assertDoesNotThrow(
+                () -> categoryService.getActiveCategoryById(1L)
+        );
+
+        verify(categoryRepository).findByIdAndStatus(
+                1L,
+                CategoryStatus.ACTIVE
+        );
+    }
+
+    @Test
+    void shouldThrowResourceNotFoundExceptionWhenGettingInactiveCategoryById() {
+        when(categoryRepository.findByIdAndStatus(
+                1L,
+                CategoryStatus.ACTIVE
+        )).thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> categoryService.getActiveCategoryById(1L)
+        );
+
+        verify(categoryRepository).findByIdAndStatus(
+                1L,
+                CategoryStatus.ACTIVE
+        );
     }
 }
