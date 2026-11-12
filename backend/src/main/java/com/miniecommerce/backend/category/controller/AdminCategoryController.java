@@ -1,5 +1,6 @@
 package com.miniecommerce.backend.category.controller;
 
+import com.miniecommerce.backend.category.dto.AdminCategoryResponse;
 import com.miniecommerce.backend.category.dto.CategoryRequest;
 import com.miniecommerce.backend.category.dto.CategoryResponse;
 import com.miniecommerce.backend.category.service.CategoryService;
@@ -22,8 +23,9 @@ public class AdminCategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategories() {
-        List<CategoryResponse> categories =
+    public ResponseEntity<ApiResponse<List<AdminCategoryResponse>>>
+    getAllCategories() {
+        List<AdminCategoryResponse> categories =
                 categoryService.getAllCategories();
 
         return ResponseEntity.ok(

@@ -2,6 +2,7 @@ package com.miniecommerce.backend.category.service;
 
 import com.miniecommerce.backend.category.dto.CategoryRequest;
 import com.miniecommerce.backend.category.dto.CategoryResponse;
+import com.miniecommerce.backend.category.dto.AdminCategoryResponse;
 import com.miniecommerce.backend.category.entity.Category;
 import com.miniecommerce.backend.category.entity.CategoryStatus;
 import com.miniecommerce.backend.category.repository.CategoryRepository;
@@ -59,10 +60,10 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResponse> getAllCategories() {
+    public List<AdminCategoryResponse> getAllCategories() {
         return categoryRepository.findAll()
                 .stream()
-                .map(CategoryResponse::fromEntity)
+                .map(AdminCategoryResponse::fromEntity)
                 .toList();
     }
 
