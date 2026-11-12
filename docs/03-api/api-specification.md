@@ -1477,7 +1477,8 @@ ADMIN
 
 | Status | Condition              |
 |---|------------------------|
-| `400` | Dữ liệu không hợp lệ/Category đang INACTIVE |
+| `400` | Dữ liệu không hợp lệ   |
+| `400` | Category đang INACTIVE |
 | `401` | Chưa đăng nhập         |
 | `403` | Không phải Admin       |
 | `404` | Category không tồn tại |
@@ -1542,7 +1543,8 @@ ADMIN
 
 | Status | Condition                           |
 |---|-------------------------------------|
-| `400` | Dữ liệu không hợp lệ/Category đang INACTIVE|
+| `400` | Dữ liệu không hợp lệ                |
+| `400` | Category đang INACTIVE              |
 | `401` | Chưa đăng nhập                      |
 | `403` | Không phải Admin                    |
 | `404` | Product hoặc Category không tồn tại |
