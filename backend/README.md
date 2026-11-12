@@ -216,98 +216,107 @@ Khi chạy test, không cần khởi động MySQL Server nếu các test chỉ 
 
 ## 8. Cấu trúc package
 
-Backend sử dụng package-by-feature (package theo module nghiệp vụ).
-Các class liên quan đến cùng một module được đặt trong package
-tương ứng. Những thành phần dùng chung được tổ chức trong `common/`,
-cấu hình ứng dụng trong `config/` và khởi tạo dữ liệu trong `bootstrap/`.
+Backend sử dụng cách tổ chức package theo module nghiệp vụ (package-by-feature). Mỗi module chứa các thành phần liên quan đến nghiệp vụ tương ứng, được phân chia thành các package con như `controller/`, `service/`, `repository/`, `entity/` và `dto/` khi cần thiết.
 
-Các package con như `dto/` chỉ được tạo khi cần thiết.
-Không chia tất cả module thành các package kỹ thuật chung như
-`controller/`, `service/`, `repository/`.
-Ví dụ cấu trúc định hướng:
+Các thành phần dùng chung được tổ chức trong `common/`, cấu hình và thành phần khởi tạo ứng dụng được tổ chức trong `config/`.
+
+Cấu trúc package hiện tại:
 
 ```text
 com.miniecommerce.backend/
 ├── BackendApplication.java
 │
-├── config/
-│   └── PasswordEncoderConfig.java
-│
-├── common/
-│   ├── response/
-│   │   ├── ApiResponse.java
-│   │   ├── ErrorDetail.java
-│   │   └── PageResponse.java
-│   │
-│   └── exception/
-│       ├── GlobalExceptionHandler.java
-│       ├── BadRequestException.java
-│       ├── UnauthorizedException.java
-│       ├── ResourceNotFoundException.java
-│       └── ConflictException.java
-│
-├── user/
-│   ├── User.java
-│   ├── Role.java
-│   └── UserRepository.java
-│
 ├── auth/
-│   ├── AuthController.java
-│   ├── AuthService.java
-│   └── dto/
-│       ├── RegisterRequest.java
-│       └── RegisterResponse.java
-│
-├── category/
-│   ├── Category.java
-│   ├── CategoryStatus.java
-│   ├── CategoryRepository.java
-│   ├── CategoryService.java
-│   ├── CategoryController.java
-│   ├── AdminCategoryController.java
-│   └── dto/
-│       ├── CategoryRequest.java
-│       └── CategoryResponse.java
-│
-├── product/
-│   ├── Product.java
-│   ├── ProductStatus.java
-│   ├── ProductRepository.java
-│   ├── ProductService.java
-│   ├── AdminProductController.java
-│   └── dto/
-│       ├── ProductRequest.java
-│       └── AdminProductResponse.java
+│   ├── controller/
+│   │   └── AuthController.java
+│   ├── dto/
+│   │   ├── RegisterRequest.java
+│   │   └── RegisterResponse.java
+│   └── service/
+│       └── AuthService.java
 │
 ├── cart/
-│   ├── Cart.java
-│   ├── CartItem.java
-│   ├── CartRepository.java
-│   └── CartItemRepository.java
+│   ├── entity/
+│   │   ├── Cart.java
+│   │   └── CartItem.java
+│   └── repository/
+│       ├── CartItemRepository.java
+│       └── CartRepository.java
+│
+├── category/
+│   ├── controller/
+│   │   ├── AdminCategoryController.java
+│   │   └── CategoryController.java
+│   ├── dto/
+│   │   ├── CategoryRequest.java
+│   │   └── CategoryResponse.java
+│   ├── entity/
+│   │   ├── Category.java
+│   │   └── CategoryStatus.java
+│   ├── repository/
+│   │   └── CategoryRepository.java
+│   └── service/
+│       └── CategoryService.java
+│
+├── common/
+│   ├── exception/
+│   │   ├── BadRequestException.java
+│   │   ├── ConflictException.java
+│   │   ├── GlobalExceptionHandler.java
+│   │   ├── ResourceNotFoundException.java
+│   │   └── UnauthorizedException.java
+│   └── response/
+│       ├── ApiResponse.java
+│       ├── ErrorDetail.java
+│       └── PageResponse.java
+│
+├── config/
+│   └── DataInitializer.java
 │
 ├── order/
-│   ├── Order.java
-│   ├── OrderItem.java
-│   ├── OrderStatus.java
-│   ├── PaymentStatus.java
-│   ├── OrderRepository.java
-│   └── OrderItemRepository.java
+│   ├── entity/
+│   │   ├── Order.java
+│   │   ├── OrderItem.java
+│   │   ├── OrderStatus.java
+│   │   └── PaymentStatus.java
+│   └── repository/
+│       ├── OrderItemRepository.java
+│       └── OrderRepository.java
 │
-└── bootstrap/
-    └── DataInitializer.java
+├── product/
+│   ├── controller/
+│   │   └── AdminProductController.java
+│   ├── dto/
+│   │   ├── AdminProductDetailResponse.java
+│   │   ├── AdminProductRequest.java
+│   │   └── AdminProductResponse.java
+│   ├── entity/
+│   │   ├── Product.java
+│   │   └── ProductStatus.java
+│   ├── repository/
+│   │   └── ProductRepository.java
+│   └── service/
+│       └── AdminProductService.java
+│
+└── user/
+    ├── entity/
+    │   ├── User.java
+    │   └── UserRole.java
+    └── repository/
+        └── UserRepository.java
 ```
 
 Trong đó:
 
-- Mỗi module quản lý các thành phần thuộc nghiệp vụ tương ứng.
 - `controller`: tiếp nhận và xử lý HTTP request.
 - `service`: triển khai business logic.
 - `repository`: truy cập dữ liệu.
-- `entity`: các JPA Entity thuộc module.
+- `entity`: các JPA Entity và kiểu dữ liệu liên quan đến module.
 - `dto`: các đối tượng trao đổi dữ liệu.
 - `common`: thành phần dùng chung giữa nhiều module.
+- `config`: cấu hình và các thành phần khởi tạo ứng dụng.
 
-Tên package gốc phải thống nhất với package của class `BackendApplication`. Cấu trúc trên là định hướng tổ chức, không yêu cầu tạo toàn bộ package khi module tương ứng chưa được triển khai.
+Cấu trúc trên phản ánh các package và class hiện có trong source code. Khi triển khai thêm chức năng, các package con và class tương ứng sẽ được bổ sung vào module nghiệp vụ phù hợp.
 
 ## 9. Cấu hình JPA
 
