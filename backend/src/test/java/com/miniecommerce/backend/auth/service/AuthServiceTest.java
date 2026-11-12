@@ -10,6 +10,7 @@ import com.miniecommerce.backend.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -21,13 +22,13 @@ class AuthServiceTest {
 
     private UserRepository userRepository;
     private AuthService authService;
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
         userRepository = mock(UserRepository.class);
-        authService = new AuthService(userRepository);
         passwordEncoder = new BCryptPasswordEncoder();
+        authService = new AuthService(userRepository, passwordEncoder);
     }
 
     @Test
