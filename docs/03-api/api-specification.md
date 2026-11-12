@@ -291,7 +291,7 @@ Admin không được đăng ký thông qua endpoint này.
 | Field | Type | Required | Validation |
 |---|---|---:|---|
 | `email` | String | Yes | Email hợp lệ, không trùng |
-| `password` | String | Yes | Tối thiểu 8 ký tự |
+| `password` | String | Yes | Tối thiểu 8 ký tự, tối đa 72 byte UTF-8 |
 
 ### Success Response
 
@@ -325,6 +325,7 @@ Admin không được đăng ký thông qua endpoint này.
 - Không có Email Verification trong MVP.
 - Không có Password Reset trong MVP.
 - `confirmPassword`, nếu có trên Frontend, chỉ dùng để validation và không được gửi/lưu như một trường Database.
+- Password không được vượt quá 72 byte UTF-8 để tương thích với giới hạn của BCrypt.
 
 ---
 
@@ -2538,3 +2539,4 @@ api-specification.md
 | 2026-10-18 | N-15 | §18.2 | Cập nhật quy trình Cancel Order theo hướng cập nhật có điều kiện từ `PENDING` sang `CANCELLED` trước; Chỉ hoàn stock sau khi cập nhật trạng thái thành công, nhằm tránh hoàn kho nhiều lần. |
 | 2026-10-18 | R-11 | §13.1 | Cập nhật ví dụ response có dữ liệu và làm rõ quy ước phân trang hoặc không phân trang cho API liên quan. |
 | 2026-11-09 | D-08 | §12.3, §12.4 | Bổ sung Error Case HTTP 400 khi tạo hoặc cập nhật Product với Category đang INACTIVE. |
+| 2026-11-11 | G-04 | §6.1 | Bổ sung giới hạn mật khẩu tối đa 72 byte UTF-8 để tương thích với BCrypt. |
