@@ -239,8 +239,11 @@ com.miniecommerce.backend/
 │   ├── dto/
 │   │   ├── RegisterRequest.java
 │   │   └── RegisterResponse.java
-│   └── service/
-│       └── AuthService.java
+│   ├── service/
+│   │   └── AuthService.java
+│   └── validation/
+│       ├── PasswordByteLength.java
+│       └── PasswordByteLengthValidator.java
 │
 ├── cart/
 │   ├── entity/
@@ -279,7 +282,8 @@ com.miniecommerce.backend/
 │       └── PageResponse.java
 │
 ├── config/
-│   └── DataInitializer.java
+│   ├── DataInitializer.java
+│   └── PasswordEncoderConfig.java
 │
 ├── order/
 │   ├── entity/
