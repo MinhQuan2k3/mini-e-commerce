@@ -16,6 +16,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByName(String name);
 
     List<Category> findAllByStatus(CategoryStatus status);
+
+    Optional<Category> findByIdAndStatus(Long id, CategoryStatus status);
 /*
  - Phương thức findAllByStatus() là derived query method của Spring Data JPA,
  tương ứng với truy vấn các Category theo trạng thái.

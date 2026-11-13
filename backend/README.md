@@ -77,6 +77,14 @@ Sau khi thực thi thành công, database `mini_ecommerce` sẽ được tạo v
 - `orders`
 - `order_items`
 
+> **Lưu ý khi khởi tạo database:**
+>
+> - File `database/schema.sql` chỉ dùng để khởi tạo schema trên database mới, chưa có các bảng tương ứng. Đây không phải migration script và không được thiết kế để chạy lại trên database đã tồn tại đầy đủ các bảng.
+>
+> - Nếu cần khởi tạo lại từ đầu, phải xóa database `mini_ecommerce` hiện tại, tạo lại database trống rồi thực thi lại `database/schema.sql`.
+>
+> - Thao tác xóa database sẽ xóa toàn bộ bảng và dữ liệu hiện có. Chỉ thực hiện khi đã sao lưu dữ liệu cần giữ và chắc chắn có thể khởi tạo lại database.
+
 Kiểm tra database:
 
 ```sql
@@ -116,6 +124,7 @@ Backend sử dụng các biến sau:
 | `DB_PASSWORD` | Mật khẩu tài khoản MySQL |
 | `ADMIN_EMAIL` | Email dự kiến của tài khoản Admin |
 | `ADMIN_PASSWORD` | Mật khẩu dự kiến của tài khoản Admin |
+| `SPRING_PROFILES_ACTIVE` | Profile Spring Boot cần kích hoạt, ví dụ `dev` |
 
 File `.env.example` tại thư mục gốc repository cung cấp giá trị mẫu cho các biến này.
 
@@ -139,7 +148,16 @@ DB_USERNAME=mini_ecommerce_app
 DB_PASSWORD=your_database_password
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=your_admin_password
+SPRING_PROFILES_ACTIVE=dev
 ```
+
+**Kích hoạt profile dev:**
+
+Biến môi trường `SPRING_PROFILES_ACTIVE=dev` cho phép kích hoạt cấu hình dành cho môi trường phát triển tại `src/main/resources/application-dev.yml`.
+
+Profile `dev` bật SQL logging (`show-sql`, `format_sql`) và DEBUG logging cho package `com.miniecommerce`.
+
+Nếu không khai báo `SPRING_PROFILES_ACTIVE`, ứng dụng sử dụng cấu hình mặc định trong `application.yml`. Không nên bật SQL logging trong môi trường triển khai.
 
 6. Nhấn **Apply → OK** để lưu cấu hình.
 
@@ -172,6 +190,7 @@ $env:DB_PASSWORD = "your_database_password"
 
 $env:ADMIN_EMAIL = "admin@example.com"
 $env:ADMIN_PASSWORD = "your_admin_password"
+$env:SPRING_PROFILES_ACTIVE = "dev"
 ```
 
 Khởi động ứng dụng:
@@ -202,112 +221,110 @@ H2 được bật chế độ tương thích MySQL thông qua `MODE=MySQL`.
 
 Khi chạy test, không cần khởi động MySQL Server nếu các test chỉ sử dụng profile H2.
 
-> **Lưu ý:** 
-> - File `database/schema.sql` được thiết kế để khởi tạo
-> schema trên một database trống. Script không được thiết kế để
-> chạy lại trên database đã có các bảng tương ứng.
->
-> - Nếu cần khởi tạo lại database từ đầu, hãy xóa database
-> `mini_ecommerce` hiện tại trước, tạo lại database trống,
-> sau đó thực thi lại `database/schema.sql`.
->
-> - Việc xóa database sẽ xóa toàn bộ dữ liệu hiện có.
-> Chỉ thực hiện khi chắc chắn không cần giữ lại dữ liệu.
-
 ## 8. Cấu trúc package
 
-Backend sử dụng package-by-feature (package theo module nghiệp vụ).
-Các class liên quan đến cùng một module được đặt trong package
-tương ứng. Những thành phần dùng chung được tổ chức trong `common/`,
-cấu hình ứng dụng trong `config/` và khởi tạo dữ liệu trong `bootstrap/`.
+Backend sử dụng cách tổ chức package theo module nghiệp vụ (package-by-feature). Mỗi module chứa các thành phần liên quan đến nghiệp vụ tương ứng, được phân chia thành các package con như `controller/`, `service/`, `repository/`, `entity/` và `dto/` khi cần thiết.
 
-Các package con như `dto/` chỉ được tạo khi cần thiết.
-Không chia tất cả module thành các package kỹ thuật chung như
-`controller/`, `service/`, `repository/`.
-Ví dụ cấu trúc định hướng:
+Các thành phần dùng chung được tổ chức trong `common/`, cấu hình và thành phần khởi tạo ứng dụng được tổ chức trong `config/`.
+
+Cấu trúc package hiện tại:
 
 ```text
 com.miniecommerce.backend/
 ├── BackendApplication.java
 │
-├── config/
-│   └── PasswordEncoderConfig.java
-│
-├── common/
-│   ├── response/
-│   │   ├── ApiResponse.java
-│   │   ├── ErrorDetail.java
-│   │   └── PageResponse.java
-│   │
-│   └── exception/
-│       ├── GlobalExceptionHandler.java
-│       ├── BadRequestException.java
-│       ├── UnauthorizedException.java
-│       ├── ResourceNotFoundException.java
-│       └── ConflictException.java
-│
-├── user/
-│   ├── User.java
-│   ├── Role.java
-│   └── UserRepository.java
-│
 ├── auth/
-│   ├── AuthController.java
-│   ├── AuthService.java
-│   └── dto/
-│       ├── RegisterRequest.java
-│       └── RegisterResponse.java
-│
-├── category/
-│   ├── Category.java
-│   ├── CategoryStatus.java
-│   ├── CategoryRepository.java
-│   ├── CategoryService.java
-│   ├── CategoryController.java
-│   ├── AdminCategoryController.java
-│   └── dto/
-│       ├── CategoryRequest.java
-│       └── CategoryResponse.java
-│
-├── product/
-│   ├── Product.java
-│   ├── ProductStatus.java
-│   ├── ProductRepository.java
-│   ├── ProductService.java
-│   ├── AdminProductController.java
-│   └── dto/
-│       ├── ProductRequest.java
-│       └── AdminProductResponse.java
+│   ├── controller/
+│   │   └── AuthController.java
+│   ├── dto/
+│   │   ├── RegisterRequest.java
+│   │   └── RegisterResponse.java
+│   └── service/
+│       └── AuthService.java
 │
 ├── cart/
-│   ├── Cart.java
-│   ├── CartItem.java
-│   ├── CartRepository.java
-│   └── CartItemRepository.java
+│   ├── entity/
+│   │   ├── Cart.java
+│   │   └── CartItem.java
+│   └── repository/
+│       ├── CartItemRepository.java
+│       └── CartRepository.java
+│
+├── category/
+│   ├── controller/
+│   │   ├── AdminCategoryController.java
+│   │   └── CategoryController.java
+│   ├── dto/
+│   │   ├── AdminCategoryResponse.java
+│   │   ├── CategoryRequest.java
+│   │   └── CategoryResponse.java
+│   ├── entity/
+│   │   ├── Category.java
+│   │   └── CategoryStatus.java
+│   ├── repository/
+│   │   └── CategoryRepository.java
+│   └── service/
+│       └── CategoryService.java
+│
+├── common/
+│   ├── exception/
+│   │   ├── BadRequestException.java
+│   │   ├── ConflictException.java
+│   │   ├── GlobalExceptionHandler.java
+│   │   ├── ResourceNotFoundException.java
+│   │   └── UnauthorizedException.java
+│   └── response/
+│       ├── ApiResponse.java
+│       ├── ErrorDetail.java
+│       └── PageResponse.java
+│
+├── config/
+│   └── DataInitializer.java
 │
 ├── order/
-│   ├── Order.java
-│   ├── OrderItem.java
-│   ├── OrderStatus.java
-│   ├── PaymentStatus.java
-│   ├── OrderRepository.java
-│   └── OrderItemRepository.java
+│   ├── entity/
+│   │   ├── Order.java
+│   │   ├── OrderItem.java
+│   │   ├── OrderStatus.java
+│   │   └── PaymentStatus.java
+│   └── repository/
+│       ├── OrderItemRepository.java
+│       └── OrderRepository.java
 │
-└── bootstrap/
-    └── DataInitializer.java
+├── product/
+│   ├── controller/
+│   │   └── AdminProductController.java
+│   ├── dto/
+│   │   ├── AdminProductDetailResponse.java
+│   │   ├── AdminProductRequest.java
+│   │   └── AdminProductResponse.java
+│   ├── entity/
+│   │   ├── Product.java
+│   │   └── ProductStatus.java
+│   ├── repository/
+│   │   └── ProductRepository.java
+│   └── service/
+│       └── AdminProductService.java
+│
+└── user/
+    ├── entity/
+    │   ├── User.java
+    │   └── UserRole.java
+    └── repository/
+        └── UserRepository.java
 ```
 
 Trong đó:
 
-- Mỗi module quản lý các thành phần thuộc nghiệp vụ tương ứng.
 - `controller`: tiếp nhận và xử lý HTTP request.
 - `service`: triển khai business logic.
 - `repository`: truy cập dữ liệu.
-- `entity`: các JPA Entity thuộc module.
+- `entity`: các JPA Entity và kiểu dữ liệu liên quan đến module.
 - `dto`: các đối tượng trao đổi dữ liệu.
 - `common`: thành phần dùng chung giữa nhiều module.
+- `config`: cấu hình và các thành phần khởi tạo ứng dụng.
 
-Tên package gốc phải thống nhất với package của class `BackendApplication`. Cấu trúc trên là định hướng tổ chức, không yêu cầu tạo toàn bộ package khi module tương ứng chưa được triển khai.
+Cấu trúc trên phản ánh các package và class hiện có trong source code. Khi triển khai thêm chức năng, các package con và class tương ứng sẽ được bổ sung vào module nghiệp vụ phù hợp.
 
 ## 9. Cấu hình JPA
 

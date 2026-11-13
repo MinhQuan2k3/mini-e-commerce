@@ -2,12 +2,15 @@ package com.miniecommerce.backend.category.service;
 
 import com.miniecommerce.backend.category.dto.CategoryRequest;
 import com.miniecommerce.backend.category.dto.CategoryResponse;
+import com.miniecommerce.backend.category.dto.AdminCategoryResponse;
 import com.miniecommerce.backend.category.entity.Category;
 import com.miniecommerce.backend.category.entity.CategoryStatus;
 import com.miniecommerce.backend.category.repository.CategoryRepository;
 import com.miniecommerce.backend.common.exception.ConflictException;
 import com.miniecommerce.backend.common.exception.ResourceNotFoundException;
 import com.miniecommerce.backend.product.repository.ProductRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,8 @@ import java.util.List;
 @Transactional
 public class CategoryService {
 
+    private static final Logger log =
+            LoggerFactory.getLogger(CategoryService.class);
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
 
@@ -44,10 +49,21 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResponse> getAllCategories() {
+    public CategoryResponse getActiveCategoryById(Long id) {
+        Category category = categoryRepository
+                .findByIdAndStatus(id, CategoryStatus.ACTIVE)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Category not found with id: " + id
+                ));
+
+        return CategoryResponse.fromEntity(category);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdminCategoryResponse> getAllCategories() {
         return categoryRepository.findAll()
                 .stream()
-                .map(CategoryResponse::fromEntity)
+                .map(AdminCategoryResponse::fromEntity)
                 .toList();
     }
 
@@ -65,6 +81,7 @@ public class CategoryService {
         );
 
         Category savedCategory = categoryRepository.save(category);
+        log.info("Category created: id={}", savedCategory.getId());
 
         return CategoryResponse.fromEntity(savedCategory);
     }
@@ -82,6 +99,7 @@ public class CategoryService {
         category.setStatus(request.status());
 
         Category updatedCategory = categoryRepository.save(category);
+        log.info("Category updated: id={}", updatedCategory.getId());
 
         return CategoryResponse.fromEntity(updatedCategory);
     }
@@ -96,6 +114,7 @@ public class CategoryService {
         }
 
         categoryRepository.delete(category);
+        log.info("Category deleted: id={}", id);
     }
 
     private Category findCategoryById(Long id) {
