@@ -132,7 +132,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ApiResponse.<Void>failure(
-                        "A resource with the same unique value already exists"
+                        "Data conflicts with existing data"
                 ));
     }
 
