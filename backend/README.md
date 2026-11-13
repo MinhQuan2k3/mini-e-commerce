@@ -81,9 +81,13 @@ Sau khi thực thi thành công, database `mini_ecommerce` sẽ được tạo v
 >
 > - File `database/schema.sql` chỉ dùng để khởi tạo schema trên database mới, chưa có các bảng tương ứng. Đây không phải migration script và không được thiết kế để chạy lại trên database đã tồn tại đầy đủ các bảng.
 >
-> - Nếu cần khởi tạo lại từ đầu, phải xóa database `mini_ecommerce` hiện tại, tạo lại database trống rồi thực thi lại `database/schema.sql`.
+> - Nếu cần khởi tạo lại từ đầu, phải xóa database `mini_ecommerce` hiện tại trước khi thực thi lại `database/schema.sql`. Có thể sử dụng lệnh SQL:
 >
-> - Thao tác xóa database sẽ xóa toàn bộ bảng và dữ liệu hiện có. Chỉ thực hiện khi đã sao lưu dữ liệu cần giữ và chắc chắn có thể khởi tạo lại database.
+> ```sql
+> DROP DATABASE mini_ecommerce;
+> ```
+>
+> - **Cảnh báo:** Lệnh trên sẽ xóa toàn bộ database `mini_ecommerce`, bao gồm tất cả bảng và dữ liệu hiện có. Chỉ thực hiện khi đã sao lưu dữ liệu cần giữ và chắc chắn có thể khởi tạo lại database.
 
 Kiểm tra database:
 
