@@ -9,6 +9,7 @@ import com.miniecommerce.backend.product.repository.ProductRepository;
 import com.miniecommerce.backend.user.entity.User;
 import com.miniecommerce.backend.user.entity.UserRole;
 import com.miniecommerce.backend.user.repository.UserRepository;
+import com.miniecommerce.backend.auth.validation.PasswordByteLengthValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,8 @@ public class DataInitializer implements CommandLineRunner {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordByteLengthValidator passwordByteLengthValidator =
+            new PasswordByteLengthValidator();
 
     @Value("${ADMIN_EMAIL:}")
     private String adminEmail;
@@ -207,6 +210,16 @@ public class DataInitializer implements CommandLineRunner {
                 || adminPassword == null || adminPassword.isBlank()) {
             log.warn(
                     "ADMIN_EMAIL or ADMIN_PASSWORD is missing. "
+                            + "Skipping initial Admin account creation."
+            );
+            return;
+        }
+
+        if (adminPassword.length() < 8
+                || !passwordByteLengthValidator.isValid(adminPassword, null)) {
+            log.warn(
+                    "ADMIN_PASSWORD is invalid. It must contain at least "
+                            + "8 characters and must not exceed 72 UTF-8 bytes. "
                             + "Skipping initial Admin account creation."
             );
             return;
