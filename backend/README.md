@@ -129,6 +129,7 @@ Backend sử dụng các biến sau:
 | `ADMIN_EMAIL` | Email dự kiến của tài khoản Admin |
 | `ADMIN_PASSWORD` | Mật khẩu dự kiến của tài khoản Admin |
 | `SPRING_PROFILES_ACTIVE` | Profile Spring Boot cần kích hoạt, ví dụ `dev` |
+| `CORS_ALLOWED_ORIGINS` | Danh sách origin được phép truy cập Backend qua CORS, phân cách bằng dấu phẩy |
 
 File `.env.example` tại thư mục gốc repository cung cấp giá trị mẫu cho các biến này.
 
@@ -137,6 +138,17 @@ Có thể sao chép `.env.example` thành `.env` để lưu thông tin cấu hì
 **Lưu ý:** Spring Boot không tự động đọc file `.env`. Các biến môi trường cần được khai báo trong IntelliJ IDEA Run Configuration hoặc trong môi trường hệ điều hành trước khi chạy ứng dụng.
 
 `ADMIN_EMAIL` và `ADMIN_PASSWORD` hiện được chuẩn bị cho các giai đoạn phát triển sau. Chúng chưa được sử dụng để tự động tạo tài khoản Admin.
+
+`CORS_ALLOWED_ORIGINS` là biến tùy chọn, dùng để cấu hình các origin được phép gửi
+cross-origin request đến Backend. Mỗi origin cần bao gồm scheme và port nếu có,
+ví dụ `http://localhost:5173`.
+
+Có thể khai báo nhiều origin bằng cách phân cách bằng dấu phẩy. Không thêm dấu `/`
+ở cuối origin.
+
+Nếu chưa xác định công cụ và port Frontend, có thể để biến này trống. Khi đó Backend
+không cho phép cross-origin request từ các origin bên ngoài. Cần cập nhật biến này
+khi bắt đầu tích hợp Frontend.
 
 ### 5.2. Cấu hình trong IntelliJ IDEA
 
@@ -153,7 +165,10 @@ DB_PASSWORD=your_database_password
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=your_admin_password
 SPRING_PROFILES_ACTIVE=dev
+CORS_ALLOWED_ORIGINS=http://localhost:<frontend-port>
 ```
+Thay `<frontend-port>` bằng port thực tế của Frontend khi bắt đầu tích hợp.
+Nếu chưa triển khai Frontend, có thể để trống `CORS_ALLOWED_ORIGINS`.
 
 **Kích hoạt profile dev:**
 
@@ -195,6 +210,8 @@ $env:DB_PASSWORD = "your_database_password"
 $env:ADMIN_EMAIL = "admin@example.com"
 $env:ADMIN_PASSWORD = "your_admin_password"
 $env:SPRING_PROFILES_ACTIVE = "dev"
+
+$env:CORS_ALLOWED_ORIGINS = "http://localhost:<frontend-port>"
 ```
 
 Khởi động ứng dụng:
@@ -224,6 +241,11 @@ src/test/resources/application-test.properties
 H2 được bật chế độ tương thích MySQL thông qua `MODE=MySQL`.
 
 Khi chạy test, không cần khởi động MySQL Server nếu các test chỉ sử dụng profile H2.
+
+Integration Test cho CORS nằm tại:
+
+```text
+src/test/java/com/miniecommerce/backend/config/CorsConfigIntegrationTest.java
 
 ## 8. Cấu trúc package
 
