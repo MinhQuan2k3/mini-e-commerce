@@ -129,6 +129,7 @@ Backend sử dụng các biến sau:
 | `ADMIN_EMAIL` | Email dự kiến của tài khoản Admin |
 | `ADMIN_PASSWORD` | Mật khẩu dự kiến của tài khoản Admin |
 | `SPRING_PROFILES_ACTIVE` | Profile Spring Boot cần kích hoạt, ví dụ `dev` |
+| `CORS_ALLOWED_ORIGINS` | Danh sách origin được phép truy cập Backend qua CORS, phân cách bằng dấu phẩy |
 
 File `.env.example` tại thư mục gốc repository cung cấp giá trị mẫu cho các biến này.
 
@@ -136,7 +137,20 @@ Có thể sao chép `.env.example` thành `.env` để lưu thông tin cấu hì
 
 **Lưu ý:** Spring Boot không tự động đọc file `.env`. Các biến môi trường cần được khai báo trong IntelliJ IDEA Run Configuration hoặc trong môi trường hệ điều hành trước khi chạy ứng dụng.
 
-`ADMIN_EMAIL` và `ADMIN_PASSWORD` hiện được chuẩn bị cho các giai đoạn phát triển sau. Chúng chưa được sử dụng để tự động tạo tài khoản Admin.
+`ADMIN_EMAIL` và `ADMIN_PASSWORD` được sử dụng bởi `DataInitializer` để khởi tạo tài khoản Admin mặc định khi ứng dụng chạy.
+
+Nếu một trong hai biến bị bỏ trống, tài khoản Admin sẽ không được tạo. Nếu email đã tồn tại, ứng dụng sẽ bỏ qua việc tạo tài khoản trùng lặp. Mật khẩu được mã hóa bằng BCrypt trước khi lưu vào database.
+
+`CORS_ALLOWED_ORIGINS` là biến tùy chọn, dùng để cấu hình các origin được phép gửi
+cross-origin request đến Backend. Mỗi origin cần bao gồm scheme và port nếu có,
+ví dụ `http://localhost:5173`.
+
+Có thể khai báo nhiều origin bằng cách phân cách bằng dấu phẩy. Không thêm dấu `/`
+ở cuối origin.
+
+Nếu chưa xác định công cụ và port Frontend, có thể để biến này trống. Khi đó Backend
+không cho phép cross-origin request từ các origin bên ngoài. Cần cập nhật biến này
+khi bắt đầu tích hợp Frontend.
 
 ### 5.2. Cấu hình trong IntelliJ IDEA
 
@@ -153,7 +167,10 @@ DB_PASSWORD=your_database_password
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=your_admin_password
 SPRING_PROFILES_ACTIVE=dev
+CORS_ALLOWED_ORIGINS=http://localhost:<frontend-port>
 ```
+Thay `<frontend-port>` bằng port thực tế của Frontend khi bắt đầu tích hợp.
+Nếu chưa triển khai Frontend, có thể để trống `CORS_ALLOWED_ORIGINS`.
 
 **Kích hoạt profile dev:**
 
@@ -195,6 +212,8 @@ $env:DB_PASSWORD = "your_database_password"
 $env:ADMIN_EMAIL = "admin@example.com"
 $env:ADMIN_PASSWORD = "your_admin_password"
 $env:SPRING_PROFILES_ACTIVE = "dev"
+
+$env:CORS_ALLOWED_ORIGINS = "http://localhost:<frontend-port>"
 ```
 
 Khởi động ứng dụng:
@@ -206,6 +225,8 @@ Khởi động ứng dụng:
 Các biến được khai báo bằng `$env:` chỉ có hiệu lực trong phiên PowerShell hiện tại và các tiến trình được khởi chạy từ phiên đó.
 
 ## 7. Chạy kiểm thử
+
+### 7.1. Kiểm thử tự động bằng Maven
 
 Tại thư mục `backend`, chạy:
 
@@ -224,6 +245,58 @@ src/test/resources/application-test.properties
 H2 được bật chế độ tương thích MySQL thông qua `MODE=MySQL`.
 
 Khi chạy test, không cần khởi động MySQL Server nếu các test chỉ sử dụng profile H2.
+
+Integration Test cho CORS nằm tại:
+
+```text
+src/test/java/com/miniecommerce/backend/config/CorsConfigIntegrationTest.java
+```
+
+### 7.2. Kiểm thử API bằng Postman
+
+Postman Collection là bộ kiểm thử API chính của dự án.
+
+Các file cấu hình Postman nằm tại thư mục `postman/` ở thư mục gốc repository:
+
+- `postman/Mini-Ecommerce-API.postman_collection.json`: định nghĩa các API requests và test scripts.
+- `postman/Mini-Ecommerce-Local.postman_environment.json`: cấu hình môi trường kiểm thử local.
+
+**Các bước thực hiện:**
+
+1. Khởi động backend và bảo đảm API có thể truy cập tại http://localhost:8080. Nếu sử dụng Postman Web, cần kết nối Postman Desktop Agent để gửi requests đến localhost.
+2. Mở Postman và import hai file JSON ở trên.
+3. Chọn Environment `Mini E-commerce - Local`.
+4. Kiểm tra biến `baseUrl` có giá trị `http://localhost:8080/api`.
+5. Mở Collection `Mini-Ecommerce-API` và chạy toàn bộ requests bằng Collection Runner với thứ tự mặc định.
+
+Collection được tổ chức thành các nhóm:
+
+- Authentication
+- Admin Categories
+- Public Categories
+- Admin Products
+- Cleanup
+
+Các requests có sử dụng environment variables để lưu và tái sử dụng những ID cần thiết, chẳng hạn `categoryId` và `productId`. Vì vậy, cần chạy toàn bộ Collection theo thứ tự mặc định để bảo đảm các requests phụ thuộc dữ liệu được thực hiện đúng.
+
+**Lưu ý về dữ liệu kiểm thử:**
+
+- Mỗi lần chạy Collection có thể tạo thêm Customer, Category và Product mới trong database.
+- Request Delete Product thực hiện xóa mềm, chuyển trạng thái Product thành `INACTIVE`.
+- Category vẫn được Product đã xóa mềm tham chiếu, vì vậy request Delete Category trong trường hợp này kỳ vọng trả về `409 Conflict`.
+- Nên sử dụng môi trường database kiểm thử local và kiểm tra dữ liệu phát sinh sau các lần chạy.
+
+### 7.3. Các file HTTP tham khảo
+
+Repository hiện có ba file `.http` trong thư mục `backend/`:
+
+- `auth-register.http`
+- `category-api.http`
+- `product-api.http`
+
+Các file này được giữ lại để tham khảo hoặc thực hiện thủ công một số API requests trong IDE.
+
+**Lưu ý:** Postman Collection là bộ kiểm thử API chính thức được sử dụng để duy trì và thực hiện kiểm thử API. Các file `.http` chỉ có vai trò tham khảo và không tiếp tục được cập nhật khi API thay đổi.
 
 ## 8. Cấu trúc package
 
@@ -286,6 +359,7 @@ com.miniecommerce.backend/
 │       └── PageResponse.java
 │
 ├── config/
+│   ├── CorsConfig.java
 │   ├── DataInitializer.java
 │   └── PasswordEncoderConfig.java
 │
@@ -361,7 +435,24 @@ Do đó, cần thực thi `database/schema.sql` trước khi chạy ứng dụng
 | `Port 8080 was already in use` | Cổng 8080 đang được tiến trình khác sử dụng | Dừng tiến trình đang chiếm cổng hoặc thay đổi port |
 | `BUILD FAILURE` khi chạy test | Lỗi biên dịch hoặc kiểm thử | Đọc thông báo lỗi đầu tiên và phần `Caused by` trong Maven output |
 
-## 11. Lưu ý bảo mật
+## 11. Bảo mật API
+
+Ở trạng thái hiện tại của nhánh này, Backend đã cấu hình CORS và mã hóa mật khẩu bằng BCrypt, nhưng chưa tích hợp Spring Security để xác thực và phân quyền truy cập API.
+
+Các endpoint hiện chưa được bảo vệ bằng cơ chế xác thực của Spring Security. Điều này có nghĩa là các API quản trị cũng chưa yêu cầu đăng nhập và chưa trả về `401 Unauthorized` chỉ vì người gọi chưa xác thực.
+
+Các endpoint dự kiến cho phép truy cập công khai theo nghiệp vụ:
+- `POST /api/auth/register`
+- `GET /api/categories`
+- `GET /api/categories/{id}`
+
+Các endpoint quản trị hiện chưa có cơ chế xác thực và phân quyền:
+- `/api/admin/categories/**`
+- `/api/admin/products/**`
+
+Việc tích hợp Spring Security và bảo vệ API sẽ được thực hiện trong PR riêng về Spring Security.
+
+## 12. Lưu ý bảo mật
 
 - Không commit mật khẩu MySQL hoặc thông tin bí mật lên Git.
 - Không sử dụng tài khoản MySQL `root` để chạy ứng dụng trong môi trường triển khai.
