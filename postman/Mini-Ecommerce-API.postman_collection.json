@@ -367,30 +367,32 @@
                                                     }
                                                 ]
                                   },
-                                  {
-                                      "name":  "Delete Category",
-                                      "request":  {
-                                                      "method":  "DELETE",
-                                                      "header":  [
-
-                                                                 ],
-                                                      "url":  "{{baseUrl}}/admin/categories/{{categoryId}}"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 204 No Content\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(204);",
-                                                                                    "});",
-                                                                                    "pm.environment.unset(\u0027categoryId\u0027);"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  }
+                                   {
+                                     "name": "Delete Category đang có Product → 409",
+                                     "request": {
+                                                 "method": "DELETE",
+                                                 "header": [],
+                                                 "url": "{{baseUrl}}/admin/categories/{{categoryId}}"
+                                                },
+                                     "event": [
+                                             {
+                                               "listen": "test",
+                                                       "script": {
+                                                         "type": "text/javascript",
+                                                         "exec": [
+                                                                   "pm.test('Status is 409 Conflict', function () {",
+                                                                   "    pm.response.to.have.status(409);",
+                                                                   "});",
+                                                                   "",
+                                                                   "pm.test('Response indicates failure', function () {",
+                                                                   "    const response = pm.response.json();",
+                                                                   "    pm.expect(response.success).to.eql(false);",
+                                                                   "});"
+                                                                  ]
+                                                       }
+                                             }
+                                     ]
+                                   }
                               ]
                  }
              ]
