@@ -137,7 +137,9 @@ Có thể sao chép `.env.example` thành `.env` để lưu thông tin cấu hì
 
 **Lưu ý:** Spring Boot không tự động đọc file `.env`. Các biến môi trường cần được khai báo trong IntelliJ IDEA Run Configuration hoặc trong môi trường hệ điều hành trước khi chạy ứng dụng.
 
-`ADMIN_EMAIL` và `ADMIN_PASSWORD` hiện được chuẩn bị cho các giai đoạn phát triển sau. Chúng chưa được sử dụng để tự động tạo tài khoản Admin.
+`ADMIN_EMAIL` và `ADMIN_PASSWORD` được sử dụng bởi `DataInitializer` để khởi tạo tài khoản Admin mặc định khi ứng dụng chạy.
+
+Nếu một trong hai biến bị bỏ trống, tài khoản Admin sẽ không được tạo. Nếu email đã tồn tại, ứng dụng sẽ bỏ qua việc tạo tài khoản trùng lặp. Mật khẩu được mã hóa bằng BCrypt trước khi lưu vào database.
 
 `CORS_ALLOWED_ORIGINS` là biến tùy chọn, dùng để cấu hình các origin được phép gửi
 cross-origin request đến Backend. Mỗi origin cần bao gồm scheme và port nếu có,
@@ -246,6 +248,7 @@ Integration Test cho CORS nằm tại:
 
 ```text
 src/test/java/com/miniecommerce/backend/config/CorsConfigIntegrationTest.java
+```
 
 ## 8. Cấu trúc package
 
@@ -308,6 +311,7 @@ com.miniecommerce.backend/
 │       └── PageResponse.java
 │
 ├── config/
+│   ├── CorsConfig.java
 │   ├── DataInitializer.java
 │   └── PasswordEncoderConfig.java
 │
@@ -383,7 +387,24 @@ Do đó, cần thực thi `database/schema.sql` trước khi chạy ứng dụng
 | `Port 8080 was already in use` | Cổng 8080 đang được tiến trình khác sử dụng | Dừng tiến trình đang chiếm cổng hoặc thay đổi port |
 | `BUILD FAILURE` khi chạy test | Lỗi biên dịch hoặc kiểm thử | Đọc thông báo lỗi đầu tiên và phần `Caused by` trong Maven output |
 
-## 11. Lưu ý bảo mật
+## 11. Bảo mật API
+
+Ở trạng thái hiện tại của nhánh này, Backend đã cấu hình CORS và mã hóa mật khẩu bằng BCrypt, nhưng chưa tích hợp Spring Security để xác thực và phân quyền truy cập API.
+
+Các endpoint hiện chưa được bảo vệ bằng cơ chế xác thực của Spring Security. Điều này có nghĩa là các API quản trị cũng chưa yêu cầu đăng nhập và chưa trả về `401 Unauthorized` chỉ vì người gọi chưa xác thực.
+
+Các endpoint dự kiến cho phép truy cập công khai theo nghiệp vụ:
+- `POST /api/auth/register`
+- `GET /api/categories`
+- `GET /api/categories/{id}`
+
+Các endpoint quản trị hiện chưa có cơ chế xác thực và phân quyền:
+- `/api/admin/categories/**`
+- `/api/admin/products/**`
+
+Việc tích hợp Spring Security và bảo vệ API sẽ được thực hiện trong PR riêng về Spring Security.
+
+## 12. Lưu ý bảo mật
 
 - Không commit mật khẩu MySQL hoặc thông tin bí mật lên Git.
 - Không sử dụng tài khoản MySQL `root` để chạy ứng dụng trong môi trường triển khai.

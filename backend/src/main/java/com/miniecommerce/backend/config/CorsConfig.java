@@ -1,4 +1,3 @@
-
 package com.miniecommerce.backend.config;
 
 import java.util.Arrays;
