@@ -226,6 +226,8 @@ Các biến được khai báo bằng `$env:` chỉ có hiệu lực trong phiê
 
 ## 7. Chạy kiểm thử
 
+### 7.1. Kiểm thử tự động bằng Maven
+
 Tại thư mục `backend`, chạy:
 
 ```powershell
@@ -249,6 +251,52 @@ Integration Test cho CORS nằm tại:
 ```text
 src/test/java/com/miniecommerce/backend/config/CorsConfigIntegrationTest.java
 ```
+
+### 7.2. Kiểm thử API bằng Postman
+
+Postman Collection là bộ kiểm thử API chính của dự án.
+
+Các file cấu hình Postman nằm tại thư mục `postman/` ở thư mục gốc repository:
+
+- `postman/Mini-Ecommerce-API.postman_collection.json`: định nghĩa các API requests và test scripts.
+- `postman/Mini-Ecommerce-Local.postman_environment.json`: cấu hình môi trường kiểm thử local.
+
+**Các bước thực hiện:**
+
+1. Khởi động backend và bảo đảm API có thể truy cập tại http://localhost:8080. Nếu sử dụng Postman Web, cần kết nối Postman Desktop Agent để gửi requests đến localhost.
+2. Mở Postman và import hai file JSON ở trên.
+3. Chọn Environment `Mini E-commerce - Local`.
+4. Kiểm tra biến `baseUrl` có giá trị `http://localhost:8080/api`.
+5. Mở Collection `Mini-Ecommerce-API` và chạy toàn bộ requests bằng Collection Runner với thứ tự mặc định.
+
+Collection được tổ chức thành các nhóm:
+
+- Authentication
+- Admin Categories
+- Public Categories
+- Admin Products
+- Cleanup
+
+Các requests có sử dụng environment variables để lưu và tái sử dụng những ID cần thiết, chẳng hạn `categoryId` và `productId`. Vì vậy, cần chạy toàn bộ Collection theo thứ tự mặc định để bảo đảm các requests phụ thuộc dữ liệu được thực hiện đúng.
+
+**Lưu ý về dữ liệu kiểm thử:**
+
+- Mỗi lần chạy Collection có thể tạo thêm Customer, Category và Product mới trong database.
+- Request Delete Product thực hiện xóa mềm, chuyển trạng thái Product thành `INACTIVE`.
+- Category vẫn được Product đã xóa mềm tham chiếu, vì vậy request Delete Category trong trường hợp này kỳ vọng trả về `409 Conflict`.
+- Nên sử dụng môi trường database kiểm thử local và kiểm tra dữ liệu phát sinh sau các lần chạy.
+
+### 7.3. Các file HTTP tham khảo
+
+Repository hiện có ba file `.http` trong thư mục `backend/`:
+
+- `auth-register.http`
+- `category-api.http`
+- `product-api.http`
+
+Các file này được giữ lại để tham khảo hoặc thực hiện thủ công một số API requests trong IDE.
+
+**Lưu ý:** Postman Collection là bộ kiểm thử API chính thức được sử dụng để duy trì và thực hiện kiểm thử API. Các file `.http` chỉ có vai trò tham khảo và không tiếp tục được cập nhật khi API thay đổi.
 
 ## 8. Cấu trúc package
 
