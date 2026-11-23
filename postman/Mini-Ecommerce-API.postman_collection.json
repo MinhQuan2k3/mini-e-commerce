@@ -2,7 +2,7 @@
     "info":  {
                  "_postman_id":  "mini-ecommerce-api-collection",
                  "name":  "Mini E-commerce API",
-                 "description":  "Postman collection for testing the Mini E-commerce backend APIs. Uses the Mini E-commerce - Local environment.",
+                 "description":  "Postman collection for testing the Mini E-commerce backend APIs. Uses the Mini E-commerce - Local environment.\n\n**Authentication note:** The Admin Categories, Admin Products, and Cleanup requests require authentication. Spring Security has been enabled, but JWT authentication has not been implemented yet. These requests currently return 401 Unauthorized when executed. JWT authentication and Bearer Token configuration will be added in a subsequent PR.",
                  "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
              },
     "item":  [
@@ -50,6 +50,7 @@
                  },
                  {
                      "name":  "Admin Categories",
+                     "description": "Requires authentication. Requests currently return 401 Unauthorized until JWT authentication is implemented in a subsequent PR.",
                      "item":  [
                                   {
                                       "name":  "Get All Categories (Admin)",
@@ -209,6 +210,7 @@
                  },
                  {
                      "name":  "Admin Products",
+                     "description": "Requires authentication. Requests currently return 401 Unauthorized until JWT authentication is implemented in a subsequent PR.",
                      "item":  [
                                   {
                                       "name":  "Get Products (with pagination and filters)",
@@ -341,7 +343,7 @@
                  },
                  {
                      "name":  "Cleanup",
-                     "description":  "Run after the other folders. Delete the product before deleting its category.",
+                     "description":  "Run after the other folders. Delete the product before deleting its category.\n\n**Note:** These requests require authentication and currently return 401 Unauthorized until JWT authentication is implemented in a subsequent PR.",
                      "item":  [
                                   {
                                       "name":  "Delete Product",

@@ -277,6 +277,14 @@ Collection được tổ chức thành các nhóm:
 - Admin Products
 - Cleanup
 
+**Lưu ý về xác thực:**
+
+Spring Security đã được tích hợp nhưng JWT authentication và luồng đăng nhập chưa được triển khai. Vì vậy:
+
+- Các requests thuộc nhóm `Admin Categories` và `Admin Products` hiện trả về `401 Unauthorized` do yêu cầu xác thực.
+- Các requests thuộc nhóm `Cleanup` cũng yêu cầu xác thực và hiện trả về `401 Unauthorized`.
+- Đây là hành vi dự kiến trong phạm vi PR hiện tại, không phải lỗi của Postman Collection. Các requests và test scripts vẫn được giữ nguyên để sử dụng sau khi JWT authentication được tích hợp trong PR tiếp theo.
+
 Các requests có sử dụng environment variables để lưu và tái sử dụng những ID cần thiết, chẳng hạn `categoryId` và `productId`. Vì vậy, cần chạy toàn bộ Collection theo thứ tự mặc định để bảo đảm các requests phụ thuộc dữ liệu được thực hiện đúng.
 
 **Lưu ý về dữ liệu kiểm thử:**
@@ -360,8 +368,11 @@ com.miniecommerce.backend/
 │
 ├── config/
 │   ├── CorsConfig.java
+│   ├── CustomAccessDeniedHandler.java
+│   ├── CustomAuthenticationEntryPoint.java
 │   ├── DataInitializer.java
-│   └── PasswordEncoderConfig.java
+│   ├── PasswordEncoderConfig.java
+│   └── SecurityConfig.java
 │
 ├── order/
 │   ├── entity/
@@ -437,20 +448,26 @@ Do đó, cần thực thi `database/schema.sql` trước khi chạy ứng dụng
 
 ## 11. Bảo mật API
 
-Ở trạng thái hiện tại của nhánh này, Backend đã cấu hình CORS và mã hóa mật khẩu bằng BCrypt, nhưng chưa tích hợp Spring Security để xác thực và phân quyền truy cập API.
+Backend đã tích hợp Spring Security với cấu hình stateless, sử dụng CORS và tắt CSRF, Form Login, HTTP Basic Authentication.
 
-Các endpoint hiện chưa được bảo vệ bằng cơ chế xác thực của Spring Security. Điều này có nghĩa là các API quản trị cũng chưa yêu cầu đăng nhập và chưa trả về `401 Unauthorized` chỉ vì người gọi chưa xác thực.
+Các endpoint được cho phép truy cập công khai:
 
-Các endpoint dự kiến cho phép truy cập công khai theo nghiệp vụ:
 - `POST /api/auth/register`
 - `GET /api/categories`
-- `GET /api/categories/{id}`
+- `GET /api/categories/**`
+- `GET /api/products`
+- `GET /api/products/**`
 
-Các endpoint quản trị hiện chưa có cơ chế xác thực và phân quyền:
+Các request không thuộc danh sách endpoint công khai đều yêu cầu xác thực. Khi request chưa được xác thực, Backend trả về `401 Unauthorized` theo định dạng `ApiResponse`.
+
+Các endpoint quản trị hiện được bảo vệ bởi Spring Security:
+
 - `/api/admin/categories/**`
 - `/api/admin/products/**`
 
-Việc tích hợp Spring Security và bảo vệ API sẽ được thực hiện trong PR riêng về Spring Security.
+**Lưu ý:** PR hiện tại mới tích hợp cơ chế bảo vệ request của Spring Security, chưa triển khai JWT và luồng đăng nhập để xác thực người dùng. Vì vậy, các Admin API hiện tạm thời không thể được truy cập từ client và sẽ trả về `401 Unauthorized`. Việc tích hợp JWT và hoàn thiện luồng xác thực sẽ được thực hiện trong PR tiếp theo.
+
+Các lỗi xác thực và từ chối truy cập được xử lý thông qua `CustomAuthenticationEntryPoint` và `CustomAccessDeniedHandler`, trả về response JSON thống nhất với cấu trúc `ApiResponse`.
 
 ## 12. Lưu ý bảo mật
 
