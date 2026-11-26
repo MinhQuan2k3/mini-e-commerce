@@ -6,7 +6,7 @@
 | Ngày cập nhật           | 25/11/2026                                                                                                                                                                                                                                                                       |
 | Căn cứ                  | `requirement-specification.md`, `api-specification.md`, `entity-relationship-diagram.md`, `class-diagram.md`, `coding-convention.md`, `git-convention.md`, `environment-setup.md`, `uoc-luong-dau-viec-tuan-2-6.md`, Kế hoạch Tuần 2, Review Tuần 3 lần 1 và Review Tuần 3 lần 2 |
 | Feedback được đối chiếu | K-01 đến K-08                                                                                                                                                                                                                                                                    |
-| Quyết định áp dụng      | D-11, D-12, D-13                                                                                                                                                                                                                                                                 |
+| Quyết định áp dụng      | D-11, D-12, D-13, D-14                                                                                                                                                                                                                                                                 |
 
 ------------------------------------------------------------------------
 
@@ -32,10 +32,11 @@ hợp từ Tuần 4:
   chuyển sang Tuần 4 theo D-11.
 - Nhóm Admin Order (9h) được chuyển sang Tuần 5.
 
-**Thời gian thực hiện dự kiến:** từ **18/11/2026 đến 03/12/2026**, không
-tính thứ Bảy và Chủ nhật (12 ngày làm việc). Đây là khung thời gian thực
-hiện và hoàn tất các PR của kế hoạch Tuần 3; không đồng nghĩa toàn bộ
-công việc phải hoàn thành trong 7 ngày lịch.
+**Thời gian thực hiện dự kiến:** từ **18/11/2026 đến 09/12/2026**, không
+tính thứ Bảy và Chủ nhật (**16 ngày làm việc**) theo quyết định D-14.
+Ngày 03/12/2026 là mốc kiểm tra tiến độ, không phải ngày kết thúc Tuần 3.
+Đây là khung thời gian thực hiện và hoàn tất các nhóm công việc của kế hoạch Tuần 3;
+không đồng nghĩa toàn bộ công việc phải hoàn thành trong 7 ngày lịch.
 
 **Nguyên tắc về năng lực thực hiện:**
 
@@ -46,7 +47,7 @@ công việc phải hoàn thành trong 7 ngày lịch.
 - Nếu khối lượng thực tế vượt mức tham chiếu 30 giờ, cần theo dõi Actual
   Time và điều chỉnh thời điểm hoàn thành; không tự ý giảm estimate của
   task.
-- Ngày hoàn thành từng PR được theo dõi theo §4.2; các ngày này là lịch
+- Ngày hoàn thành từng nhóm branch được theo dõi theo §4.2; các ngày này là lịch
   dự kiến để reviewer xác nhận, không phải deadline đã được phê duyệt.
 
 ### 1.2. Quyết định và nguyên tắc phân bổ (D-06, D-11)
@@ -404,11 +405,38 @@ Lưu ý: 3h Spring Security thuộc PR \#15, không tính lại vào PR này.
 1.  Cấu hình role mapping nhất quán giữa database, JWT và Spring
     Security.
 2.  CUSTOMER không thể gọi Admin API.
-3.  ADMIN không mặc định có quyền truy cập dữ liệu Cart/Order của
-    Customer nếu API Specification không quy định.
+3.  ADMIN gọi `/cart/**` hoặc `/orders/**` phải nhận `403 Forbidden`;
+    ADMIN không có quyền truy cập các endpoint nghiệp vụ dành riêng cho
+    CUSTOMER.
 4.  Kiểm tra ownership ở Service đối với Cart và Order.
 5.  Trả JSON response đúng format khi thiếu token, token không hợp lệ
     hoặc không đủ quyền.
+
+#### E. Công việc chuyển tiếp từ review PR #15
+
+Hoàn thành các cập nhật dưới đây trong phạm vi triển khai JWT và hoàn
+thiện kiểm thử Authentication/Authorization:
+
+1.  **M-01 — README và tên Postman Collection:**
+    - Cập nhật `backend/README.md` tại §7.2.
+    - Chuẩn hóa tên Postman Collection thành `Mini E-commerce API`.
+2.  **Q-01 — SecurityConfigIntegrationTest:**
+    - Rà soát và sửa `SecurityConfigIntegrationTest`.
+    - Thay thế hai test đang kiểm tra trực tiếp `/error` bằng các test
+      phù hợp với mục tiêu kiểm thử xử lý `ERROR` dispatcher và lỗi ứng
+      dụng ban đầu.
+3.  **Q-02 — SecurityConfig:**
+    - Bổ sung `import` cho `DispatcherType`.
+    - Sắp xếp lại import của hai class
+      `CustomAuthenticationEntryPoint` và `CustomAccessDeniedHandler`
+      theo đúng package và quy ước code.
+4.  **Postman Authentication/Authorization:**
+    - Bổ sung request Login (`POST /auth/login`).
+    - Lưu `accessToken` từ response vào Environment.
+    - Cấu hình Bearer Token dùng biến `accessToken` cho các request trong
+      folder Admin.
+    - Bảo đảm các request Admin được kiểm thử với token của tài khoản
+      ADMIN; không commit token hoặc thông tin đăng nhập thật.
 
 **Commit mẫu:**
 
@@ -426,6 +454,8 @@ Lưu ý: 3h Spring Security thuộc PR \#15, không tính lại vào PR này.
 - CUSTOMER truy cập `/admin/**` bị từ chối.
 - ADMIN và CUSTOMER chỉ truy cập endpoint đúng quyền.
 - Lỗi 401/403 trả JSON đúng format.
+- Postman Collection Runner chạy đạt toàn bộ request và test, bao gồm
+  các request trong folder Admin sử dụng Bearer Token.
 - Không có secret thật trong Git.
 
 ### Giai đoạn 4 — Cart và Cart Validation (9h)
@@ -622,8 +652,8 @@ race condition.
 - Mockito Unit Test: khi Repository trả affected rows = 0, Service phải
   xử lý lỗi 409 và không xóa CartItem.
 - Integration Test sử dụng `@SpringBootTest` và H2 MySQL mode:
-  - Checkout không đủ stock → stock không đổi, không có Order dở dang.
-  - Transaction rollback đúng khi có lỗi.
+- Checkout không đủ stock → stock không đổi, không có Order dở dang.
+- Transaction rollback đúng khi có lỗi.
 - Không bắt buộc viết test đa luồng thực sự.
 
 **Commit mẫu:**
@@ -782,25 +812,37 @@ merge vào `main` lần lượt ngày 20/11/2026 và 23/11/2026.
     tiếp theo sau khi PR trước đã được merge nếu có dependency.
 3.  Không tạo stacked PR nếu không có lý do kỹ thuật cần thiết.
 4.  Các ngày dự kiến ở §4.2 là mốc kế hoạch để reviewer xác nhận; cần
-    đối chiếu ngày hoàn thành thực tế khi PR được merge.
+    đối chiếu ngày hoàn thành thực tế khi PR tương ứng được merge.
 
-### 4.2. Nhóm PR dự kiến
+### 4.2. Nhóm branch và lịch hoàn thành dự kiến
 
-| PR                                                                | Nhóm công việc                                         | Estimate liên quan | Ngày hoàn thành          | Trạng thái                                  |
-|-------------------------------------------------------------------|--------------------------------------------------------|-------------------:|--------------------------|---------------------------------------------|
-| [PR \#14](https://github.com/MinhQuan2k3/mini-e-commerce/pull/14) | CORS + API Test Setup                                  |                 2h | **20/11/2026 — thực tế** | Đã merge                                    |
-| [PR \#15](https://github.com/MinhQuan2k3/mini-e-commerce/pull/15) | Spring Security                                        |                 3h | **23/11/2026 — thực tế** | Đã merge                                    |
-| PR \#16                                                           | JWT + Login + `/auth/me` + Authorization               |                 7h | 27/11/2026 — dự kiến     | Chưa triển khai; chờ reviewer xác nhận ngày |
-| PR \#17                                                           | Cart + Cart Validation + cập nhật API Spec §9.2 (D-13) |                 9h | 30/11/2026 — dự kiến     | Chưa triển khai; chờ reviewer xác nhận ngày |
-| PR \#18                                                           | Checkout + Inventory Transaction                       |                11h | 02/12/2026 — dự kiến     | Chưa triển khai; chờ reviewer xác nhận ngày |
-| PR \#19                                                           | Customer Order + Product Search                        |                 6h | 03/12/2026 — dự kiến     | Chưa triển khai; chờ reviewer xác nhận ngày |
+| Branch                                                                 | Nhóm công việc                                                                  | Estimate liên quan | Ngày hoàn thành dự kiến |
+|------------------------------------------------------------------------|---------------------------------------------------------------------------------|-------------------:|-------------------------|
+| `feature/backend-jwt-authorization`                                    | JWT + Login + `/auth/me` + Authorization                                       |                 7h | 01/12/2026              |
+| `feature/backend-cart`                                                 | Cart + Cart Validation + cập nhật API Spec §9.2 (D-13)                         |                 9h | 03/12/2026              |
+| `feature/backend-checkout`                                              | Checkout + Inventory Transaction                                               |                11h | 07/12/2026              |
+| `feature/backend-customer-order-product-search`                         | Customer Order + Product Search + API Test tổng hợp                             |             6h + 2h | 09/12/2026              |
 
-Giai đoạn 7 (API Test 2h) không tạo PR riêng: request Postman được cập
-nhật trong các PR chức năng tương ứng, sau đó chạy kiểm tra API tổng hợp
-và ghi nhận kết quả; mục tiêu hoàn tất cùng mốc 03/12/2026. Các ngày PR
-\#16–#19 là ngày dự kiến, chưa phải deadline được reviewer phê duyệt.
-Nếu cần sửa code phát sinh từ kiểm thử, tạo branch `fix/` theo Git
-Convention.
+PR #14 (CORS + API Test Setup) và PR #15 (Spring Security) đã merge lần
+lượt ngày 20/11/2026 và 23/11/2026; thông tin thực tế được ghi nhận tại
+§4.1. Các branch trong bảng là nhóm công việc dự kiến, không gán trước
+số PR vì số PR thực tế phụ thuộc vào thứ tự tạo Pull Request.
+
+**Mốc kiểm tra tiến độ 03/12/2026:** rà soát trạng thái merge của
+`feature/backend-jwt-authorization` và `feature/backend-cart`. Nếu một
+trong hai branch chưa được merge, cần đánh giá lại lịch các công việc
+tiếp theo. Theo D-06, điều chỉnh ngày hoàn thành tương ứng; không tự ý
+giảm estimate hoặc cắt phạm vi chức năng.
+
+Giai đoạn 7 (API Test 2h) không tạo branch hoặc PR riêng: request Postman
+được cập nhật trong các PR chức năng tương ứng; sau khi các nhóm nghiệp
+vụ được tích hợp, thực hiện kiểm tra API tổng hợp và ghi nhận kết quả
+cùng branch `feature/backend-customer-order-product-search`, mục tiêu
+hoàn tất ngày 09/12/2026.
+
+Theo D-14, Tuần 3 kết thúc ngày 09/12/2026; Tuần 4 (Frontend) bắt đầu
+ngày 10/12/2026. Các tuần tiếp theo được dịch lịch tương ứng. Nếu cần
+sửa code phát sinh từ kiểm thử, tạo branch `fix/` theo Git Convention.
 
 **Nhóm Admin Order dự kiến ở Tuần 5 (9h):**
 
@@ -811,9 +853,9 @@ Convention.
 | Xử lý Admin Cancel: restore stock transactional và cập nhật payment rule khi DELIVERED            |       3h |              5 | `DELIVERED` tự động chuyển `paymentStatus = PAID` và ghi `paidAt`         |
 | **Tổng**                                                                                          |   **9h** |                | **Chưa gán số PR hoặc ngày hoàn thành; sẽ xác định khi lập lịch Tuần 5.** |
 
-Nhóm Admin Order này thuộc kế hoạch Tuần 5 và không nằm trong estimate
-PR \#16–#19 ở bảng trên. Không tự gán số PR hoặc ngày hoàn thành khi
-chưa được thống nhất.
+Nhóm Admin Order này thuộc kế hoạch Tuần 5 và không nằm trong các
+nhóm branch ở bảng trên. Không tự gán tên branch hoặc ngày hoàn thành
+khi chưa được thống nhất.
 
 Cancel Order (4h), Edge Cases (2h) và Unit Test tổng hợp (3h) được
 chuyển sang Tuần 4 theo D-11. Nhóm Admin Order (9h), gồm
@@ -1022,13 +1064,14 @@ Các endpoint dưới đây ghi tương đối so với prefix `/api`.
 - Nếu phát sinh thay đổi estimate hoặc phạm vi, phải ghi lý do trong
   Change Log.
 
-### 7.4. Các quyết định áp dụng (D-11 → D-13)
+### 7.4. Các quyết định áp dụng (D-11 → D-14)
 
 | Mã quyết định | Nội dung đã thống nhất                                                                                                                                                                                                  | Vị trí áp dụng trong kế hoạch  |
 |---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------|
 | D-11          | Chuyển Cancel Order (4h), Edge Cases (2h) và Unit Test tổng hợp (3h) sang Tuần 4; giữ Cart Validation trong Tuần 3; chuyển nhóm Admin Order (9h) sang Tuần 5.                                                           | §1.2–§1.3; §6; §7.2            |
 | D-12          | Sử dụng Spring Security OAuth2 Resource Server + Nimbus JWT, HS256, `JWT_SECRET` tối thiểu 32 bytes, thời hạn 3600 giây, claim `sub` và `role`.                                                                         | §2.3.A; §3 Giai đoạn 3         |
 | D-13          | Khi Product đã có trong Cart, cộng quantity mới vào quantity hiện tại; nếu tổng vượt stock thì trả `409 Conflict` và không lưu thay đổi. Bổ sung dòng tương ứng vào API Specification §9.2 và Change Log trong PR Cart. | §2.4.A; §3 Giai đoạn 4.E; §7.1 |
+| D-14          | Kéo dài Tuần 3 đến hết ngày 09/12/2026 (16 ngày làm việc); dùng tên branch thay cho số PR dự kiến; 03/12 là mốc kiểm tra tiến độ; Tuần 4 bắt đầu 10/12/2026 và các tuần sau dịch lịch tương ứng. | §1.1; §4.2 |
 
 ## Change Log
 
@@ -1038,10 +1081,12 @@ Các endpoint dưới đây ghi tương đối so với prefix `/api`.
 | 2026-11-25 | L-03      | §1.2; §1.3; §4.2; §6              | Đồng bộ ba task Admin Order theo file ước lượng: List/Search/Filter (3h), Detail + Status Update (3h), Admin Cancel + Payment Rule (3h), đều thuộc Tuần 5.      |
 | 2026-11-25 | L-04      | §3 Giai đoạn 1–2; §4.1–§4.2; §5.1 | Sửa URL PR \#14/#15; ghi nhận trạng thái và ngày merge thực tế.                                                                                                 |
 | 2026-11-25 | L-05      | §3 Giai đoạn 4.E; §7; §7.1; §7.4  | Bổ sung bước cập nhật API Specification §9.2 và Change Log theo D-13; đổi §7 thành bảng đối chiếu feedback K-01–K-08, tách riêng danh mục quyết định D-11–D-13. |
+| 2026-11-25 | U-03, D-14 | §1.1; §4.2; §7.4 | Điều chỉnh thời gian Tuần 3 đến 09/12/2026 (16 ngày làm việc); thay số PR dự kiến bằng tên branch; bổ sung lịch merge dự kiến, mốc kiểm tra 03/12 và thời điểm bắt đầu Tuần 4 ngày 10/12/2026. |
+| 2026-11-25 | U-04 | §3 Giai đoạn 3.D–E; Nghiệm thu Giai đoạn 3 | Bổ sung các việc chuyển tiếp M-01, Q-01, Q-02 và Postman Login/Bearer Token từ review PR #15; làm rõ ADMIN gọi `/cart/**` và `/orders/**` nhận `403 Forbidden`; bổ sung tiêu chí Postman Runner bao gồm folder Admin. |
 
 ------------------------------------------------------------------------
 
 *File này là kế hoạch Tuần 3 đã được điều chỉnh theo feedback K-01 đến
-K-08 và các quyết định D-11 đến D-13. Khi có thay đổi so với kế hoạch,
+K-08 và các quyết định D-11 đến D-14. Khi có thay đổi so với kế hoạch,
 cần ghi rõ lý do và cập nhật đồng bộ file ước lượng; không tự ý thay đổi
 baseline hoặc ghi nhận task chưa hoàn thành là đã nghiệm thu.*
