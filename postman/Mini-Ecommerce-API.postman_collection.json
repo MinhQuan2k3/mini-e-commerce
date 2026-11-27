@@ -1,401 +1,721 @@
-﻿{
-    "info":  {
-                 "_postman_id":  "mini-ecommerce-api-collection",
-                 "name":  "Mini E-commerce API",
-                 "description":  "Postman collection for testing the Mini E-commerce backend APIs. Uses the Mini E-commerce - Local environment.\n\n**Authentication note:** The Admin Categories, Admin Products, and Cleanup requests require authentication. Spring Security has been enabled, but JWT authentication has not been implemented yet. These requests currently return 401 Unauthorized when executed. JWT authentication and Bearer Token configuration will be added in a subsequent PR.",
-                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-             },
-    "item":  [
-                 {
-                     "name":  "Authentication",
-                     "item":  [
-                                  {
-                                      "name":  "Register Customer",
-                                      "request":  {
-                                                      "method":  "POST",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"email\": \"postman-{{$timestamp}}@example.com\",\n  \"password\": \"Customer123\"\n}"
-                                                               },
-                                                      "url":  "{{baseUrl}}/auth/register"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 201 Created\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(201);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Response contains registered customer data\u0027, function () {",
-                                                                                    "    const response = pm.response.json();",
-                                                                                    "    pm.expect(response.success).to.eql(true);",
-                                                                                    "    pm.expect(response.data).to.have.property(\u0027id\u0027);",
-                                                                                    "    pm.expect(response.data).to.have.property(\u0027email\u0027);",
-                                                                                    "    pm.expect(response.data).to.have.property(\u0027role\u0027);",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  }
-                              ]
-                 },
-                 {
-                     "name":  "Admin Categories",
-                     "description": "Requires authentication. Requests currently return 401 Unauthorized until JWT authentication is implemented in a subsequent PR.",
-                     "item":  [
-                                  {
-                                      "name":  "Get All Categories (Admin)",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-
-                                                                 ],
-                                                      "url":  "{{baseUrl}}/admin/categories"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 200 OK\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(200);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Response indicates success\u0027, function () {",
-                                                                                    "    pm.expect(pm.response.json().success).to.eql(true);",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  },
-                                  {
-                                      "name":  "Create Category",
-                                      "request":  {
-                                                      "method":  "POST",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"name\": \"Postman Category {{$timestamp}}\",\n  \"description\": \"Category created by Postman collection\",\n  \"status\": \"ACTIVE\"\n}"
-                                                               },
-                                                      "url":  "{{baseUrl}}/admin/categories"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 201 Created\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(201);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Category is created and its ID is saved\u0027, function () {",
-                                                                                    "    const response = pm.response.json();",
-                                                                                    "    pm.expect(response.success).to.eql(true);",
-                                                                                    "    pm.expect(response.data).to.have.property(\u0027id\u0027);",
-                                                                                    "    pm.environment.set(\u0027categoryId\u0027, String(response.data.id));",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  },
-                                  {
-                                      "name":  "Update Category",
-                                      "request":  {
-                                                      "method":  "PUT",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"name\": \"Postman Updated Category {{$timestamp}}\",\n  \"description\": \"Category updated by Postman collection\",\n  \"status\": \"ACTIVE\"\n}"
-                                                               },
-                                                      "url":  "{{baseUrl}}/admin/categories/{{categoryId}}"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 200 OK\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(200);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Response indicates success\u0027, function () {",
-                                                                                    "    pm.expect(pm.response.json().success).to.eql(true);",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  }
-                              ]
-                 },
-                 {
-                     "name":  "Public Categories",
-                     "item":  [
-                                  {
-                                      "name":  "Get All Categories",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-
-                                                                 ],
-                                                      "url":  "{{baseUrl}}/categories"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 200 OK\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(200);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Response indicates success\u0027, function () {",
-                                                                                    "    pm.expect(pm.response.json().success).to.eql(true);",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  },
-                                  {
-                                      "name":  "Get Category By ID",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-
-                                                                 ],
-                                                      "url":  "{{baseUrl}}/categories/{{categoryId}}"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 200 OK\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(200);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Response contains the requested category\u0027, function () {",
-                                                                                    "    const response = pm.response.json();",
-                                                                                    "    pm.expect(response.success).to.eql(true);",
-                                                                                    "    pm.expect(String(response.data.id)).to.eql(pm.environment.get(\u0027categoryId\u0027));",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  }
-                              ]
-                 },
-                 {
-                     "name":  "Admin Products",
-                     "description": "Requires authentication. Requests currently return 401 Unauthorized until JWT authentication is implemented in a subsequent PR.",
-                     "item":  [
-                                  {
-                                      "name":  "Get Products (with pagination and filters)",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-
-                                                                 ],
-                                                      "url":  "{{baseUrl}}/admin/products?page=0\u0026size=10\u0026sort=createdAt\u0026direction=DESC"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 200 OK\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(200);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Response contains paginated product data\u0027, function () {",
-                                                                                    "    const response = pm.response.json();",
-                                                                                    "    pm.expect(response.success).to.eql(true);",
-                                                                                    "    pm.expect(response.data).to.have.property(\u0027content\u0027);",
-                                                                                    "    pm.expect(response.data).to.have.property(\u0027totalElements\u0027);",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  },
-                                  {
-                                      "name":  "Create Product",
-                                      "request":  {
-                                                      "method":  "POST",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"sku\": \"POSTMAN-{{$timestamp}}\",\n  \"name\": \"Postman Test Product\",\n  \"description\": \"Product created by Postman collection\",\n  \"price\": 12990000,\n  \"stockQuantity\": 20,\n  \"imageUrl\": \"https://example.com/images/product.jpg\",\n  \"categoryId\": {{categoryId}},\n  \"status\": \"ACTIVE\"\n}"
-                                                               },
-                                                      "url":  "{{baseUrl}}/admin/products"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 201 Created\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(201);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Product is created and its ID is saved\u0027, function () {",
-                                                                                    "    const response = pm.response.json();",
-                                                                                    "    pm.expect(response.success).to.eql(true);",
-                                                                                    "    pm.expect(response.data).to.have.property(\u0027id\u0027);",
-                                                                                    "    pm.environment.set(\u0027productId\u0027, String(response.data.id));",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  },
-                                  {
-                                      "name":  "Get Product By ID",
-                                      "request":  {
-                                                      "method":  "GET",
-                                                      "header":  [
-
-                                                                 ],
-                                                      "url":  "{{baseUrl}}/admin/products/{{productId}}"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 200 OK\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(200);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Response contains the requested product\u0027, function () {",
-                                                                                    "    const response = pm.response.json();",
-                                                                                    "    pm.expect(response.success).to.eql(true);",
-                                                                                    "    pm.expect(String(response.data.id)).to.eql(pm.environment.get(\u0027productId\u0027));",
-                                                                                    "    pm.expect(response.data.category).to.have.property(\u0027id\u0027);",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  },
-                                  {
-                                      "name":  "Update Product",
-                                      "request":  {
-                                                      "method":  "PUT",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"sku\": \"POSTMAN-UPDATED-{{$timestamp}}\",\n  \"name\": \"Postman Updated Product\",\n  \"description\": \"Product updated by Postman collection\",\n  \"price\": 13990000,\n  \"stockQuantity\": 25,\n  \"imageUrl\": \"https://example.com/images/updated-product.jpg\",\n  \"categoryId\": {{categoryId}},\n  \"status\": \"ACTIVE\"\n}"
-                                                               },
-                                                      "url":  "{{baseUrl}}/admin/products/{{productId}}"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 200 OK\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(200);",
-                                                                                    "});",
-                                                                                    "pm.test(\u0027Response indicates success\u0027, function () {",
-                                                                                    "    pm.expect(pm.response.json().success).to.eql(true);",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  }
-                              ]
-                 },
-                 {
-                     "name":  "Cleanup",
-                     "description":  "Run after the other folders. Delete the product before deleting its category.\n\n**Note:** These requests require authentication and currently return 401 Unauthorized until JWT authentication is implemented in a subsequent PR.",
-                     "item":  [
-                                  {
-                                      "name":  "Delete Product",
-                                      "request":  {
-                                                      "method":  "DELETE",
-                                                      "header":  [
-
-                                                                 ],
-                                                      "url":  "{{baseUrl}}/admin/products/{{productId}}"
-                                                  },
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027Status is 204 No Content\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(204);",
-                                                                                    "});",
-                                                                                    "pm.environment.unset(\u0027productId\u0027);"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ]
-                                  },
-                                   {
-                                     "name": "Delete Category đang có Product → 409",
-                                     "request": {
-                                                 "method": "DELETE",
-                                                 "header": [],
-                                                 "url": "{{baseUrl}}/admin/categories/{{categoryId}}"
-                                                },
-                                     "event": [
-                                             {
-                                               "listen": "test",
-                                                       "script": {
-                                                         "type": "text/javascript",
-                                                         "exec": [
-                                                                   "pm.test('Status is 409 Conflict', function () {",
-                                                                   "    pm.response.to.have.status(409);",
-                                                                   "});",
-                                                                   "",
-                                                                   "pm.test('Response indicates failure', function () {",
-                                                                   "    const response = pm.response.json();",
-                                                                   "    pm.expect(response.success).to.eql(false);",
-                                                                   "});"
-                                                                  ]
-                                                       }
-                                             }
-                                     ]
-                                   }
-                              ]
-                 }
-             ]
+{
+  "info": {
+    "_postman_id": "mini-ecommerce-api-collection",
+    "name": "Mini E-commerce API",
+    "description": "Postman collection for testing the Mini E-commerce backend APIs. Uses the Mini E-commerce - Local environment.\n\n**Authentication:**\n- Authentication endpoints support Customer registration and login.\n- Admin login and Customer login return JWT access tokens.\n- Access tokens are automatically saved to the active Postman environment.\n- Admin Categories, Admin Products, and Cleanup folders use the Admin Bearer Token.\n- Protected endpoints require a valid JWT.\n- Customer and Admin access permissions are tested separately.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 Created', function () {\n    pm.response.to.have.status(201);\n});\n\npm.test('Response contains registered customer data', function () {\n    const response = pm.response.json();\n\n    pm.expect(response.success).to.eql(true);\n    pm.expect(response.data).to.have.property('id');\n    pm.expect(response.data).to.have.property('email');\n    pm.expect(response.data).to.have.property('role');\n\n    pm.expect(response.data.role).to.eql('CUSTOMER');\n\n    // Save the registered customer email for the login request.\n    pm.environment.set('customerEmail', response.data.email);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"postman-{{$timestamp}}@example.com\",\n  \"password\": \"Customer123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "text"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test('Login response contains valid Customer JWT', function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.success).to.eql(true);\r\n    pm.expect(response.data.accessToken).to.be.a('string').and.not.empty;\r\n    pm.expect(response.data.tokenType).to.eql('Bearer');\r\n    pm.expect(response.data.expiresIn).to.eql(3600);\r\n    pm.expect(response.data.user.role).to.eql('CUSTOMER');\r\n    pm.expect(response.data.user.email).to.eql(\r\n        pm.environment.get('customerEmail')\r\n    );\r\n\r\n    pm.environment.set(\r\n        'customerAccessToken',\r\n        response.data.accessToken\r\n    );\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{customerEmail}}\",\r\n  \"password\": \"Customer123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test('Login response contains valid Admin JWT', function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.success).to.eql(true);\r\n    pm.expect(response.data.accessToken).to.be.a('string').and.not.empty;\r\n    pm.expect(response.data.tokenType).to.eql('Bearer');\r\n    pm.expect(response.data.expiresIn).to.eql(3600);\r\n\r\n    pm.expect(response.data.user.id).to.eql(1);\r\n    pm.expect(response.data.user.email).to.eql(\r\n        pm.environment.get('adminEmail')\r\n    );\r\n    pm.expect(response.data.user.role).to.eql('ADMIN');\r\n\r\n    pm.environment.set(\r\n        'adminAccessToken',\r\n        response.data.accessToken\r\n    );\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{adminEmail}}\",\r\n  \"password\": \"{{adminPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test('Current user matches authenticated Admin', function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.success).to.eql(true);\r\n    pm.expect(response.data.id).to.eql(1);\r\n    pm.expect(response.data.email).to.eql(\r\n        pm.environment.get('adminEmail')\r\n    );\r\n    pm.expect(response.data.role).to.eql('ADMIN');\r\n\r\n    pm.expect(response.data).to.not.have.property('password');\r\n    pm.expect(response.data).to.not.have.property('passwordHash');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Customer Access Admin API → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403 Forbidden', function () {\r\n    pm.response.to.have.status(403);\r\n});\r\n\r\npm.test('Customer is denied Admin API access with JSON response', function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.success).to.eql(false);\r\n    pm.expect(response.message).to.be.a('string').and.not.empty;\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin Categories",
+      "item": [
+        {
+          "name": "Get All Categories (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response indicates success', function () {",
+                  "    pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Category is created and its ID is saved', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.eql(true);",
+                  "    pm.expect(response.data).to.have.property('id');",
+                  "    pm.environment.set('categoryId', String(response.data.id));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Category {{$timestamp}}\",\n  \"description\": \"Category created by Postman collection\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response indicates success', function () {",
+                  "    pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Updated Category {{$timestamp}}\",\n  \"description\": \"Category updated by Postman collection\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories",
+                "{{categoryId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Requires authentication with an Admin Bearer Token.\n\nAll requests require ADMIN role authorization.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminAccessToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Public Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response indicates success', function () {",
+                  "    pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response contains the requested category', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.eql(true);",
+                  "    pm.expect(String(response.data.id)).to.eql(pm.environment.get('categoryId'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories",
+                "{{categoryId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin Products",
+      "item": [
+        {
+          "name": "Get Products (with pagination and filters)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response contains paginated product data', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.eql(true);",
+                  "    pm.expect(response.data).to.have.property('content');",
+                  "    pm.expect(response.data).to.have.property('totalElements');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/products?page=0&size=10&sort=createdAt&direction=DESC",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "direction",
+                  "value": "DESC"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Product is created and its ID is saved', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.eql(true);",
+                  "    pm.expect(response.data).to.have.property('id');",
+                  "    pm.environment.set('productId', String(response.data.id));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"POSTMAN-{{$timestamp}}\",\n  \"name\": \"Postman Test Product\",\n  \"description\": \"Product created by Postman collection\",\n  \"price\": 12990000,\n  \"stockQuantity\": 20,\n  \"imageUrl\": \"https://example.com/images/product.jpg\",\n  \"categoryId\": {{categoryId}},\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response contains the requested product', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.eql(true);",
+                  "    pm.expect(String(response.data.id)).to.eql(pm.environment.get('productId'));",
+                  "    pm.expect(response.data.category).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/products/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "products",
+                "{{productId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response indicates success', function () {",
+                  "    pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"POSTMAN-UPDATED-{{$timestamp}}\",\n  \"name\": \"Postman Updated Product\",\n  \"description\": \"Product updated by Postman collection\",\n  \"price\": 13990000,\n  \"stockQuantity\": 25,\n  \"imageUrl\": \"https://example.com/images/updated-product.jpg\",\n  \"categoryId\": {{categoryId}},\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/products/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "products",
+                "{{productId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Requires authentication with an Admin Bearer Token.\n\nAll requests require ADMIN role authorization.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminAccessToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cleanup",
+      "item": [
+        {
+          "name": "Delete Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 204 No Content', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "pm.environment.unset('productId');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/products/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "products",
+                "{{productId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category đang có Product → 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 409 Conflict', function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "",
+                  "pm.test('Response indicates failure', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories",
+                "{{categoryId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Run after the other folders. Delete the product before deleting its category.\n\nRequires authentication with an Admin Bearer Token.\nAll requests require ADMIN role authorization.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminAccessToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
 }
