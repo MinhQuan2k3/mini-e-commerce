@@ -1,5 +1,6 @@
 package com.miniecommerce.backend.config;
 
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -56,7 +57,7 @@ public class SecurityConfig {
                         )
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR)
+                        .dispatcherTypeMatchers(DispatcherType.ERROR)
                         .permitAll()
                         .requestMatchers("/error")
                         .permitAll()
