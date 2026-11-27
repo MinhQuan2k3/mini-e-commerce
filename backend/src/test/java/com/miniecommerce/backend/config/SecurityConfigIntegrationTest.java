@@ -1,5 +1,11 @@
 package com.miniecommerce.backend.config;
 
+import com.miniecommerce.backend.auth.service.JwtService;
+import com.miniecommerce.backend.user.entity.User;
+import com.miniecommerce.backend.user.entity.UserRole;
+import com.miniecommerce.backend.user.repository.UserRepository;
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.RequestDispatcher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,38 +14,58 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.servlet.DispatcherType;
+import javax.crypto.spec.SecretKeySpec;
+import java.time.Instant;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 class SecurityConfigIntegrationTest {
 
     private static final String ALLOWED_ORIGIN =
             "http://frontend.example.test";
+
+    private static final String AUTH_ME_ENDPOINT = "/api/auth/me";
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private JwtEncoder jwtEncoder;
 
     @Test
     void shouldAllowRegistrationWithoutAuthentication() throws Exception {
@@ -138,4 +164,234 @@ class SecurityConfigIntegrationTest {
                         .value("/api/admin/products"));
     }
 
+    @Test
+    void shouldReturnUnauthorizedWhenBearerTokenIsMissing()
+            throws Exception {
+        mockMvc.perform(get(AUTH_ME_ENDPOINT)
+                        .contextPath("/api"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message")
+                        .value("Authentication required"))
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
+    void shouldReturnUnauthorizedWhenBearerTokenIsMalformed()
+            throws Exception {
+        mockMvc.perform(get(AUTH_ME_ENDPOINT)
+                        .contextPath("/api")
+                        .header(
+                                HttpHeaders.AUTHORIZATION,
+                                "Bearer not-a-valid-jwt"
+                        ))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message")
+                        .value("Authentication required"))
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
+    void shouldReturnCurrentUserWhenBearerTokenIsValid()
+            throws Exception {
+        User user = createUser(UserRole.CUSTOMER);
+        String token = jwtService.generateToken(user);
+
+        mockMvc.perform(get(AUTH_ME_ENDPOINT)
+                        .contextPath("/api")
+                        .header(
+                                HttpHeaders.AUTHORIZATION,
+                                "Bearer " + token
+                        ))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id")
+                        .value(user.getId()))
+                .andExpect(jsonPath("$.data.email")
+                        .value(user.getEmail()))
+                .andExpect(jsonPath("$.data.role")
+                        .value("CUSTOMER"))
+                .andExpect(jsonPath("$.data.passwordHash").doesNotExist())
+                .andExpect(jsonPath("$.data.password_hash").doesNotExist());
+    }
+
+    @Test
+    void shouldReturnUnauthorizedWhenJwtIsExpired()
+            throws Exception {
+        String expiredToken = createExpiredToken();
+
+        mockMvc.perform(get(AUTH_ME_ENDPOINT)
+                        .contextPath("/api")
+                        .header(
+                                HttpHeaders.AUTHORIZATION,
+                                "Bearer " + expiredToken
+                        ))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message")
+                        .value("Authentication required"))
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+    @Test
+    void shouldReturnUnauthorizedWhenJwtSignatureIsInvalid()
+            throws Exception {
+        String invalidToken = createTokenWithInvalidSignature();
+
+        mockMvc.perform(get(AUTH_ME_ENDPOINT)
+                        .contextPath("/api")
+                        .header(
+                                HttpHeaders.AUTHORIZATION,
+                                "Bearer " + invalidToken
+                        ))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message")
+                        .value("Authentication required"))
+                .andExpect(jsonPath("$.errors").isArray());
+    }
+
+
+    @Test
+    void shouldForbidCustomerFromAccessingAdminEndpoint()
+            throws Exception {
+        User customer = createUser(UserRole.CUSTOMER);
+        String token = jwtService.generateToken(customer);
+
+        mockMvc.perform(get("/api/admin/products")
+                        .contextPath("/api")
+                        .header(
+                                HttpHeaders.AUTHORIZATION,
+                                "Bearer " + token
+                        ))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Access denied"));
+    }
+
+    @Test
+    void shouldAllowAdminToAccessAdminEndpoint()
+            throws Exception {
+        User admin = createUser(UserRole.ADMIN);
+        String token = jwtService.generateToken(admin);
+
+        mockMvc.perform(get("/api/admin/categories")
+                        .contextPath("/api")
+                        .header(
+                                HttpHeaders.AUTHORIZATION,
+                                "Bearer " + token
+                        ))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldForbidAdminFromAccessingCartEndpoint()
+            throws Exception {
+        User admin = createUser(UserRole.ADMIN);
+        String token = jwtService.generateToken(admin);
+
+        mockMvc.perform(get("/api/cart")
+                        .contextPath("/api")
+                        .header(
+                                HttpHeaders.AUTHORIZATION,
+                                "Bearer " + token
+                        ))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Access denied"));
+    }
+
+    @Test
+    void shouldForbidAdminFromAccessingOrderEndpoint()
+            throws Exception {
+        User admin = createUser(UserRole.ADMIN);
+        String token = jwtService.generateToken(admin);
+
+        mockMvc.perform(get("/api/orders")
+                        .contextPath("/api")
+                        .header(
+                                HttpHeaders.AUTHORIZATION,
+                                "Bearer " + token
+                        ))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Access denied"));
+    }
+
+    private User createUser(UserRole role) {
+        String email = "security-test-" + UUID.randomUUID()
+                + "@example.com";
+
+        return userRepository.saveAndFlush(
+                new User(
+                        email,
+                        "test-password-hash",
+                        role
+                )
+        );
+    }
+
+    private String createExpiredToken() {
+        Instant now = Instant.now();
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .subject("1")
+                .issuedAt(now.minusSeconds(7200))
+                .expiresAt(now.minusSeconds(3600))
+                .claim("role", "CUSTOMER")
+                .build();
+
+        return jwtEncoder.encode(
+                JwtEncoderParameters.from(
+                        JwsHeader.with(MacAlgorithm.HS256).build(),
+                        claims
+                )
+        ).getTokenValue();
+    }
+
+    private String createTokenWithInvalidSignature() {
+        Instant now = Instant.now();
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .subject("1")
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(3600))
+                .claim("role", "CUSTOMER")
+                .build();
+
+        byte[] invalidKeyBytes = new byte[32];
+
+        JwtEncoder invalidJwtEncoder = new NimbusJwtEncoder(
+                new ImmutableSecret<>(
+                        new SecretKeySpec(
+                                invalidKeyBytes,
+                                "HmacSHA256"
+                        )
+                )
+        );
+
+        return invalidJwtEncoder.encode(
+                JwtEncoderParameters.from(
+                        JwsHeader.with(MacAlgorithm.HS256).build(),
+                        claims
+                )
+        ).getTokenValue();
+    }
 }

@@ -73,7 +73,12 @@ public class SecurityConfig {
                                 "/products",
                                 "/products/**"
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/admin/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers("/cart/**", "/orders/**")
+                        .hasRole("CUSTOMER")
+                        .anyRequest()
+                        .authenticated()
                 )
                 .build();
     }
