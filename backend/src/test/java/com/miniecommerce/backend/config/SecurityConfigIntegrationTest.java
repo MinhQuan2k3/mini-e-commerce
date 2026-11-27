@@ -1,10 +1,12 @@
 package com.miniecommerce.backend.config;
 
+import jakarta.servlet.RequestDispatcher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -108,24 +110,32 @@ class SecurityConfigIntegrationTest {
     }
 
     @Test
-    void shouldAllowDirectAccessToErrorEndpoint() throws Exception {
+    void shouldPermitErrorDispatchForOriginalApplicationError()
+            throws Exception {
         mockMvc.perform(get("/api/error")
-                        .contextPath("/api"))
-                .andExpect(status().isInternalServerError());
+                        .contextPath("/api")
+                        .requestAttr(
+                                RequestDispatcher.ERROR_STATUS_CODE,
+                                HttpStatus.INTERNAL_SERVER_ERROR.value()
+                        )
+                        .requestAttr(
+                                RequestDispatcher.ERROR_REQUEST_URI,
+                                "/api/admin/products"
+                        )
+                        .requestAttr(
+                                RequestDispatcher.ERROR_MESSAGE,
+                                "Internal Server Error"
+                        )
+                        .with(request -> {
+                            request.setDispatcherType(DispatcherType.ERROR);
+                            return request;
+                        }))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentTypeCompatibleWith(
+                        MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.path")
+                        .value("/api/admin/products"));
     }
 
-    @Test
-    void shouldAllowErrorDispatcherType() throws Exception {
-        MockHttpServletRequestBuilder errorRequest = get(
-                "/api/admin/products"
-        )
-                .contextPath("/api")
-                .with(request -> {
-                    request.setDispatcherType(DispatcherType.ERROR);
-                    return request;
-                });
-
-        mockMvc.perform(errorRequest)
-                .andExpect(status().isOk());
-    }
 }
